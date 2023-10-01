@@ -1,0 +1,19 @@
+FROM golang:1.20-alpine as build
+WORKDIR /backend/src
+
+ENV GOPATH $HOME/backend
+ENV PATH $PATH:$GOPATH/bin
+
+COPY ./src .
+RUN go mod tidy
+
+RUN go build -o main main.go
+
+FROM alpine:3.8
+RUN apk upgrade --update && \
+    apk add --no-cache tzdata
+COPY --from=build /backend/src/main /backend/main
+
+EXPOSE 8080
+
+CMD ["/backend/main"]
