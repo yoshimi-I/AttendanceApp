@@ -1,7 +1,9 @@
 // main.go
 package main
 
+import "fmt"
+
 func main() {
-	11
+	fmt.Print("test")
 
 }
