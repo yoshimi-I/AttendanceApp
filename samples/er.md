@@ -1,8 +1,9 @@
 ```mermaid
 erDiagram
     User ||--o{ Attendances : "has"
-    Attendances ||--o{ Breaks : "has"
-    Attendances ||--o{ PrayerTimes : "has"
+    Attendances ||--o{ Play : "has"
+    Attendances ||--o{ StudyStartEnd : "has"
+    Attendances ||--o{ BreakStartEnd : "has"
 
     User {
         int user_id PK
@@ -16,15 +17,13 @@ erDiagram
         int attendance_id PK
         int user_id FK
         date attendance_date
-        timestamp clock_in_time
-        timestamp clock_out_time
         string notes
         timestamp created_at
         timestamp updated_at
     }
 
-    Breaks {
-        int break_id PK
+    Play {
+        int play_id PK
         int attendance_id FK
         timestamp start_time
         timestamp end_time
@@ -32,14 +31,20 @@ erDiagram
         timestamp updated_at
     }
 
-    PrayerTimes {
-        int prayer_id PK
+    StudyStartEnd {
+        int study_id PK
         int attendance_id FK
-        timestamp fajr
-        timestamp dhuhr
-        timestamp asr
-        timestamp maghrib
-        timestamp isha
+        timestamp start_time
+        timestamp end_time
+        timestamp created_at
+        timestamp updated_at
+    }
+
+    BreakStartEnd {
+        int break_id PK
+        int attendance_id FK
+        timestamp start_time
+        timestamp end_time
         timestamp created_at
         timestamp updated_at
     }

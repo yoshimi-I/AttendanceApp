@@ -1,46 +1,52 @@
 -- Userテーブルの作成
 CREATE TABLE User (
-                      user_id INT PRIMARY KEY,
-                      name VARCHAR(255),
-                      email VARCHAR(255) UNIQUE,
-                      created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-                      updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+    user_id INT AUTO_INCREMENT PRIMARY KEY,
+    name VARCHAR(255),
+    email VARCHAR(255) UNIQUE,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
 );
 
--- Attendancesテーブルの作成
-CREATE TABLE Attendances (
-                             attendance_id INT PRIMARY KEY,
-                             user_id INT,
-                             attendance_date DATE,
-                             clock_in_time TIMESTAMP,
-                             clock_out_time TIMESTAMP,
-                             notes TEXT,
-                             created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-                             updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-                             FOREIGN KEY (user_id) REFERENCES User(user_id)
+-- Activitiesテーブルの作成
+CREATE TABLE Activities (
+    activity_id CHAR(36) DEFAULT (UUID()) PRIMARY KEY,
+    user_id INT,
+    activity_date DATE,
+    notes TEXT,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    FOREIGN KEY (user_id) REFERENCES User(user_id)
 );
 
--- Breaksテーブルの作成
-CREATE TABLE Breaks (
-                        break_id INT PRIMARY KEY,
-                        attendance_id INT,
-                        start_time TIMESTAMP,
-                        end_time TIMESTAMP,
-                        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-                        updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-                        FOREIGN KEY (attendance_id) REFERENCES Attendances(attendance_id)
+-- Playテーブルの作成
+CREATE TABLE Play (
+    play_id INT AUTO_INCREMENT PRIMARY KEY,
+    activity_id CHAR(36),
+    start_time TIMESTAMP,
+    end_time TIMESTAMP,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    FOREIGN KEY (activity_id) REFERENCES Activities(activity_id)
 );
 
--- PrayerTimesテーブルの作成
-CREATE TABLE PrayerTimes (
-                             prayer_id INT PRIMARY KEY,
-                             attendance_id INT,
-                             fajr TIMESTAMP,
-                             dhuhr TIMESTAMP,
-                             asr TIMESTAMP,
-                             maghrib TIMESTAMP,
-                             isha TIMESTAMP,
-                             created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-                             updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-                             FOREIGN KEY (attendance_id) REFERENCES Attendances(attendance_id)
+-- StudyStartEndテーブルの作成
+CREATE TABLE StudyStartEnd (
+    study_id INT AUTO_INCREMENT PRIMARY KEY,
+    activity_id CHAR(36),
+    start_time TIMESTAMP,
+    end_time TIMESTAMP,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    FOREIGN KEY (activity_id) REFERENCES Activities(activity_id)
+);
+
+-- BreakStartEndテーブルの作成
+CREATE TABLE BreakStartEnd (
+    break_id INT AUTO_INCREMENT PRIMARY KEY,
+    activity_id CHAR(36),
+    start_time TIMESTAMP,
+    end_time TIMESTAMP,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    FOREIGN KEY (activity_id) REFERENCES Activities(activity_id)
 );
