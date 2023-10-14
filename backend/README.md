@@ -9,6 +9,10 @@
     - マイグレーション
   - go-chi
     - https
+  - Air
+    - ホットリロード
+  - swaggo
+    - ドキュメント自動生成
 ### ディレクトリ構成
 ```
 .
@@ -52,4 +56,14 @@
 ## 
 ```bash
 go mod init yoshimi-I/AttendanceApp
+```
+
+## Dockerで迷子になったら
+- まずはディレクトリ構成を把握
+```
+docker build --target build -t temp-image .
+```
+- そのあとlsやpwdを押してルートを確認
+```
+docker run --rm temp-image ls
 ```
