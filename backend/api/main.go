@@ -2,12 +2,11 @@
 package main
 
 import (
-	"fmt"
 	"github.com/yoshimi-I/AttendanceApp/router"
+	"net/http"
 )
 
 func main() {
-	fmt.Print("test")
-	router.Router()
-
+	r := router.Router()
+	http.ListenAndServe(":5000", r)
 }

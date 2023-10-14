@@ -9,7 +9,7 @@ import (
 func Router() *chi.Mux {
 	r := chi.NewRouter()
 	r.Use(middleware.Logger)
-	
+
 	// 勉強の全履歴を取得
 	r.Get("/study/allHistory/", usecase.GetAllStudyHistory)
 
