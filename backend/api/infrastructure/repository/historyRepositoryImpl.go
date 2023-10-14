@@ -7,17 +7,17 @@ import (
 	"time"
 )
 
-type StudyHistoryImpl struct {
+type HistoryRepoImpl struct {
 	db *gorm.DB
 }
 
-func NewStudyHistoryRepository(db *gorm.DB) repository.StudyHistoryRepository {
-	return &StudyHistoryImpl{
+func NewHistoryRepository(db *gorm.DB) repository.HistoryRepository {
+	return &HistoryRepoImpl{
 		db: db,
 	}
 }
 
-func (s *StudyHistoryImpl) GetAllHistory() []model.Activities {
+func (s *HistoryRepoImpl) GetAllHistory() []model.Activities {
 	a := model.Activities{
 		ActivityDate: time.Time{},
 		Notes:        "",
@@ -37,7 +37,7 @@ func (s *StudyHistoryImpl) GetAllHistory() []model.Activities {
 	return []model.Activities{a, b}
 }
 
-func (s *StudyHistoryImpl) GetHistoryByDate(date string) model.Activities {
+func (s *HistoryRepoImpl) GetHistoryByDate(date string) model.Activities {
 	a := model.Activities{
 		ActivityDate: time.Time{},
 		Notes:        "",
