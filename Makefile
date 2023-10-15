@@ -32,3 +32,7 @@ migrate-down:
 # 現在のマイグレーションの状態を表示する
 migrate-status:
 	cd backend/api && goose -dir=../../db/migration mysql "$(DSN)" status
+
+# DIを行う
+di:
+	cd backend/api/di && wire gen
