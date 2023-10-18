@@ -1,8 +1,9 @@
 "use client";
 import React, { useEffect, useState } from "react";
+import Link from "next/link";
 
 import "./styles.css";
-import { Box } from '@mui/material';
+import { Box } from "@mui/material";
 
 interface ActivityData {
   day: string;
@@ -24,7 +25,7 @@ interface ActivityCalendarProps {
 }
 
 export const ActivityCalendar: React.FC<ActivityCalendarProps> = ({
-  sampleData = [],
+  sampleData,
   colorCustomization,
   showMonth = true,
 }) => {
@@ -48,6 +49,35 @@ export const ActivityCalendar: React.FC<ActivityCalendarProps> = ({
     }
     return day;
   };
+
+  function formatDateForURL(dateString: string | undefined): string {
+    if (!dateString) {
+      // 必要に応じてデフォルト値やエラーメッセージを返す
+      return "/default-value";
+    }
+    const months: { [key: string]: string } = {
+      Jan: "01",
+      Feb: "02",
+      Mar: "03",
+      Apr: "04",
+      May: "05",
+      Jun: "06",
+      Jul: "07",
+      Aug: "08",
+      Sep: "09",
+      Oct: "10",
+      Nov: "11",
+      Dec: "12",
+    };
+
+    const parts = dateString.split(" ");
+    const month = months[parts[0]];
+    const day = parts[1].replace(",", "").padStart(2, "0");
+    const year = parts[2];
+
+    return `/${year}-${month}-${day}`;
+  }
+
   function dateFromDay(day: number) {
     var date = new Date(currentYear, 0);
     let newDate = new Date(date.setDate(day)).toLocaleDateString("en-US", {
@@ -65,7 +95,7 @@ export const ActivityCalendar: React.FC<ActivityCalendarProps> = ({
     setDayText(tempDateTextList);
   }
   const initialise = async () => {
-    sampleData.map((item) => {
+    sampleData?.map((item) => {
       let activityDay = getDayOfYear(item.day);
       tempGraphData[activityDay] = item.activity;
     });
@@ -115,126 +145,161 @@ export const ActivityCalendar: React.FC<ActivityCalendarProps> = ({
         {[...Array(52)].map((e, i) => {
           return (
             <Box key={i}>
-              <div className="aci-wrapper" >
-                <div
-                  className={`ac-item day-${i * 7 + 1} ${
-                    graphData[i * 7 + 1] !== 0
-                      ? `active activity-${
-                          graphData[i * 7 + 1] < 4 ? graphData[i * 7 + 1] : 4
-                        }`
-                      : ""
-                  }`}
-                  style={{
-                    background: matchColorComb(graphData[i * 7 + 1]),
-                  }}
+              <div className="aci-wrapper">
+                <Link
+                  href={`/mypage/${formatDateForURL(dateText[i * 7 + 1])}`}
+                  passHref
                 >
-                  <span className="tooltiptext">
-                    {graphData[i * 7 + 1]} activity on{" "}
-                    {dateText.length !== 0 ? dateText[i * 7 + 1] : ""}
-                  </span>
-                </div>
-                <div
-                  className={`ac-item day-${i * 7 + 2} ${
-                    graphData[i * 7 + 2] !== 0
-                      ? `active activity-${
-                          graphData[i * 7 + 2] < 4 ? graphData[i * 7 + 2] : 4
-                        }`
-                      : ""
-                  }`}
-                  style={{
-                    background: matchColorComb(graphData[i * 7 + 2]),
-                  }}
+                  <div
+                    className={`ac-item day-${i * 7 + 1} ${
+                      graphData[i * 7 + 1] !== 0
+                        ? `active activity-${
+                            graphData[i * 7 + 1] < 4 ? graphData[i * 7 + 1] : 4
+                          }`
+                        : ""
+                    }`}
+                    style={{
+                      background: matchColorComb(graphData[i * 7 + 1]),
+                    }}
+                  >
+                    <span className="tooltiptext">
+                      {graphData[i * 7 + 1]} activity on{" "}
+                      {dateText.length !== 0 ? dateText[i * 7 + 1] : ""}
+                    </span>
+                  </div>
+                </Link>
+                <Link
+                  href={`/mypage/${formatDateForURL(dateText[i * 7 + 1])}`}
+                  passHref
                 >
-                  <span className="tooltiptext">
-                    {graphData[i * 7 + 2]} activity on{" "}
-                    {dateText.length !== 0 ? dateText[i * 7 + 2] : ""}
-                  </span>
-                </div>
-                <div
-                  className={`ac-item day-${i * 7 + 3} ${
-                    graphData[i * 7 + 3] !== 0
-                      ? `active activity-${
-                          graphData[i * 7 + 3] < 4 ? graphData[i * 7 + 3] : 4
-                        }`
-                      : ""
-                  }`}
-                  style={{
-                    background: matchColorComb(graphData[i * 7 + 3]),
-                  }}
+                  <div
+                    className={`ac-item day-${i * 7 + 2} ${
+                      graphData[i * 7 + 2] !== 0
+                        ? `active activity-${
+                            graphData[i * 7 + 2] < 4 ? graphData[i * 7 + 2] : 4
+                          }`
+                        : ""
+                    }`}
+                    style={{
+                      background: matchColorComb(graphData[i * 7 + 2]),
+                    }}
+                  >
+                    <span className="tooltiptext">
+                      {graphData[i * 7 + 2]} activity on{" "}
+                      {dateText.length !== 0 ? dateText[i * 7 + 2] : ""}
+                    </span>
+                  </div>
+                </Link>
+                <Link
+                  href={`/mypage/${formatDateForURL(dateText[i * 7 + 1])}`}
+                  passHref
                 >
-                  <span className="tooltiptext">
-                    {graphData[i * 7 + 3]} activity on{" "}
-                    {dateText.length !== 0 ? dateText[i * 7 + 3] : ""}
-                  </span>
-                </div>
-                <div
-                  className={`ac-item day-${i * 7 + 4} ${
-                    graphData[i * 7 + 4] !== 0
-                      ? `active activity-${
-                          graphData[i * 7 + 4] < 4 ? graphData[i * 7 + 4] : 4
-                        }`
-                      : ""
-                  }`}
-                  style={{
-                    background: matchColorComb(graphData[i * 7 + 4]),
-                  }}
+                  <div
+                    className={`ac-item day-${i * 7 + 3} ${
+                      graphData[i * 7 + 3] !== 0
+                        ? `active activity-${
+                            graphData[i * 7 + 3] < 4 ? graphData[i * 7 + 3] : 4
+                          }`
+                        : ""
+                    }`}
+                    style={{
+                      background: matchColorComb(graphData[i * 7 + 3]),
+                    }}
+                  >
+                    <span className="tooltiptext">
+                      {graphData[i * 7 + 3]} activity on{" "}
+                      {dateText.length !== 0 ? dateText[i * 7 + 3] : ""}
+                    </span>
+                  </div>
+                </Link>
+                <Link
+                  href={`/mypage/${formatDateForURL(dateText[i * 7 + 1])}`}
+                  passHref
                 >
-                  <span className="tooltiptext">
-                    {graphData[i * 7 + 4]} activity on{" "}
-                    {dateText.length !== 0 ? dateText[i * 7 + 4] : ""}
-                  </span>
-                </div>
-                <div
-                  className={`ac-item day-${i * 7 + 5} ${
-                    graphData[i * 7 + 5] !== 0
-                      ? `active activity-${
-                          graphData[i * 7 + 5] < 4 ? graphData[i * 7 + 5] : 4
-                        }`
-                      : ""
-                  }`}
-                  style={{
-                    background: matchColorComb(graphData[i * 7 + 5]),
-                  }}
+                  <div
+                    className={`ac-item day-${i * 7 + 4} ${
+                      graphData[i * 7 + 4] !== 0
+                        ? `active activity-${
+                            graphData[i * 7 + 4] < 4 ? graphData[i * 7 + 4] : 4
+                          }`
+                        : ""
+                    }`}
+                    style={{
+                      background: matchColorComb(graphData[i * 7 + 4]),
+                    }}
+                  >
+                    <span className="tooltiptext">
+                      {graphData[i * 7 + 4]} activity on{" "}
+                      {dateText.length !== 0 ? dateText[i * 7 + 4] : ""}
+                    </span>
+                  </div>
+                </Link>
+                <Link
+                  href={`/mypage/${formatDateForURL(dateText[i * 7 + 1])}`}
+                  passHref
                 >
-                  <span className="tooltiptext">
-                    {graphData[i * 7 + 5]} activity on{" "}
-                    {dateText.length !== 0 ? dateText[i * 7 + 5] : ""}
-                  </span>
-                </div>
-                <div
-                  className={`ac-item day-${i * 7 + 6} ${
-                    graphData[i * 7 + 6] !== 0
-                      ? `active activity-${
-                          graphData[i * 7 + 6] < 4 ? graphData[i * 7 + 6] : 4
-                        }`
-                      : ""
-                  }`}
-                  style={{
-                    background: matchColorComb(graphData[i * 7 + 6]),
-                  }}
+                  <div
+                    className={`ac-item day-${i * 7 + 5} ${
+                      graphData[i * 7 + 5] !== 0
+                        ? `active activity-${
+                            graphData[i * 7 + 5] < 4 ? graphData[i * 7 + 5] : 4
+                          }`
+                        : ""
+                    }`}
+                    style={{
+                      background: matchColorComb(graphData[i * 7 + 5]),
+                    }}
+                  >
+                    <span className="tooltiptext">
+                      {graphData[i * 7 + 5]} activity on{" "}
+                      {dateText.length !== 0 ? dateText[i * 7 + 5] : ""}
+                    </span>
+                  </div>
+                </Link>
+                <Link
+                  href={`/mypage/${formatDateForURL(dateText[i * 7 + 1])}`}
+                  passHref
                 >
-                  <span className="tooltiptext">
-                    {graphData[i * 7 + 6]} activity on{" "}
-                    {dateText.length !== 0 ? dateText[i * 7 + 6] : ""}
-                  </span>
-                </div>
-                <div
-                  className={`ac-item day-${i * 7 + 7} ${
-                    graphData[i * 7 + 7] !== 0
-                      ? `active activity-${
-                          graphData[i * 7 + 7] < 4 ? graphData[i * 7 + 7] : 4
-                        }`
-                      : ""
-                  }`}
-                  style={{
-                    background: matchColorComb(graphData[i * 7 + 7]),
-                  }}
+                  <div
+                    className={`ac-item day-${i * 7 + 6} ${
+                      graphData[i * 7 + 6] !== 0
+                        ? `active activity-${
+                            graphData[i * 7 + 6] < 4 ? graphData[i * 7 + 6] : 4
+                          }`
+                        : ""
+                    }`}
+                    style={{
+                      background: matchColorComb(graphData[i * 7 + 6]),
+                    }}
+                  >
+                    <span className="tooltiptext">
+                      {graphData[i * 7 + 6]} activity on{" "}
+                      {dateText.length !== 0 ? dateText[i * 7 + 6] : ""}
+                    </span>
+                  </div>
+                </Link>
+                <Link
+                  href={`/mypage/${formatDateForURL(dateText[i * 7 + 1])}`}
+                  passHref
                 >
-                  <span className="tooltiptext">
-                    {graphData[i * 7 + 7]} activity on{" "}
-                    {dateText.length !== 0 ? dateText[i * 7 + 7] : ""}
-                  </span>
-                </div>
+                  <div
+                    className={`ac-item day-${i * 7 + 7} ${
+                      graphData[i * 7 + 7] !== 0
+                        ? `active activity-${
+                            graphData[i * 7 + 7] < 4 ? graphData[i * 7 + 7] : 4
+                          }`
+                        : ""
+                    }`}
+                    style={{
+                      background: matchColorComb(graphData[i * 7 + 7]),
+                    }}
+                  >
+                    <span className="tooltiptext">
+                      {graphData[i * 7 + 7]} activity on{" "}
+                      {dateText.length !== 0 ? dateText[i * 7 + 7] : ""}
+                    </span>
+                  </div>
+                </Link>
               </div>
             </Box>
           );

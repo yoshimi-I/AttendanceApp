@@ -1,5 +1,3 @@
-import GithubCalender from "@/components/calender/calender";
-import Calendar from "@/components/calender/calender";
 import { ActivityCalendar } from "@/components/githubCarender/githubCarender";
 import CurrentTime from "@/components/time/currentTime";
 

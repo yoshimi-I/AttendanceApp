@@ -1,12 +1,10 @@
 ```mermaid
 erDiagram
-    User ||--o{ Attendances : "has"
-    Attendances ||--o{ Play : "has"
-    Attendances ||--o{ StudyStartEnd : "has"
-    Attendances ||--o{ BreakStartEnd : "has"
+    Users ||--o{ Attendances : ""
+    Attendances ||--o{ Attendance_types : ""
 
-    User {
-        int user_id PK
+    Users {
+        int id PK
         string name
         string email
         timestamp created_at
@@ -14,39 +12,20 @@ erDiagram
     }
 
     Attendances {
-        int attendance_id PK
+        int id PK
         int user_id FK
-        date attendance_date
+        int attendance_type 
         string notes
+        timestamp actual_time "フロント側から受け取った時間"
+        timestamp created_at　"レコードの生成と同時に生まれるカラム"
+        timestamp updated_at　"レコードの生成と同時に生まれるカラム"
+    }
+    Attendance_types {
+        int attendance_type_id PK,FK"1:出勤退勤 　2:休憩 　3:お祈り" 
+        string action_name
         timestamp created_at
         timestamp updated_at
     }
 
-    Play {
-        int play_id PK
-        int attendance_id FK
-        timestamp start_time
-        timestamp end_time
-        timestamp created_at
-        timestamp updated_at
-    }
-
-    StudyStartEnd {
-        int study_id PK
-        int attendance_id FK
-        timestamp start_time
-        timestamp end_time
-        timestamp created_at
-        timestamp updated_at
-    }
-
-    BreakStartEnd {
-        int break_id PK
-        int attendance_id FK
-        timestamp start_time
-        timestamp end_time
-        timestamp created_at
-        timestamp updated_at
-    }
 
 ```
