@@ -7,9 +7,9 @@ package di
 
 import (
 	"github.com/google/wire"
-	"github.com/yoshimi-I/AttendanceApp/controller"
 	"github.com/yoshimi-I/AttendanceApp/infrastructure"
 	"github.com/yoshimi-I/AttendanceApp/infrastructure/repository"
+	controller2 "github.com/yoshimi-I/AttendanceApp/presentation/controller"
 	"github.com/yoshimi-I/AttendanceApp/usecase"
 )
 
@@ -18,7 +18,7 @@ var historySuperSet = wire.NewSet(
 	infrastructure.InitDB,
 	repository.NewHistoryRepository,
 	usecase.NewHistoryUsecase,
-	controller.NewHisoryController,
+	controller2.NewHisoryController,
 )
 
 // ActivityController周りの依存関係
@@ -26,20 +26,20 @@ var activitySuperSet = wire.NewSet(
 	infrastructure.InitDB,
 	repository.NewActivityRespotiroy,
 	usecase.NewActivityUsecase,
-	controller.NewActivityController,
+	controller2.NewActivityController,
 )
 
 // InitHistoryController HistoryControllerのインスタンスを初期化
 //
 //	Controllerが一番先頭の呼び出し関数のため
-func InitHistoryController() (controller.HistoryController, error) {
+func InitHistoryController() (controller2.HistoryController, error) {
 	wire.Build(historySuperSet)
-	return &controller.HistoryControllerImpl{}, nil
+	return &controller2.HistoryControllerImpl{}, nil
 }
 
 // InitActivityController InitActivityControllerのインスタンス初期化
-func InitActivityController() (controller.ActivityController, error) {
+func InitActivityController() (controller2.ActivityController, error) {
 	wire.Build(activitySuperSet)
-	return &controller.ActivityControllerImpl{}, nil
+	return &controller2.ActivityControllerImpl{}, nil
 
 }

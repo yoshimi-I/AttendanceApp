@@ -2,13 +2,13 @@ package usecase
 
 import (
 	"github.com/yoshimi-I/AttendanceApp/domain/repository"
-	"github.com/yoshimi-I/AttendanceApp/usecase/dto"
+	"github.com/yoshimi-I/AttendanceApp/usecase/dto/response"
 )
 
 type ActivityUsecase interface {
 	// レスポンス値にDTOを使う
-	AddStudyActivity(activity dto.ActivityRequestDTO) (dto.ActivityResponseDTO, error)
-	UpdateStudyActivity(activity dto.ActivityRequestDTO) (dto.ActivityResponseDTO, error)
+	AddStudyActivity(activity response.ActivityRequestDTO) (response.ActivityResponseDTO, error)
+	UpdateStudyActivity(activity response.ActivityRequestDTO) (response.ActivityResponseDTO, error)
 	DeleteActivity(activityID int) error
 }
 
@@ -16,12 +16,12 @@ type ActivityUsecaseImpl struct {
 	activityRepo repository.ActivtyRepository
 }
 
-func (a ActivityUsecaseImpl) AddStudyActivity(activity dto.ActivityRequestDTO) (dto.ActivityResponseDTO, error) {
+func (a ActivityUsecaseImpl) AddStudyActivity(activity response.ActivityRequestDTO) (response.ActivityResponseDTO, error) {
 	//TODO implement me
 	panic("implement me")
 }
 
-func (a ActivityUsecaseImpl) UpdateStudyActivity(activity dto.ActivityRequestDTO) (dto.ActivityResponseDTO, error) {
+func (a ActivityUsecaseImpl) UpdateStudyActivity(activity response.ActivityRequestDTO) (response.ActivityResponseDTO, error) {
 	//TODO implement me
 	panic("implement me")
 }

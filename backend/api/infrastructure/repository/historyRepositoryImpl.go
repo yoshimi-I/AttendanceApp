@@ -17,7 +17,7 @@ func NewHistoryRepository(db *gorm.DB) repository.HistoryRepository {
 	}
 }
 
-func (s *HistoryRepoImpl) GetAllHistory() []model.Activities {
+func (s *HistoryRepoImpl) GetAllHistory() ([]model.Activities, error) {
 	a := model.Activities{
 		ActivityDate: time.Time{},
 		Notes:        "",
@@ -34,10 +34,10 @@ func (s *HistoryRepoImpl) GetAllHistory() []model.Activities {
 		Breaks:       nil,
 		SumTime:      0,
 	}
-	return []model.Activities{a, b}
+	return []model.Activities{a, b}, nil
 }
 
-func (s *HistoryRepoImpl) GetHistoryByDate(date string) model.Activities {
+func (s *HistoryRepoImpl) GetHistoryByDate(date string) (model.Activities, error) {
 	a := model.Activities{
 		ActivityDate: time.Time{},
 		Notes:        "",
@@ -46,5 +46,5 @@ func (s *HistoryRepoImpl) GetHistoryByDate(date string) model.Activities {
 		Breaks:       nil,
 		SumTime:      0,
 	}
-	return a
+	return a, nil
 }
