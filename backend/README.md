@@ -16,42 +16,83 @@
 ### ディレクトリ構成
 ```
 .
-├── main.go  # アプリケーションのエントリーポイント
-├── config          # 設定ファイルや環境変数の管理
-│   └── config.go
-├── domain
-│   ├── model
-│   │   ├── user.go
-│   │   ├── attendance.go
-│   │   └── ...     # その他のモデル
-│   └── repository
-│       ├── user_repository.go
-│       ├── attendance_repository.go
-│       └── ...     # その他のリポジトリインターフェース
-├── infrastructure
-│   ├── config      # DBや外部サービスの接続設定
-│   │   └── connection.go
-│   ├── orm
-│   │   ├── gorm_model.go    # GORMに関連する設定やマッピング
-│   │   └── ...     # 他のORMの設定やマッピング
-│   ├── repository
-│   │   ├── mysql   # MySQLに関連するリポジトリの実装
-│   │   ├── redis   # Redisに関連するリポジトリの実装
-│   │   └── ...     # その他のデータソースのリポジトリ実装
-│   └── middleware  # ミドルウェアの実装
-├── usecase
-│   ├── user_usecase.go
-│   ├── attendance_usecase.go
-│   └── ...         # その他のユースケース
-├── router          # ルーティングの設定
-│   └── router.go
-├── di              # 依存性注入の設定
-│   └── di.go
-├── go.mod
-├── go.sum
-└── go.work
+├── README.md
+├── api
+│   ├── config
+│   │   └── config.go
+│   ├── controller
+│   │   ├── activityController.go ルーティングでここのコントローラを呼ぶ
+│   │   └── historyController.go
+│   ├── di
+│   │   ├── wire.go
+│   │   └── wire_gen.go
+│   ├── domain
+│   │   ├── model // ビジネスモデル
+│   │   │   └── model.go 
+│   │   └── repository // DB操作の処理をinterfaceで定義
+│   │       ├── activityRepository.go 
+│   │       └── historyRepository.go
+│   ├── go.mod
+│   ├── go.sum
+│   ├── infrastructure 
+│   │   ├── connection.go
+│   │   ├── orm
+│   │   │   └── gorm_model.go // DBアクセス時に使用
+│   │   └── repository // domain層のrepositoryを実装する
+│   │       ├── activityRepositoryImpl.go
+│   │       └── historyRepositoryImpl.go
+│   ├── main.go
+│   ├── router
+│   │   └── router.go  //ここでルーティング
+│   ├── tmp
+│   │   └── main
+│   └── usecase //今回のアプリケーションのビジネスロジックはここに書く
+│       ├── activityUsecase.go
+│       ├── dto // model層のデータをdtoを通して書き換える
+│       │   ├── activityResponseDto.go
+│       │   └── historyResponseDto.go
+│       └── historyUsecase.go
+└── dockerfile
 
 ```
+```mermaid
+sequenceDiagram
+
+    participant Client
+    participant Router
+    participant Controller
+    participant Usecase
+    participant Repository
+    participant Database
+
+    Client->>Router: リクエスト (例: GET /activity)
+
+    Router->>Controller: 適切なControllerへリクエストを転送
+
+    Controller->>Usecase: 関連するビジネスロジックを呼び出し
+
+    Usecase->>Repository: データをリクエスト
+
+    Repository->>Database: データを取得/保存
+
+    Database-->>Repository: データを返す
+    note left of Repository: 返り値: domain層のmodel
+
+    Repository-->>Usecase: データを返す
+    note left of Usecase: 返り値: ResponseDataDTO
+
+    Usecase-->>Controller: 処理されたデータを返す
+
+    Controller-->>Router: Clientへの応答
+    note left of Router: 返り値: json
+
+    Router-->>Client: 応答 (例: アクティビティデータ)
+
+
+
+```
+
+
 
 ## 
 ```bash
