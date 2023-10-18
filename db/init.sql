@@ -1,44 +1,39 @@
--- Userテーブルの作成
+-- Usersテーブルの作成
 CREATE TABLE Users (
-    user_id INT AUTO_INCREMENT PRIMARY KEY,
-    name VARCHAR(255),
-    email VARCHAR(255) UNIQUE,
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    name VARCHAR(255) NOT NULL,
+    email VARCHAR(255) NOT NULL UNIQUE,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
 );
 
--- Activitiesテーブルの作成
-CREATE TABLE Activities (
-    activity_id INT AUTO_INCREMENT PRIMARY KEY,
+-- Attendance_typesテーブルの作成
+CREATE TABLE Attendance_types (
+    attendance_type_id INT PRIMARY KEY,
+    action_type VARCHAR(100) NOT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+);
+
+-- Attendancesテーブルの作成
+CREATE TABLE Attendances (
+    id INT AUTO_INCREMENT PRIMARY KEY,
     user_id INT,
-    activity_date DATE,
+    attendance_type INT,
     notes TEXT,
+    actual_time TIMESTAMP,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-    FOREIGN KEY (user_id) REFERENCES Users(user_id)
+    FOREIGN KEY (user_id) REFERENCES Users(id),
+    FOREIGN KEY (attendance_type) REFERENCES Attendance_types(attendance_type_id)
 );
 
--- Playテーブルの作成
-CREATE TABLE Play (
-    play_id INT AUTO_INCREMENT PRIMARY KEY,
-    activity_id CHAR(36),
-    start_time TIMESTAMP,
-    end_time TIMESTAMP,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-    FOREIGN KEY (activity_id) REFERENCES Activities(activity_id)
-);
+-- Attendance_typesテーブルにデータをINSERT
+INSERT INTO Attendance_types (attendance_type_id, action_type) VALUES
+(1, '出勤退勤'),
+(2, '休憩'),
+(3, 'お祈り');
 
--- StudyStartEndテーブルの作成
-CREATE TABLE StudyStartEnd (
-    study_id INT AUTO_INCREMENT PRIMARY KEY,
-    activity_id CHAR(36),
-    start_time TIMESTAMP,
-    end_time TIMESTAMP,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-    FOREIGN KEY (activity_id) REFERENCES Activities(activity_id)
-);
 
 -- BreakStartEndテーブルの作成
 CREATE TABLE BreakStartEnd (
