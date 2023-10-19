@@ -1,7 +1,6 @@
 package usecase
 
 import (
-	"fmt"
 	"github.com/yoshimi-I/AttendanceApp/domain/repository"
 	"github.com/yoshimi-I/AttendanceApp/usecase/dto"
 )
@@ -18,15 +17,16 @@ type HistoryUsecaseImpl struct {
 }
 
 func (h HistoryUsecaseImpl) GetAllStudyHistory() (*dto.ALlHistoryDto, error) {
-	r, err := h.hr.GetAllHistory()
-	if err != nil {
-		fmt.Errorf("ミスです")
-	}
+	//r, err := h.hr.GetAllHistory()
+	//if err != nil {
+	//	fmt.Errorf("ミスです")
+	//}
+	return nil, nil
 }
 
 func (h HistoryUsecaseImpl) GetStudyActivityByData(date string) (*dto.HistoryByDateDto, error) {
-	r := h.hr.GetHistoryByDate(date)
-	return r
+	//r := h.hr.GetHistoryByDate(date)
+	return nil, nil
 }
 
 // 関数を実装した構造体をnewする関数を実装,またこのとき返り値はinterface

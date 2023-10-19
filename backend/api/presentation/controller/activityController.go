@@ -16,18 +16,15 @@ type ActivityControllerImpl struct {
 }
 
 func (a ActivityControllerImpl) AddActivity() http.HandlerFunc {
-	//TODO implement me
-	panic("implement me")
+	return nil
 }
 
 func (a ActivityControllerImpl) UpdateActivity() http.HandlerFunc {
-	//TODO implement me
-	panic("implement me")
+	return nil
 }
 
 func (a ActivityControllerImpl) DeleteActivity() http.HandlerFunc {
-	//TODO implement me
-	panic("implement me")
+	return nil
 }
 
 func NewActivityController(au usecase.ActivityUsecase) ActivityController {
