@@ -23,7 +23,6 @@ type Attendance struct {
 	ID             int       `gorm:"primaryKey;column:id"`
 	UserID         int       `gorm:"column:user_id"`
 	AttendanceType int       `gorm:"column:attendance_type"`
-	Notes          string    `gorm:"column:notes"`
 	ActualTime     time.Time `gorm:"column:actual_time"`
 	CreatedAt      time.Time `gorm:"column:created_at"`
 	UpdatedAt      time.Time `gorm:"column:updated_at"`

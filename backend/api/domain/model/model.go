@@ -2,7 +2,7 @@ package model
 
 import "time"
 
-type Users struct {
+type User struct {
 	UserId int
 	Name   string
 	Email  string
@@ -29,4 +29,11 @@ type BreakStartEnd struct {
 	ID        int
 	StartTime time.Time
 	EndTime   time.Time
+}
+
+type Activity struct {
+	Date          time.Time
+	Plays         []Play
+	StudySessions []StudyStartEnd
+	Breaks        []BreakStartEnd
 }

@@ -3,6 +3,7 @@ package repository
 import (
 	"github.com/yoshimi-I/AttendanceApp/domain/model"
 	"github.com/yoshimi-I/AttendanceApp/domain/repository"
+	orm_model "github.com/yoshimi-I/AttendanceApp/infrastructure/orm"
 	"gorm.io/gorm"
 	"time"
 )
@@ -17,27 +18,17 @@ func NewHistoryRepository(db *gorm.DB) repository.HistoryRepository {
 	}
 }
 
-func (s *HistoryRepoImpl) GetAllHistory() ([]model.Activities, error) {
-	a := model.Activities{
-		ActivityDate: time.Time{},
-		Notes:        "",
-		Plays:        nil,
-		Studies:      nil,
-		Breaks:       nil,
-		SumTime:      2,
+func (s *HistoryRepoImpl) GetAllHistory(userID int) ([]model.Activity, error) {
+	var attendances = &orm_model.Attendance{}
+
+	if err := s.db.Joins("AttendanceType").Where("user_id = ?", userID).Find(&attendances).Error; err != nil {
+		return nil, err
 	}
-	b := model.Activities{
-		ActivityDate: time.Time{},
-		Notes:        "",
-		Plays:        nil,
-		Studies:      nil,
-		Breaks:       nil,
-		SumTime:      0,
-	}
-	return []model.Activities{a, b}, nil
+
+	return attendances, nil
 }
 
-func (s *HistoryRepoImpl) GetHistoryByDate(date string) (model.Activities, error) {
+func (s *HistoryRepoImpl) GetHistoryByDate(userID int, date string) (model.Activity, error) {
 	a := model.Activities{
 		ActivityDate: time.Time{},
 		Notes:        "",

@@ -3,13 +3,13 @@ package usecase
 import (
 	"fmt"
 	"github.com/yoshimi-I/AttendanceApp/domain/repository"
-	"github.com/yoshimi-I/AttendanceApp/usecase/dto/response"
+	"github.com/yoshimi-I/AttendanceApp/usecase/dto"
 )
 
 // まずは扱う関数のinterfaceを実装
 type HistoryUsecase interface {
-	GetStudyHistory(date string) (*response.HistoryByDateDto, error)
-	GetAllStudyHistory() (*response.ALlHistoryDto, error)
+	GetStudyActivityByData(date string) (*dto.HistoryByDateDto, error)
+	GetAllStudyHistory() (*dto.ALlHistoryDto, error)
 }
 
 // 構造体を実装
@@ -17,28 +17,16 @@ type HistoryUsecaseImpl struct {
 	hr repository.HistoryRepository
 }
 
-func (h HistoryUsecaseImpl) GetAllStudyHistory() (*[]interface{}, error) {
-	//TODO implement me
-	panic("implement me")
-}
-
-// 構造体にinterfaceの関数を実装
-func (h HistoryUsecaseImpl) GetStudyHistory(date string) (*response.HistoryByDateDto, error) {
-	response := &dto.{
-		Type: "勉強開始",
-
-		Timestamp: parsedDate,
-	}
-
-	return response, nil
-}
-
-func (h HistoryUsecaseImpl) GetAllStudyAHistory() (*response.ALlHistoryDto, error) {
-	activities, err := h.hr.GetAllHistory()
+func (h HistoryUsecaseImpl) GetAllStudyHistory() (*dto.ALlHistoryDto, error) {
+	r, err := h.hr.GetAllHistory()
 	if err != nil {
-		return nil, fmt.Errorf("failed to get all study activities: %w", err)
+		fmt.Errorf("ミスです")
 	}
-	return &activities, err
+}
+
+func (h HistoryUsecaseImpl) GetStudyActivityByData(date string) (*dto.HistoryByDateDto, error) {
+	r := h.hr.GetHistoryByDate(date)
+	return r
 }
 
 // 関数を実装した構造体をnewする関数を実装,またこのとき返り値はinterface

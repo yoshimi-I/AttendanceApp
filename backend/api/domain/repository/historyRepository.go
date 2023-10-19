@@ -3,6 +3,6 @@ package repository
 import "github.com/yoshimi-I/AttendanceApp/domain/model"
 
 type HistoryRepository interface {
-	GetAllHistory() ([]model.Activities, error)
-	GetHistoryByDate(date string) (model.Activities, error)
+	GetAllHistory(userID int) ([]model.Activity, error)
+	GetHistoryByDate(userID int, date string) (model.Activity, error)
 }

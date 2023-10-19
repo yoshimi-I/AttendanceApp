@@ -22,10 +22,10 @@ func NewHisoryController(hu usecase.HistoryUsecase) HistoryController {
 	return &HistoryControllerImpl{hu: hu}
 }
 
-func (h HistoryControllerImpl) GetAllHistory() http.HandlerFunc {
+func (h *HistoryControllerImpl) GetAllHistory() http.HandlerFunc {
 	return func(writer http.ResponseWriter, request *http.Request) {
 		// Usecaseから勉強の全履歴を取得
-		activities, err := h.hu.GetAllStudyActivity()
+		activities, err := h.hu.GetAllStudyHistory()
 		if err != nil {
 			http.Error(writer, "Failed to retrieve study history", http.StatusInternalServerError)
 			return
@@ -41,7 +41,7 @@ func (h HistoryControllerImpl) GetAllHistory() http.HandlerFunc {
 	}
 }
 
-func (h HistoryControllerImpl) GetHistoryByDate() http.HandlerFunc {
+func (h *HistoryControllerImpl) GetHistoryByDate() http.HandlerFunc {
 	return func(writer http.ResponseWriter, request *http.Request) {
 		// URLから日付を取得
 		date := chi.URLParam(request, "date")
@@ -54,7 +54,7 @@ func (h HistoryControllerImpl) GetHistoryByDate() http.HandlerFunc {
 		}
 
 		// Usecaseを使用して指定された日付の勉強履歴を取得
-		activity, err := h.hu.GetStudyActivity(date)
+		activity, err := h.hu.GetStudyActivityByData(date)
 		if err != nil {
 			http.Error(writer, err.Error(), http.StatusBadRequest)
 			return
@@ -70,4 +70,3 @@ func (h HistoryControllerImpl) GetHistoryByDate() http.HandlerFunc {
 		}
 	}
 }
-
