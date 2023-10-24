@@ -3,7 +3,7 @@ package router
 import (
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
-	"github.com/yoshimi-I/AttendanceApp/di"
+	"github.com/yoshimi-I/AttendanceApp/infrastructure/di"
 )
 
 func Router() *chi.Mux {

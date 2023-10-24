@@ -1,7 +1,6 @@
 package repository
 
 import (
-	"fmt"
 	"github.com/yoshimi-I/AttendanceApp/domain/model"
 	"github.com/yoshimi-I/AttendanceApp/domain/repository"
 	orm_model "github.com/yoshimi-I/AttendanceApp/infrastructure/orm"
@@ -18,19 +17,44 @@ func NewHistoryRepository(db *gorm.DB) repository.HistoryRepository {
 	}
 }
 
-func (s *HistoryRepoImpl) GetAllHistory(userID int) ([]model.Activity, error) {
-	var attendances = []orm_model.Attendance{}
-	var _ = []model.Activity{}
-	fmt.Println(attendances)
-
-	if err := s.db.Joins("AttendanceType").Where("user_id = ?", userID).Find(&attendances).Error; err != nil {
+func (s *HistoryRepoImpl) ReadAllHistory(userID int) ([]model.Attendance, error) {
+	var activities []orm_model.Attendance
+	var res []model.Attendance
+	err := s.db.Where("user_id = ?", userID).Find(&activities).Error
+	if err != nil {
 		return nil, err
 	}
-	return nil, nil
-
+	for _, activity := range activities {
+		resItem := model.Attendance{
+			ID:             activity.ID,
+			UserID:         activity.UserID,
+			AttendanceType: activity.AttendanceType,
+			StartTime:      activity.StartTime,
+			EndTime:        activity.EndTime,
+			Date:           activity.Date,
+		}
+		res = append(res, resItem)
+	}
+	return res, nil
 }
 
-func (s *HistoryRepoImpl) GetHistoryByDate(userID int, date string) (model.Activity, error) {
-	a := model.Activity{}
-	return a, nil
+func (s *HistoryRepoImpl) ReadHistoryByDate(userID int, date string) ([]model.Attendance, error) {
+	var activities []orm_model.Attendance
+	var res []model.Attendance
+	err := s.db.Where("user_id = ?", userID).Where("date = ?", date).Find(&activities).Error
+	if err != nil {
+		return nil, err
+	}
+	for _, activity := range activities {
+		resItem := model.Attendance{
+			ID:             activity.ID,
+			UserID:         activity.UserID,
+			AttendanceType: activity.AttendanceType,
+			StartTime:      activity.StartTime,
+			EndTime:        activity.EndTime,
+			Date:           activity.Date,
+		}
+		res = append(res, resItem)
+	}
+	return res, nil
 }

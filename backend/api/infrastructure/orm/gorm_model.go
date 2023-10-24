@@ -23,7 +23,9 @@ type Attendance struct {
 	ID             int       `gorm:"primaryKey;column:id"`
 	UserID         int       `gorm:"column:user_id"`
 	AttendanceType int       `gorm:"column:attendance_type"`
-	ActualTime     time.Time `gorm:"column:actual_time"`
+	StartTime      time.Time `gorm:"column:start_time"`
+	EndTime        time.Time `gorm:"column:end_time"`
+	Date           string    `gorm:"column:date"`
 	CreatedAt      time.Time `gorm:"column:created_at"`
 	UpdatedAt      time.Time `gorm:"column:updated_at"`
 }

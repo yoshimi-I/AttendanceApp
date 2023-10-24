@@ -1,16 +1,20 @@
 package repository
 
 import (
+	"github.com/yoshimi-I/AttendanceApp/domain/model"
 	"time"
 )
 
-type Activity struct {
-	Type      string
-	Timestamp time.Time
+type ActivityInput struct {
+	AttendanceType int
+	CurrentTime    time.Time
+	Date           string
 }
 
-type ActivtyRepository interface {
-	PostStudyActivity(activity Activity) error
-	PutStudyActivity(id int, activity Activity) error
-	DeleteStudyActivity(id int) error
+type ActivityRepository interface {
+	FindActivity(id int) error
+	PostStartActivity(attendance *model.Attendance) (*model.Attendance, error)
+	PostEndActivity(attendance *model.Attendance) (*model.Attendance, error)
+	PutStudyActivity(attendance *model.Attendance) error
+	DeleteStudyActivity(userId int, data string) error
 }
