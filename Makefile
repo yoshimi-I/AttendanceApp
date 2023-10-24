@@ -4,16 +4,16 @@ DSN=$(MYSQL_USER):$(MYSQL_PASSWORD)@tcp($(MYSQL_HOST):$(MYSQL_PORT))/$(MYSQL_DAT
 
 # Dockerを立ち上げる
 # 全て立ち上げる
-docker-all d:
+all-d:
 	docker-compose up -d
 # フォアグラウンドで立ち上げる
-docker-all fg:
+all-fg:
 	docker-compose up
 # dbとapiだけ立ち上げる
-docker-db-api:
-	docker-compose up db api
+db-api:
+	docker-compose up db backend
 # Dockerを停止する
-docker-stop:
+stop:
 	docker-compose stop
 
 # マイグレーションの新しいバージョンを作成する
