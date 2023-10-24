@@ -2,7 +2,7 @@
 package main
 
 import (
-	"github.com/yoshimi-I/AttendanceApp/router"
+	"github.com/yoshimi-I/AttendanceApp/presentation/router"
 	"net/http"
 )
 
