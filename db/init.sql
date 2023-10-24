@@ -20,7 +20,9 @@ CREATE TABLE Attendances (
     id INT AUTO_INCREMENT PRIMARY KEY,
     user_id INT,
     attendance_type INT,
-    actual_time TIMESTAMP,
+    start_time TIMESTAMP,
+    end_time TIMESTAMP,
+    date VARCHAR(15),
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     FOREIGN KEY (user_id) REFERENCES Users(id),
@@ -32,15 +34,3 @@ INSERT INTO Attendance_types (attendance_type_id, action_type) VALUES
 (1, '出勤退勤'),
 (2, '休憩'),
 (3, 'お祈り');
-
-
--- BreakStartEndテーブルの作成
-CREATE TABLE BreakStartEnd (
-    break_id INT AUTO_INCREMENT PRIMARY KEY,
-    activity_id CHAR(36),
-    start_time TIMESTAMP,
-    end_time TIMESTAMP,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-    FOREIGN KEY (activity_id) REFERENCES Activities(activity_id)
-);

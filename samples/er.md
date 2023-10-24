@@ -14,9 +14,9 @@ erDiagram
     Attendances {
         int id PK
         int user_id FK
-        int attendance_type 
-        string notes
-        timestamp actual_time "フロント側から受け取った時間"
+        int attendance_type
+        timestamp start_time "フロント側から受け取った開始時間"
+        timestamp end_time "フロント側から受け取った終了時間"
         timestamp created_at　"レコードの生成と同時に生まれるカラム"
         timestamp updated_at　"レコードの生成と同時に生まれるカラム"
     }
