@@ -10,7 +10,7 @@ import (
 	"github.com/google/wire"
 	"github.com/yoshimi-I/AttendanceApp/infrastructure"
 	"github.com/yoshimi-I/AttendanceApp/infrastructure/repository"
-	controller2 "github.com/yoshimi-I/AttendanceApp/presentation/controller"
+	"github.com/yoshimi-I/AttendanceApp/presentation/controller"
 	"github.com/yoshimi-I/AttendanceApp/usecase"
 )
 
@@ -19,33 +19,33 @@ import (
 // InitHistoryController HistoryControllerのインスタンスを初期化
 //
 //	Controllerが一番先頭の呼び出し関数のため
-func InitHistoryController() (controller2.HistoryController, error) {
+func InitHistoryController() (controller.HistoryController, error) {
 	db, err := infrastructure.InitDB()
 	if err != nil {
 		return nil, err
 	}
 	historyRepository := repository.NewHistoryRepository(db)
 	historyUsecase := usecase.NewHistoryUsecase(historyRepository)
-	historyController := controller2.NewHisoryController(historyUsecase)
+	historyController := controller.NewHistoryController(historyUsecase)
 	return historyController, nil
 }
 
 // InitActivityController InitActivityControllerのインスタンス初期化
-func InitActivityController() (controller2.ActivityController, error) {
+func InitActivityController() (controller.ActivityController, error) {
 	db, err := infrastructure.InitDB()
 	if err != nil {
 		return nil, err
 	}
-	activtyRepository := repository.NewActivityRespotiroy(db)
-	activityUsecase := usecase.NewActivityUsecase(activtyRepository)
-	activityController := controller2.NewActivityController(activityUsecase)
+	activityRepository := repository.NewActivityRepository(db)
+	activityUsecase := usecase.NewActivityUsecase(activityRepository)
+	activityController := controller.NewActivityController(activityUsecase)
 	return activityController, nil
 }
 
 // wire.go:
 
 // HistoryControllerの依存関係
-var historySuperSet = wire.NewSet(infrastructure.InitDB, repository.NewHistoryRepository, usecase.NewHistoryUsecase, controller2.NewHisoryController)
+var historySuperSet = wire.NewSet(infrastructure.InitDB, repository.NewHistoryRepository, usecase.NewHistoryUsecase, controller.NewHistoryController)
 
 // ActivityController周りの依存関係
-var activitySuperSet = wire.NewSet(infrastructure.InitDB, repository.NewActivityRespotiroy, usecase.NewActivityUsecase, controller2.NewActivityController)
+var activitySuperSet = wire.NewSet(infrastructure.InitDB, repository.NewActivityRepository, usecase.NewActivityUsecase, controller.NewActivityController)
