@@ -23,6 +23,7 @@ CREATE TABLE Attendances (
     start_time TIMESTAMP,
     end_time TIMESTAMP,
     date VARCHAR(15),
+    year INT,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     FOREIGN KEY (user_id) REFERENCES Users(id),
@@ -31,6 +32,6 @@ CREATE TABLE Attendances (
 
 -- Attendance_typesテーブルにデータをINSERT
 INSERT INTO Attendance_types (attendance_type_id, action_type) VALUES
-(1, '出勤退勤'),
+(1, '作業'),
 (2, '休憩'),
 (3, 'お祈り');
