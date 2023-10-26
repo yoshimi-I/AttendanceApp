@@ -35,4 +35,4 @@ migrate-status:
 
 # DIを行う
 di:
-	cd backend/api/di && wire gen
+	cd backend/api/infrastructure/di && wire gen
