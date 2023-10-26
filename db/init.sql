@@ -1,5 +1,5 @@
 -- Usersテーブルの作成
-CREATE TABLE Users (
+CREATE TABLE users (
     id INT AUTO_INCREMENT PRIMARY KEY,
     name VARCHAR(255) NOT NULL,
     email VARCHAR(255) NOT NULL UNIQUE,
@@ -8,7 +8,7 @@ CREATE TABLE Users (
 );
 
 -- Attendance_typesテーブルの作成
-CREATE TABLE Attendance_types (
+CREATE TABLE attendance_types (
     attendance_type_id INT PRIMARY KEY,
     action_type VARCHAR(100) NOT NULL,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
@@ -16,7 +16,7 @@ CREATE TABLE Attendance_types (
 );
 
 -- Attendancesテーブルの作成
-CREATE TABLE Attendances (
+CREATE TABLE attendances (
     id INT AUTO_INCREMENT PRIMARY KEY,
     user_id INT,
     attendance_type INT,
@@ -26,12 +26,12 @@ CREATE TABLE Attendances (
     year INT,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-    FOREIGN KEY (user_id) REFERENCES Users(id),
-    FOREIGN KEY (attendance_type) REFERENCES Attendance_types(attendance_type_id)
+    FOREIGN KEY (user_id) REFERENCES users(id),
+    FOREIGN KEY (attendance_type) REFERENCES attendance_types(attendance_type_id)
 );
 
 -- Attendance_typesテーブルにデータをINSERT
-INSERT INTO Attendance_types (attendance_type_id, action_type) VALUES
+INSERT INTO attendance_types (attendance_type_id, action_type) VALUES
 (1, '作業'),
 (2, '休憩'),
 (3, 'お祈り');
