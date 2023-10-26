@@ -71,8 +71,8 @@ func (h HistoryUsecaseImpl) HistoryByDate(userId int, date string) (*response.Hi
 		Type := response.ConvertActivityTime(v.AttendanceType)
 		activity := response.ActivityDetail{
 			Type:      Type,
-			StartTime: StartTime,
-			EndTime:   EndTime,
+			StartTime: response.FormatChange(StartTime),
+			EndTime:   response.FormatChange(EndTime),
 		}
 
 		activities = append(activities, activity)

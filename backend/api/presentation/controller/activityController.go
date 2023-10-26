@@ -22,7 +22,7 @@ type ActivityControllerImpl struct {
 
 func (a ActivityControllerImpl) AddStartActivity() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		var activity request.ActivityRequestDTO
+		var activity request.ActivityStartRequestDTO
 
 		// bodyを取得
 		if err := json.NewDecoder(r.Body).Decode(&activity); err != nil {
@@ -47,7 +47,7 @@ func (a ActivityControllerImpl) AddStartActivity() http.HandlerFunc {
 
 func (a ActivityControllerImpl) AddEndActivity() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		var activity request.ActivityRequestDTO
+		var activity request.ActivityEditRequestDTO
 
 		// bodyを取得
 		if err := json.NewDecoder(r.Body).Decode(&activity); err != nil {
@@ -79,7 +79,7 @@ func (a ActivityControllerImpl) AddEndActivity() http.HandlerFunc {
 
 func (a ActivityControllerImpl) UpdateActivity() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		var activity request.ActivityRequestDTO
+		var activity request.ActivityEditRequestDTO
 		if err := json.NewDecoder(r.Body).Decode(&activity); err != nil {
 			http.Error(w, "Invalid request body", http.StatusBadRequest)
 			return

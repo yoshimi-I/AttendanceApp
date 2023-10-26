@@ -11,9 +11,9 @@ import (
 )
 
 type ActivityUsecase interface {
-	AddStartActivity(activity *request.ActivityRequestDTO) (*response.ActivityResponseDTO, error)
-	AddEndActivity(activity *request.ActivityRequestDTO, id int) (*response.ActivityResponseDTO, error)
-	Update(activity *request.ActivityRequestDTO, id int) (*response.ActivityResponseDTO, error)
+	AddStartActivity(activity *request.ActivityStartRequestDTO) (*response.ActivityResponseDTO, error)
+	AddEndActivity(activity *request.ActivityEditRequestDTO, id int) (*response.ActivityResponseDTO, error)
+	Update(activity *request.ActivityEditRequestDTO, id int) (*response.ActivityResponseDTO, error)
 	DeleteByActivityID(activityID int) error
 }
 
@@ -21,7 +21,7 @@ type ActivityUsecaseImpl struct {
 	ar repository.ActivityRepository
 }
 
-func (a ActivityUsecaseImpl) AddStartActivity(activity *request.ActivityRequestDTO) (*response.ActivityResponseDTO, error) {
+func (a ActivityUsecaseImpl) AddStartActivity(activity *request.ActivityStartRequestDTO) (*response.ActivityResponseDTO, error) {
 
 	var res *model.Attendance
 	var err error
@@ -32,8 +32,8 @@ func (a ActivityUsecaseImpl) AddStartActivity(activity *request.ActivityRequestD
 		AttendanceType: activity.AttendanceType,
 		StartTime:      activity.StartTime,
 		EndTime:        activity.StartTime, // nilではなく開始時刻を使用
-		Date:           request.ToString(activity.Date),
-		Year:           activity.Year,
+		Date:           activity.Date(),
+		Year:           activity.Year(),
 	}
 
 	res, err = a.ar.PostStartActivity(attendance)
@@ -55,7 +55,7 @@ func (a ActivityUsecaseImpl) AddStartActivity(activity *request.ActivityRequestD
 	return responseDTO, nil
 }
 
-func (a ActivityUsecaseImpl) AddEndActivity(activity *request.ActivityRequestDTO, id int) (*response.ActivityResponseDTO, error) {
+func (a ActivityUsecaseImpl) AddEndActivity(activity *request.ActivityEditRequestDTO, id int) (*response.ActivityResponseDTO, error) {
 
 	var res *model.Attendance
 	var attendance *model.Attendance
@@ -67,9 +67,8 @@ func (a ActivityUsecaseImpl) AddEndActivity(activity *request.ActivityRequestDTO
 	}
 
 	// 日付を跨いだ場合の処理を記載
-	if record.Date != request.ToString(activity.Date) {
+	if record.Date != activity.Date() {
 		var firstAttendance *model.Attendance
-		dayBefore := activity.Date.AddDate(0, 0, -1)
 		dayStartTime := activity.StartTime.Truncate(time.Hour)                               // 0:00
 		dayEndTime := activity.StartTime.Truncate(time.Hour).Add(time.Hour*24 - time.Second) // 23:59
 
@@ -83,8 +82,8 @@ func (a ActivityUsecaseImpl) AddEndActivity(activity *request.ActivityRequestDTO
 			AttendanceType: activity.AttendanceType,
 			StartTime:      dayStartTime, // 0:00
 			EndTime:        activity.EndTime,
-			Date:           request.ToString(dayBefore),
-			Year:           activity.Year,
+			Date:           activity.Date(),
+			Year:           activity.Year(),
 		}
 
 		// 2つの値をDBに保存
@@ -119,7 +118,7 @@ func (a ActivityUsecaseImpl) AddEndActivity(activity *request.ActivityRequestDTO
 	return responseDTO, nil
 }
 
-func (a ActivityUsecaseImpl) Update(activity *request.ActivityRequestDTO, id int) (*response.ActivityResponseDTO, error) {
+func (a ActivityUsecaseImpl) Update(activity *request.ActivityEditRequestDTO, id int) (*response.ActivityResponseDTO, error) {
 	_, err := a.ar.FindActivity(id)
 	if err != nil {
 		return nil, fmt.Errorf("failed to find existing activity: %v", err)
