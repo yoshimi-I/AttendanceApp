@@ -17,10 +17,10 @@ func NewHistoryRepository(db *gorm.DB) repository.HistoryRepository {
 	}
 }
 
-func (s *HistoryRepoImpl) ReadAllHistory(userID int) ([]model.Attendance, error) {
+func (s *HistoryRepoImpl) ReadAllHistory(userID int, year int) ([]model.Attendance, error) {
 	var activities []orm_model.Attendance
 	var res []model.Attendance
-	err := s.db.Where("user_id = ?", userID).Find(&activities).Error
+	err := s.db.Where("user_id = ?", userID).Where("year = ?", year).Find(&activities).Error
 	if err != nil {
 		return nil, err
 	}

@@ -1,6 +1,7 @@
 package repository
 
 import (
+	"fmt"
 	"github.com/yoshimi-I/AttendanceApp/domain/model"
 	"github.com/yoshimi-I/AttendanceApp/domain/repository"
 	orm_model "github.com/yoshimi-I/AttendanceApp/infrastructure/orm"
@@ -16,26 +17,44 @@ func NewActivityRepository(db *gorm.DB) repository.ActivityRepository {
 		db: db,
 	}
 }
-func (a ActivityRepositoryImpl) FindActivity(id int) error {
+func (a ActivityRepositoryImpl) FindActivity(id int) (*model.Attendance, error) {
 	var attendance orm_model.Attendance
 
-	if err := a.db.First(&attendance, id).Error; err != nil {
-		return err
+	if err := a.db.Where("id = ?", id).First(&attendance).Error; err != nil {
+		if err == gorm.ErrRecordNotFound {
+			return nil, fmt.Errorf("no record found with id: %d", id)
+		}
+		return nil, err
 	}
 
-	return nil
+	result := &model.Attendance{
+		ID:             attendance.ID,
+		UserID:         attendance.UserID,
+		AttendanceType: attendance.AttendanceType,
+		StartTime:      attendance.StartTime,
+		EndTime:        attendance.EndTime,
+		Year:           attendance.Year,
+		Date:           attendance.Date,
+	}
+
+	return result, nil
 }
+
 func (a ActivityRepositoryImpl) PostStartActivity(attendance *model.Attendance) (*model.Attendance, error) {
 	entity := &orm_model.Attendance{
 		UserID:         attendance.UserID,
 		AttendanceType: attendance.AttendanceType,
 		StartTime:      attendance.StartTime,
+		EndTime:        attendance.EndTime,
 		Date:           attendance.Date,
+		Year:           attendance.Year,
 	}
 
 	if err := a.db.Create(entity).Error; err != nil {
 		return nil, err
 	}
+
+	attendance.ID = entity.ID
 	return attendance, nil
 }
 
@@ -48,10 +67,11 @@ func (a ActivityRepositoryImpl) PostEndActivity(attendance *model.Attendance) (*
 	if err := a.db.Model(&orm_model.Attendance{}).Where("id = ?", id).Updates(entity).Error; err != nil {
 		return nil, err
 	}
+
 	return attendance, nil
 }
 
-func (a ActivityRepositoryImpl) PutStudyActivity(attendance *model.Attendance) error {
+func (a ActivityRepositoryImpl) PutActivity(attendance *model.Attendance) (*model.Attendance, error) {
 	entity := &orm_model.Attendance{
 		StartTime: attendance.StartTime,
 		EndTime:   attendance.EndTime,
@@ -59,15 +79,15 @@ func (a ActivityRepositoryImpl) PutStudyActivity(attendance *model.Attendance) e
 	id := attendance.ID
 
 	if err := a.db.Model(&orm_model.Attendance{}).Where("id = ?", id).Updates(entity).Error; err != nil {
-		return err
+		return nil, err
 	}
 
-	return nil
+	return attendance, nil
 }
 
-func (a ActivityRepositoryImpl) DeleteStudyActivity(userId int, date string) error {
+func (a ActivityRepositoryImpl) DeleteActivity(id int) error {
 
-	if err := a.db.Where("user_id = ? AND date = ?", userId, date).Delete(&orm_model.Attendance{}).Error; err != nil {
+	if err := a.db.Where("id = ?", id).Delete(&orm_model.Attendance{}).Error; err != nil {
 		return err
 	}
 

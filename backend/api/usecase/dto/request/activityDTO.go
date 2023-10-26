@@ -1,10 +1,19 @@
 package request
 
-import "time"
+import (
+	"fmt"
+	"time"
+)
 
-type ActivityInput struct {
-	UserID         int
-	AttendanceType int
-	CurrentTime    time.Time
-	Date           string
+type ActivityRequestDTO struct {
+	UserID         int       `json:"userID"`
+	AttendanceType int       `json:"attendanceType"`
+	StartTime      time.Time `json:"startTime"`
+	EndTime        time.Time `json:"endTime"`
+	Year           int       `json:"year"`
+	Date           time.Time `json:"date"`
+}
+
+func ToString(Date time.Time) string {
+	return fmt.Sprintf("%04d-%02d-%02d", Date.Year(), Date.Month(), Date.Day())
 }

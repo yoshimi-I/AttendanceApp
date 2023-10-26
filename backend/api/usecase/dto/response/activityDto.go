@@ -2,14 +2,12 @@ package response
 
 import "time"
 
-// ActivityRequestDTO アクティビティのリクエストデータ
-type ActivityRequestDTO struct {
-	Type      string    `json:"type"`
-	Timestamp time.Time `json:"timestamp"`
-}
-
-// ActivityResponseDTO アクティビティのレスポンスデータ
 type ActivityResponseDTO struct {
-	Message      string `json:"message"`
-	AttendanceID int    `json:"attendanceId"`
+	ID             int       `json:"id"`
+	UserID         int       `json:"userID"`
+	AttendanceType string    `json:"attendanceType"`
+	StartTime      time.Time `json:"startTime"`
+	EndTime        time.Time `json:"endTime"`
+	Year           int       `json:"year"`
+	Date           string    `json:"date"`
 }

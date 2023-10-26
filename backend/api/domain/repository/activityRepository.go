@@ -12,9 +12,9 @@ type ActivityInput struct {
 }
 
 type ActivityRepository interface {
-	FindActivity(id int) error
+	FindActivity(id int) (*model.Attendance, error)
 	PostStartActivity(attendance *model.Attendance) (*model.Attendance, error)
 	PostEndActivity(attendance *model.Attendance) (*model.Attendance, error)
-	PutStudyActivity(attendance *model.Attendance) error
-	DeleteStudyActivity(userId int, data string) error
+	PutActivity(attendance *model.Attendance) (*model.Attendance, error)
+	DeleteActivity(id int) error
 }

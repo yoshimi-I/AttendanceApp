@@ -8,5 +8,6 @@ type Attendance struct {
 	AttendanceType int
 	StartTime      time.Time
 	EndTime        time.Time
+	Year           int
 	Date           string
 }

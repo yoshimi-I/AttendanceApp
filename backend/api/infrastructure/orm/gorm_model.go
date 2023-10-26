@@ -26,6 +26,7 @@ type Attendance struct {
 	StartTime      time.Time `gorm:"column:start_time"`
 	EndTime        time.Time `gorm:"column:end_time"`
 	Date           string    `gorm:"column:date"`
+	Year           int       `gorm:"column:year"`
 	CreatedAt      time.Time `gorm:"column:created_at"`
 	UpdatedAt      time.Time `gorm:"column:updated_at"`
 }
