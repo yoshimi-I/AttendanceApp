@@ -35,14 +35,12 @@ func (h HistoryUsecaseImpl) AllHistory(userId int, year int) ([]response.Activit
 		date := v.Date
 		attendanceType := v.AttendanceType
 		duration := v.EndTime.Sub(v.StartTime)
-		hours := int(duration.Hours()) //時間(h)切り捨て
 
+		hours := int(duration.Minutes()) / 60 //分(h)切り捨て.その後60で割る
 		// 存在するかどうかのチェック
 		if existDate, ok := durationMap[date]; ok {
 			if attendanceType == 1 {
 				durationMap[date] = existDate + hours
-			} else {
-				durationMap[date] = existDate - hours
 			}
 		} else {
 			durationMap[date] = hours
