@@ -16,10 +16,10 @@ func Router() *chi.Mux {
 		panic(err)
 	}
 	// 勉強の全履歴を取得
-	r.Get("/study/allHistory/", historyController.GetAllHistory())
+	r.Get("/study/allHistory/{userId}/{year}", historyController.GetAllHistory())
 
 	// 指定日の勉強履歴を取得
-	r.Get("/study/history/{date}", historyController.GetHistoryByDate())
+	r.Get("/study/history/{userId}/{date}", historyController.GetHistoryByDate())
 
 	// 勉強の活動を追加
 	r.Post("/study/activity", activityController.AddActivity())

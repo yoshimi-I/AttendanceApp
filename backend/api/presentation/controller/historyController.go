@@ -6,6 +6,7 @@ import (
 	"github.com/yoshimi-I/AttendanceApp/usecase"
 	"net/http"
 	"regexp"
+	"strconv"
 )
 
 type HistoryController interface {
@@ -18,14 +19,27 @@ type HistoryControllerImpl struct {
 	hu usecase.HistoryUsecase
 }
 
-func NewHisoryController(hu usecase.HistoryUsecase) HistoryController {
+func NewHistoryController(hu usecase.HistoryUsecase) HistoryController {
 	return &HistoryControllerImpl{hu: hu}
 }
 
 func (h *HistoryControllerImpl) GetAllHistory() http.HandlerFunc {
 	return func(writer http.ResponseWriter, request *http.Request) {
+		// パラメータ取得
+		userId, err := strconv.Atoi(chi.URLParam(request, "userId"))
+		if err != nil {
+			http.Error(writer, "Invalid user ID", http.StatusBadRequest)
+			return
+		}
+
+		year, err := strconv.Atoi(chi.URLParam(request, "year"))
+		if err != nil {
+			http.Error(writer, "Invalid year format", http.StatusBadRequest)
+			return
+		}
+
 		// Usecaseから勉強の全履歴を取得
-		activities, err := h.hu.GetAllStudyHistory()
+		activities, err := h.hu.AllHistory(userId, year)
 		if err != nil {
 			http.Error(writer, "Failed to retrieve study history", http.StatusInternalServerError)
 			return
@@ -43,7 +57,12 @@ func (h *HistoryControllerImpl) GetAllHistory() http.HandlerFunc {
 
 func (h *HistoryControllerImpl) GetHistoryByDate() http.HandlerFunc {
 	return func(writer http.ResponseWriter, request *http.Request) {
-		// URLから日付を取得
+		userId, err := strconv.Atoi(chi.URLParam(request, "userId"))
+		if err != nil {
+			http.Error(writer, "Invalid user ID", http.StatusBadRequest)
+			return
+		}
+
 		date := chi.URLParam(request, "date")
 
 		// dateのフォーマットを確認
@@ -54,7 +73,7 @@ func (h *HistoryControllerImpl) GetHistoryByDate() http.HandlerFunc {
 		}
 
 		// Usecaseを使用して指定された日付の勉強履歴を取得
-		activity, err := h.hu.GetStudyActivityByData(date)
+		activity, err := h.hu.HistoryByDate(userId, date)
 		if err != nil {
 			http.Error(writer, err.Error(), http.StatusBadRequest)
 			return
