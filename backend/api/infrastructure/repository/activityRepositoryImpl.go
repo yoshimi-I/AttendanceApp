@@ -62,7 +62,8 @@ func (a ActivityRepositoryImpl) PostEndActivity(attendance *model.Attendance) (*
 	id := attendance.ID
 
 	entity := &orm_model.Attendance{
-		EndTime: attendance.EndTime,
+		StartTime: attendance.StartTime,
+		EndTime:   attendance.EndTime,
 	}
 	if err := a.db.Model(&orm_model.Attendance{}).Where("id = ?", id).Updates(entity).Error; err != nil {
 		return nil, err

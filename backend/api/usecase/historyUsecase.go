@@ -50,8 +50,8 @@ func (h HistoryUsecaseImpl) AllHistory(userId int, year int) ([]response.Activit
 	// DTOに変換
 	for date, duration := range durationMap {
 		responseData = append(responseData, response.ActivityTimeResponseDTO{
-			Date:    date,
-			SumTime: duration,
+			Date:         date,
+			ActivityTime: duration,
 		})
 	}
 	return responseData, nil
@@ -66,10 +66,12 @@ func (h HistoryUsecaseImpl) HistoryByDate(userId int, date string) (*response.Hi
 
 	var activities []response.ActivityDetail
 	for _, v := range historyByDate {
+		Id := v.ID
 		StartTime := v.StartTime
 		EndTime := v.EndTime
 		Type := response.ConvertActivityTime(v.AttendanceType)
 		activity := response.ActivityDetail{
+			Id:        Id,
 			Type:      Type,
 			StartTime: response.FormatChange(StartTime),
 			EndTime:   response.FormatChange(EndTime),

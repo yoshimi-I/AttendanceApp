@@ -12,7 +12,7 @@ import (
 
 type ActivityUsecase interface {
 	AddStartActivity(activity *request.ActivityStartRequestDTO) (*response.ActivityResponseDTO, error)
-	AddEndActivity(activity *request.ActivityEditRequestDTO, id int) (*response.ActivityResponseDTO, error)
+	AddEndActivity(activity *request.ActivityEndRequestDTO, id int) (*response.ActivityResponseDTO, error)
 	Update(activity *request.ActivityEditRequestDTO, id int) (*response.ActivityResponseDTO, error)
 	DeleteByActivityID(activityID int) error
 }
@@ -55,7 +55,7 @@ func (a ActivityUsecaseImpl) AddStartActivity(activity *request.ActivityStartReq
 	return responseDTO, nil
 }
 
-func (a ActivityUsecaseImpl) AddEndActivity(activity *request.ActivityEditRequestDTO, id int) (*response.ActivityResponseDTO, error) {
+func (a ActivityUsecaseImpl) AddEndActivity(activity *request.ActivityEndRequestDTO, id int) (*response.ActivityResponseDTO, error) {
 
 	var res *model.Attendance
 	var attendance *model.Attendance
@@ -69,12 +69,18 @@ func (a ActivityUsecaseImpl) AddEndActivity(activity *request.ActivityEditReques
 	// 日付を跨いだ場合の処理を記載
 	if record.Date != activity.Date() {
 		var firstAttendance *model.Attendance
-		dayStartTime := activity.StartTime.Truncate(time.Hour)                               // 0:00
-		dayEndTime := activity.StartTime.Truncate(time.Hour).Add(time.Hour*24 - time.Second) // 23:59
+		currentDate := time.Now()
+
+		// 0:00を表現
+		dayStartTime := time.Date(currentDate.Year(), currentDate.Month(), currentDate.Day(), 0, 0, 0, 0, time.UTC)
+
+		// 23:59を表現
+		dayEndTime := time.Date(currentDate.Year(), currentDate.Month(), currentDate.Day(), 23, 59, 0, 0, time.UTC)
 
 		firstAttendance = &model.Attendance{
-			ID:      id,
-			EndTime: dayEndTime, // 23:59を入れる
+			ID:        id,
+			StartTime: res.StartTime,
+			EndTime:   dayEndTime, // 23:59を入れる
 		}
 
 		secondAttendance := &model.Attendance{
@@ -96,8 +102,9 @@ func (a ActivityUsecaseImpl) AddEndActivity(activity *request.ActivityEditReques
 
 	} else {
 		attendance = &model.Attendance{
-			ID:      id,
-			EndTime: activity.EndTime,
+			ID:        id,
+			StartTime: res.StartTime,
+			EndTime:   activity.EndTime,
 		}
 		res, err = a.ar.PostEndActivity(attendance)
 		if err != nil {
@@ -105,21 +112,23 @@ func (a ActivityUsecaseImpl) AddEndActivity(activity *request.ActivityEditReques
 			return nil, fmt.Errorf("failed to post end activity: %w", err)
 		}
 	}
+	fmt.Println(res)
+
 	// DTOに詰め替え作業
 	responseDTO := &response.ActivityResponseDTO{
-		ID:             res.ID,
-		UserID:         res.UserID,
-		AttendanceType: response.ConvertActivityTime(res.AttendanceType),
-		StartTime:      res.StartTime,
+		ID:             record.ID,
+		UserID:         record.UserID,
+		AttendanceType: response.ConvertActivityTime(record.AttendanceType),
+		StartTime:      record.StartTime,
 		EndTime:        res.EndTime,
-		Year:           res.Year,
-		Date:           res.Date,
+		Year:           record.Year,
+		Date:           record.Date,
 	}
 	return responseDTO, nil
 }
 
 func (a ActivityUsecaseImpl) Update(activity *request.ActivityEditRequestDTO, id int) (*response.ActivityResponseDTO, error) {
-	_, err := a.ar.FindActivity(id)
+	record, err := a.ar.FindActivity(id)
 	if err != nil {
 		return nil, fmt.Errorf("failed to find existing activity: %v", err)
 	}
@@ -136,12 +145,12 @@ func (a ActivityUsecaseImpl) Update(activity *request.ActivityEditRequestDTO, id
 	// DTOに詰め替え作業
 	responseDTO := &response.ActivityResponseDTO{
 		ID:             res.ID,
-		UserID:         res.UserID,
-		AttendanceType: response.ConvertActivityTime(res.AttendanceType),
+		UserID:         record.UserID,
+		AttendanceType: response.ConvertActivityTime(record.AttendanceType),
 		StartTime:      res.StartTime,
 		EndTime:        res.EndTime,
-		Year:           res.Year,
-		Date:           res.Date,
+		Year:           record.Year,
+		Date:           record.Date,
 	}
 	return responseDTO, nil
 }

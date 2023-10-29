@@ -27,13 +27,13 @@ func Router() *chi.Mux {
 	r.Post("/study/activity", activityController.AddStartActivity())
 
 	// 活動の終了を追加
-	r.Put("/study/activity/{activityId}", activityController.AddEndActivity())
+	r.Put("/study/activity/{activityId}/end", activityController.AddEndActivity())
 
 	// 指定の活動を更新
-	r.Put("/study/activity/{activityId}", activityController.UpdateActivity())
+	r.Put("/study/activity/{activityId}/update", activityController.UpdateActivity())
 
 	// 指定の活動を削除
-	r.Delete("/study/activity/{activityId}", activityController.DeleteActivity())
+	r.Delete("/study/activity/{activityId}/delete", activityController.DeleteActivity())
 
 	return r
 }

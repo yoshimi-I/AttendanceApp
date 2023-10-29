@@ -17,8 +17,8 @@ type ActivityResponseDTO struct {
 
 // ActivityTimeResponseDTO アクティビティのレスポンスデータ
 type ActivityTimeResponseDTO struct {
-	Date    string
-	SumTime int
+	Date         string `json:"day"` // フロントに合わせて修正
+	ActivityTime int    `json:"activity_time"`
 }
 
 func ConvertActivityTime(actionType int) string {
