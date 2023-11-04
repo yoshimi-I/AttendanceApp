@@ -78,7 +78,7 @@ export const ActivityCalendar: React.FC<ActivityCalendarProps> = ({
     return `/${year}-${month}-${day}`;
   }
 
-  function dateFromDay(day: number) {
+  const dateFromDay = (day: number) => {
     var date = new Date(currentYear, 0);
     let newDate = new Date(date.setDate(day)).toLocaleDateString("en-US", {
       year: "numeric",
@@ -86,14 +86,8 @@ export const ActivityCalendar: React.FC<ActivityCalendarProps> = ({
       day: "2-digit",
     });
     return newDate;
-  }
-  function initialiseDateText() {
-    let tempDateTextList = Array(366).fill("");
-    for (let i = 1; i <= 365; i++) {
-      tempDateTextList[i] = dateFromDay(i);
-    }
-    setDateText(tempDateTextList);
-  }
+  };
+
   const initialise = async () => {
     sampleData?.map((item) => {
       let activityDay = getDayOfYear(item.day);
@@ -105,23 +99,49 @@ export const ActivityCalendar: React.FC<ActivityCalendarProps> = ({
     setShowMonthBar(showMonth);
     initialise();
     // ここで日付テキストを初期化する
-    const tempDateTextList = Array.from({ length: 366 }, (_, i) => dateFromDay(i));
+    const tempDateTextList = Array.from({ length: 366 }, (_, i) =>
+      dateFromDay(i)
+    );
     setDateText(tempDateTextList);
   }, [sampleData, showMonth]);
-  const matchColorComb = (colorId: number) => {
-    if (!colorCustomization) {
-      if (colorId >= 4) return "#5105fd";
-      else if (colorId == 0) return "#dadada";
-      else if (colorId == 2) return "#5105fd69";
-      else if (colorId == 1) return "#5105fd52";
-      else return "#5105fd99";
+
+  const getActivityColorId = (activityTime: number): number => {
+    if (activityTime >= 10) {
+      return 4;
+    } else if (activityTime >= 6) {
+      return 3;
+    } else if (activityTime >= 2) {
+      return 2;
+    } else if (activityTime > 0) {
+      return 1;
+    } else {
+      return 0;
     }
-    if (colorId >= 4) return colorCustomization.activity4;
-    else if (colorId == 0) return colorCustomization.activity0;
-    else if (colorId == 1) return colorCustomization.activity1;
-    else if (colorId == 2) return colorCustomization.activity2;
-    else return colorCustomization.activity3;
   };
+
+  const matchColorComb = (activityTime: number) => {
+    const colorId = getActivityColorId(activityTime);
+
+    if (!colorCustomization) {
+      switch (colorId) {
+        case 0: return "#dadada";
+        case 1: return "#5105fd52";
+        case 2: return "#5105fd69";
+        case 3: return "#5105fd99";
+        case 4: return "#5105fd";
+        default: return "#dadada"; // 万が一のためのデフォルト値
+      }
+    } else {
+      switch (colorId) {
+        case 0: return colorCustomization.activity0 || "#dadada";
+        case 1: return colorCustomization.activity1 || "#5105fd52";
+        case 2: return colorCustomization.activity2 || "#5105fd69";
+        case 3: return colorCustomization.activity3 || "#5105fd99";
+        case 4: return colorCustomization.activity4 || "#5105fd";
+        default: return colorCustomization.activity0 || "#dadada"; // 万が一のためのデフォルト値
+      }
+    }
+  }
   return (
     <Container
       sx={{
