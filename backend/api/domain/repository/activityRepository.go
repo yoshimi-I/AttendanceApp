@@ -1,8 +1,8 @@
 package repository
 
 import (
-	"github.com/yoshimi-I/AttendanceApp/domain/model"
 	"time"
+	"work-management-app/domain/model"
 )
 
 type ActivityInput struct {

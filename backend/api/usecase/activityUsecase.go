@@ -2,12 +2,12 @@ package usecase
 
 import (
 	"fmt"
-	"github.com/yoshimi-I/AttendanceApp/domain/model"
-	"github.com/yoshimi-I/AttendanceApp/domain/repository"
-	"github.com/yoshimi-I/AttendanceApp/usecase/dto/request"
-	"github.com/yoshimi-I/AttendanceApp/usecase/dto/response"
 	"log"
 	"time"
+	"work-management-app/domain/model"
+	"work-management-app/domain/repository"
+	"work-management-app/usecase/dto/request"
+	"work-management-app/usecase/dto/response"
 )
 
 type ActivityUsecase interface {

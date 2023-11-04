@@ -2,11 +2,12 @@ package controller
 
 import (
 	"encoding/json"
-	"github.com/go-chi/chi/v5"
-	"github.com/yoshimi-I/AttendanceApp/usecase"
 	"net/http"
 	"regexp"
 	"strconv"
+	"work-management-app/usecase"
+
+	"github.com/go-chi/chi/v5"
 )
 
 type HistoryController interface {

@@ -2,8 +2,8 @@
 package main
 
 import (
-	"github.com/yoshimi-I/AttendanceApp/presentation/router"
 	"net/http"
+	"work-management-app/presentation/router"
 )
 
 func main() {

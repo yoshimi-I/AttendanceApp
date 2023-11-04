@@ -1,6 +1,6 @@
 package repository
 
-import "github.com/yoshimi-I/AttendanceApp/domain/model"
+import "work-management-app/domain/model"
 
 type HistoryRepository interface {
 	ReadAllHistory(userID int, year int) ([]model.Attendance, error)

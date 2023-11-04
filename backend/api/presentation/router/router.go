@@ -1,13 +1,16 @@
 package router
 
 import (
+	"work-management-app/infrastructure/di"
+
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
-	"github.com/yoshimi-I/AttendanceApp/infrastructure/di"
 )
 
 func Router() *chi.Mux {
 	r := chi.NewRouter()
+
+	r.Use(middleware.Cors())
 	r.Use(middleware.Logger)
 	// DIコンテナ
 	historyController, err := di.InitHistoryController()

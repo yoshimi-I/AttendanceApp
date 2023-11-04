@@ -2,9 +2,9 @@ package usecase
 
 import (
 	"fmt"
-	"github.com/yoshimi-I/AttendanceApp/domain/repository"
-	"github.com/yoshimi-I/AttendanceApp/usecase/dto/response"
 	"log"
+	"work-management-app/domain/repository"
+	"work-management-app/usecase/dto/response"
 )
 
 // まずは扱う関数のinterfaceを実装
@@ -86,6 +86,7 @@ func (h HistoryUsecaseImpl) HistoryByDate(userId int, date string) (*response.Hi
 	}
 
 	return responseDto, nil
+
 }
 
 // 関数を実装した構造体をnewする関数を実装,またこのとき返り値はinterface

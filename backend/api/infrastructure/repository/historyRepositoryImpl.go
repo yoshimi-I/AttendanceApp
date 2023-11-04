@@ -1,9 +1,10 @@
 package repository
 
 import (
-	"github.com/yoshimi-I/AttendanceApp/domain/model"
-	"github.com/yoshimi-I/AttendanceApp/domain/repository"
-	orm_model "github.com/yoshimi-I/AttendanceApp/infrastructure/orm"
+	"work-management-app/domain/model"
+	"work-management-app/domain/repository"
+	orm_model "work-management-app/infrastructure/orm"
+
 	"gorm.io/gorm"
 )
 

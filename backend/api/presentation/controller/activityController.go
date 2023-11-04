@@ -2,12 +2,13 @@ package controller
 
 import (
 	"encoding/json"
-	"github.com/go-chi/chi/v5"
-	"github.com/yoshimi-I/AttendanceApp/usecase"
-	"github.com/yoshimi-I/AttendanceApp/usecase/dto/request"
 	"log"
 	"net/http"
 	"strconv"
+	"work-management-app/usecase"
+	"work-management-app/usecase/dto/request"
+
+	"github.com/go-chi/chi/v5"
 )
 
 type ActivityController interface {

@@ -8,10 +8,10 @@ package di
 
 import (
 	"github.com/google/wire"
-	"github.com/yoshimi-I/AttendanceApp/infrastructure"
-	"github.com/yoshimi-I/AttendanceApp/infrastructure/repository"
-	"github.com/yoshimi-I/AttendanceApp/presentation/controller"
-	"github.com/yoshimi-I/AttendanceApp/usecase"
+	"work-management-app/infrastructure"
+	"work-management-app/infrastructure/repository"
+	"work-management-app/presentation/controller"
+	"work-management-app/usecase"
 )
 
 // Injectors from wire.go:
