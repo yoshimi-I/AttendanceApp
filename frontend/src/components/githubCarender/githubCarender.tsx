@@ -32,7 +32,7 @@ export const ActivityCalendar: React.FC<ActivityCalendarProps> = ({
   const [graphData, setGraphData] = useState<number[]>([]);
   const tempGraphData = Array(366).fill(0);
   const [currentYear, setCurrentYear] = useState<number>(2023);
-  const [dateText, setDayText] = useState<string[]>([]);
+  const [dateText, setDateText] = useState<string[]>([]);
   const [showMonthBar, setShowMonthBar] = useState<boolean>(true);
   const getDayOfYear = (date: string) => {
     var days = [31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31];
@@ -92,7 +92,7 @@ export const ActivityCalendar: React.FC<ActivityCalendarProps> = ({
     for (let i = 1; i <= 365; i++) {
       tempDateTextList[i] = dateFromDay(i);
     }
-    setDayText(tempDateTextList);
+    setDateText(tempDateTextList);
   }
   const initialise = async () => {
     sampleData?.map((item) => {
@@ -103,12 +103,11 @@ export const ActivityCalendar: React.FC<ActivityCalendarProps> = ({
   };
   useEffect(() => {
     setShowMonthBar(showMonth);
-    if (!sampleData) sampleData = [];
-    initialiseDateText();
-  }, []);
-  useEffect(() => {
     initialise();
-  }, []);
+    // ここで日付テキストを初期化する
+    const tempDateTextList = Array.from({ length: 366 }, (_, i) => dateFromDay(i));
+    setDateText(tempDateTextList);
+  }, [sampleData, showMonth]);
   const matchColorComb = (colorId: number) => {
     if (!colorCustomization) {
       if (colorId >= 4) return "#5105fd";

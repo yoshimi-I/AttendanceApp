@@ -1,25 +1,40 @@
-import { ActivityCalendar } from "@/components/githubCarender/githubCarender";
-import TaskButtons from "@/components/register/registerButton";
-import CurrentTime from "@/components/time/currentTime";
+"use client";
+import { useEffect, useState } from 'react';
+import { useForm } from 'react-hook-form';
+import { ActivityCalendar } from '../../components/githubCarender/githubCarender';
+import CurrentTime from '../../components/time/currentTime';
+import AttendanceButtons from '../../components/register/registerButtonList';
 
+export default function Home() {
+  const { handleSubmit } = useForm();
+  const [sampleData, setSampleData] = useState([]);
+  const year = new Date().getFullYear();
 
-const MyPage = () => {
-  const sampleData = [
-    {
-      day: "2023-01-01",
-      activity_time: 5
-    },
-    {
-      day: "2023-11-02",
-      activity_time: 1
-    }
-  ]
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const response = await fetch(`http://localhost:8080/study/allHistory/1/${year}`);
+        const data = await response.json();
+        setSampleData(data);
+        outPutData(data);
+      } catch (error) {
+        console.error("Error fetching data:", error);
+      }
+    };
+
+    fetchData();
+  }, [year]);
+
+  const outPutData = (data: any) => {
+    console.log(data);
+  };
+
   return (
+
     <main>
       <CurrentTime />
-      <TaskButtons />
+      <AttendanceButtons />
       <ActivityCalendar sampleData={sampleData} />
     </main>
   );
 }
-export default MyPage;
