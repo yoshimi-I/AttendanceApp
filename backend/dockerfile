@@ -28,3 +28,6 @@ WORKDIR /backend/api
 
 # airを実行
 CMD ["air"]
+
+# Go run main.goを実行
+# CMD ["go", "run", "main.go"]

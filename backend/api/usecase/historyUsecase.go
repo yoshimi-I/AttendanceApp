@@ -32,15 +32,17 @@ func (h HistoryUsecaseImpl) AllHistory(userId int, year int) ([]response.Activit
 	durationMap := make(map[string]int)
 
 	for _, v := range allHistoryList {
-		date := v.Date
-		attendanceType := v.AttendanceType
+		date := v.Date                     // yyyy-mm-dd
+		attendanceType := v.AttendanceType // 作業か,休憩かを判断
 		duration := v.EndTime.Sub(v.StartTime)
 
-		hours := int(duration.Minutes()) / 60 //分(h)切り捨て.その後60で割る
+		hours := int(duration.Minutes()) / 60 // 分(h)切り捨て.その後60で割る
 		// 存在するかどうかのチェック
-		if existDate, ok := durationMap[date]; ok {
+		if _, ok := durationMap[date]; ok {
 			if attendanceType == 1 {
-				durationMap[date] = existDate + hours
+				durationMap[date] += hours
+			} else {
+				durationMap[date] -= hours
 			}
 		} else {
 			durationMap[date] = hours

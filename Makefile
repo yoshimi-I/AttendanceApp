@@ -33,6 +33,10 @@ migrate-down:
 migrate-status:
 	cd backend/api && goose -dir=../../db/migration mysql "$(DSN)" status
 
+# コンテナに入る
+make exec:
+	docker exec -it attendanceapp-db-1 sh -c 'mysql -u yoshimi -p -h db -P 3306'
+
 # DIを行う
 di:
 	cd backend/api/infrastructure/di && wire gen
