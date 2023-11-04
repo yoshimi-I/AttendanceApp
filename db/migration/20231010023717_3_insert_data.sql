@@ -2,13 +2,13 @@
 
 -- +goose StatementBegin
 INSERT INTO User (name, email) VALUES
-('Yoshimi', 'yoshimi@example.com'),
+('Yuto', 'yuto@example.com'),
 ('Taro', 'taro@example.com');
 -- +goose StatementEnd
 
 -- +goose StatementBegin
 INSERT INTO Activities (user_id, activity_date, notes) VALUES
-(1, '2023-10-10', 'Yoshimi study notes'),
+(1, '2023-10-10', 'Yuto study notes'),
 (2, '2023-10-10', 'Taro study notes');
 -- +goose StatementEnd
 
