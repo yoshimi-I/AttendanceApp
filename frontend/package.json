@@ -22,8 +22,11 @@
     "@types/react": "18.2.21",
     "@types/react-dom": "18.2.7",
     "activity-calendar-react": "^1.0.4",
+    "dotenv": "^16.3.1",
+    "encoding": "^0.1.13",
     "eslint": "8.49.0",
     "eslint-config-next": "13.4.19",
+    "firebase": "^10.5.2",
     "moment": "^2.29.4",
     "mui": "^0.0.1",
     "next": "13.4.19",
@@ -35,5 +38,9 @@
     "react-redux": "^8.1.2",
     "sass": "^1.68.0",
     "typescript": "5.2.2"
+  },
+  "devDependencies": {
+    "@babel/eslint-parser": "^7.22.15",
+    "@types/dotenv": "^8.2.0"
   }
 }
