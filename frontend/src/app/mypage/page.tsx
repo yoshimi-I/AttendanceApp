@@ -4,6 +4,8 @@ import { useForm } from 'react-hook-form';
 import { ActivityCalendar } from '../../components/githubCarender/githubCarender';
 import CurrentTime from '../../components/time/currentTime';
 import AttendanceButtons from '../../components/register/registerButtonList';
+import UserIcon from '../../components/userIcon/userIcon';
+import LogoutDialog from '../../logic/logout';
 
 export default function Home() {
   const { handleSubmit } = useForm();
@@ -33,8 +35,10 @@ export default function Home() {
 
     <main>
       <CurrentTime />
+      <UserIcon/>
       <AttendanceButtons />
       <ActivityCalendar sampleData={sampleData} />
+
     </main>
   );
 }
