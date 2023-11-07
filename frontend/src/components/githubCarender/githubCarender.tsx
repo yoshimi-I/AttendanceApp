@@ -198,7 +198,7 @@ export const ActivityCalendar: React.FC<ActivityCalendarProps> = ({
                     </div>
                   </Link>
                   <Link
-                    href={`/mypage/${formatDateForURL(dateText[i * 7 + 1])}`}
+                    href={`/mypage/${formatDateForURL(dateText[i * 7 + 2])}`}
                     passHref
                   >
                     <div
@@ -222,7 +222,7 @@ export const ActivityCalendar: React.FC<ActivityCalendarProps> = ({
                     </div>
                   </Link>
                   <Link
-                    href={`/mypage/${formatDateForURL(dateText[i * 7 + 1])}`}
+                    href={`/mypage/${formatDateForURL(dateText[i * 7 + 3])}`}
                     passHref
                   >
                     <div
@@ -246,7 +246,7 @@ export const ActivityCalendar: React.FC<ActivityCalendarProps> = ({
                     </div>
                   </Link>
                   <Link
-                    href={`/mypage/${formatDateForURL(dateText[i * 7 + 1])}`}
+                    href={`/mypage/${formatDateForURL(dateText[i * 7 + 4])}`}
                     passHref
                   >
                     <div
@@ -270,7 +270,7 @@ export const ActivityCalendar: React.FC<ActivityCalendarProps> = ({
                     </div>
                   </Link>
                   <Link
-                    href={`/mypage/${formatDateForURL(dateText[i * 7 + 1])}`}
+                    href={`/mypage/${formatDateForURL(dateText[i * 7 + 5])}`}
                     passHref
                   >
                     <div
@@ -294,7 +294,7 @@ export const ActivityCalendar: React.FC<ActivityCalendarProps> = ({
                     </div>
                   </Link>
                   <Link
-                    href={`/mypage/${formatDateForURL(dateText[i * 7 + 1])}`}
+                    href={`/mypage/${formatDateForURL(dateText[i * 7 + 6])}`}
                     passHref
                   >
                     <div
@@ -318,7 +318,7 @@ export const ActivityCalendar: React.FC<ActivityCalendarProps> = ({
                     </div>
                   </Link>
                   <Link
-                    href={`/mypage/${formatDateForURL(dateText[i * 7 + 1])}`}
+                    href={`/mypage/${formatDateForURL(dateText[i * 7 + 7])}`}
                     passHref
                   >
                     <div
