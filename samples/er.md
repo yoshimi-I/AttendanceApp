@@ -1,31 +1,50 @@
 ```mermaid
 erDiagram
-    Users ||--o{ Attendances : ""
-    Attendances ||--o{ Attendance_types : ""
+    users ||--o{ attendances : ""
+    attendances ||--o{ attendance_types : ""
+    users ||--o{ user_statuses : ""
+    user_statuses ||--o{ user_status_types : ""
 
-    Users {
+    users {
         int id PK
         string name
         string email
+        string firebase_id
         timestamp created_at
         timestamp updated_at
     }
 
-    Attendances {
+    attendances {
         int id PK
         int user_id FK
-        int attendance_type
+        int attendance_type FK
         timestamp start_time "フロント側から受け取った開始時間"
         timestamp end_time "フロント側から受け取った終了時間"
-        timestamp created_at　"レコードの生成と同時に生まれるカラム"
-        timestamp updated_at　"レコードの生成と同時に生まれるカラム"
+        string date "YYYY-MM-DD形式の日付"
+        int year "年を表す"
+        timestamp created_at "レコードの生成と同時に生まれるカラム"
+        timestamp updated_at "レコードの生成と同時に生まれるカラム"
     }
-    Attendance_types {
-        int attendance_type_id PK,FK"1:出勤退勤 　2:休憩 　3:お祈り" 
-        string action_name
+
+    attendance_types {
+        int attendance_type_id PK "1:作業 　2:休憩 　3:お祈り"
+        string action_type
         timestamp created_at
         timestamp updated_at
     }
 
+    user_status_types {
+        int user_status_type_id PK "1:作業中 　2:休憩中 　3:終了"
+        string action_type
+        timestamp created_at
+        timestamp updated_at
+    }
+
+    user_statuses {
+        int id PK
+        int user_id FK "ユーザーID"
+        int status_id FK "ユーザーの現在の状態ID"
+        timestamp updated_at "最終更新時間"
+    }
 
 ```

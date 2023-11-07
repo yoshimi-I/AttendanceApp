@@ -18,4 +18,8 @@
   5. 戻したい場合はmigrate-downを実行
 
 
-  
+### mockの挿入
+1. まずはコンテナに入る
+  - makefileの* make exec*を打ってパスワードyoshimiを入力
+2. ```use manage;```を打つ
+3. mock/mock.sqlをコピーして貼り付ける
