@@ -21,13 +21,16 @@ type ActivityUsecaseImpl struct {
 	ar repository.ActivityRepository
 }
 
+func NewActivityUsecase(ar repository.ActivityRepository) ActivityUsecase {
+	return &ActivityUsecaseImpl{ar: ar}
+}
+
 func (a ActivityUsecaseImpl) AddStartActivity(activity *request.ActivityStartRequestDTO) (*response.ActivityResponseDTO, error) {
 
 	var res *model.Attendance
 	var err error
-	var attendance *model.Attendance
 
-	attendance = &model.Attendance{
+	attendance := &model.Attendance{
 		UserID:         activity.UserID,
 		AttendanceType: activity.AttendanceType,
 		StartTime:      activity.StartTime,
@@ -167,8 +170,4 @@ func (a ActivityUsecaseImpl) DeleteByActivityID(activityID int) error {
 
 	return nil
 
-}
-
-func NewActivityUsecase(ar repository.ActivityRepository) ActivityUsecase {
-	return &ActivityUsecaseImpl{ar: ar}
 }
