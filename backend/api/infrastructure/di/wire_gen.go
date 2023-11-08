@@ -16,36 +16,44 @@ import (
 
 // Injectors from wire.go:
 
-// InitHistoryController HistoryControllerのインスタンスを初期化
-//
-//	Controllerが一番先頭の呼び出し関数のため
-func InitHistoryController() (controller.HistoryController, error) {
+func InitializeControllers() (*ControllersSet, error) {
 	db, err := infrastructure.InitDB()
 	if err != nil {
 		return nil, err
 	}
+	userRepository := repository.NewUserRepository(db)
+	userUsecase := usecase.NewUserUsecase(userRepository)
+	userController := controller.NewUserController(userUsecase)
 	historyRepository := repository.NewHistoryRepository(db)
 	historyUsecase := usecase.NewHistoryUsecase(historyRepository)
 	historyController := controller.NewHistoryController(historyUsecase)
-	return historyController, nil
-}
-
-// InitActivityController InitActivityControllerのインスタンス初期化
-func InitActivityController() (controller.ActivityController, error) {
-	db, err := infrastructure.InitDB()
-	if err != nil {
-		return nil, err
-	}
 	activityRepository := repository.NewActivityRepository(db)
 	activityUsecase := usecase.NewActivityUsecase(activityRepository)
 	activityController := controller.NewActivityController(activityUsecase)
-	return activityController, nil
+	controllersSet := &ControllersSet{
+		UserController:     userController,
+		HistoryController:  historyController,
+		ActivityController: activityController,
+	}
+	return controllersSet, nil
 }
 
 // wire.go:
 
-// HistoryControllerの依存関係
-var historySuperSet = wire.NewSet(infrastructure.InitDB, repository.NewHistoryRepository, usecase.NewHistoryUsecase, controller.NewHistoryController)
+// infrastructure
+var infrastructureSet = wire.NewSet(infrastructure.InitDB)
 
-// ActivityController周りの依存関係
-var activitySuperSet = wire.NewSet(infrastructure.InitDB, repository.NewActivityRepository, usecase.NewActivityUsecase, controller.NewActivityController)
+// repository
+var repositorySet = wire.NewSet(repository.NewActivityRepository, repository.NewHistoryRepository, repository.NewUserRepository)
+
+// usecase
+var usecaseSet = wire.NewSet(usecase.NewActivityUsecase, usecase.NewHistoryUsecase, usecase.NewUserUsecase)
+
+// controller
+var controllerSet = wire.NewSet(controller.NewActivityController, controller.NewHistoryController, controller.NewUserController)
+
+type ControllersSet struct {
+	UserController     controller.UserController
+	HistoryController  controller.HistoryController
+	ActivityController controller.ActivityController
+}

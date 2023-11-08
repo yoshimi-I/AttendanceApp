@@ -32,10 +32,10 @@ func (u UserRepositoryImpl) PostUser(user *model.User) (*model.User, error) {
 	return user, nil
 }
 
-func (u UserRepositoryImpl) FindByID(id int) (*model.User, error) {
+func (u UserRepositoryImpl) FindUserByUserKey(userKey string) (*model.User, error) {
 	var user orm_model.User
 
-	if err := u.db.First(&user, id).Error; err != nil {
+	if err := u.db.Where("user_key = ?", userKey).Find(&user).Error; err != nil {
 		if err == gorm.ErrRecordNotFound {
 			return nil, err
 		}

@@ -6,6 +6,6 @@ import (
 
 type UserRepository interface {
 	PostUser(user *model.User) (*model.User, error)
-	FindByID(id int) (*model.User, error)
+	FindUserByUserKey(userKey string) (*model.User, error)
 	FindIDByUserKey(userKey string) (id int, err error)
 }

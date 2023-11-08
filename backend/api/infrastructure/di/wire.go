@@ -13,33 +13,45 @@ import (
 	"work-management-app/usecase"
 )
 
-// HistoryControllerの依存関係
-var historySuperSet = wire.NewSet(
+// infrastructure
+var infrastructureSet = wire.NewSet(
 	infrastructure.InitDB,
-	repository.NewHistoryRepository,
-	usecase.NewHistoryUsecase,
-	controller.NewHistoryController,
 )
 
-// ActivityController周りの依存関係
-var activitySuperSet = wire.NewSet(
-	infrastructure.InitDB,
+// repository
+var repositorySet = wire.NewSet(
 	repository.NewActivityRepository,
-	usecase.NewActivityUsecase,
-	controller.NewActivityController,
+	repository.NewHistoryRepository,
+	repository.NewUserRepository,
 )
 
-// InitHistoryController HistoryControllerのインスタンスを初期化
-//
-//	Controllerが一番先頭の呼び出し関数のため
-func InitHistoryController() (controller.HistoryController, error) {
-	wire.Build(historySuperSet)
-	return &controller.HistoryControllerImpl{}, nil
+// usecase
+var usecaseSet = wire.NewSet(
+	usecase.NewActivityUsecase,
+	usecase.NewHistoryUsecase,
+	usecase.NewUserUsecase,
+)
+
+// controller
+var controllerSet = wire.NewSet(
+	controller.NewActivityController,
+	controller.NewHistoryController,
+	controller.NewUserController,
+)
+
+type ControllersSet struct {
+	UserController     controller.UserController
+	HistoryController  controller.HistoryController
+	ActivityController controller.ActivityController
 }
 
-// InitActivityController InitActivityControllerのインスタンス初期化
-func InitActivityController() (controller.ActivityController, error) {
-	wire.Build(activitySuperSet)
-	return &controller.ActivityControllerImpl{}, nil
-
+func InitializeControllers() (*ControllersSet, error) {
+	wire.Build(
+		infrastructureSet,
+		repositorySet,
+		usecaseSet,
+		controllerSet,
+		wire.Struct(new(ControllersSet), "*"),
+	)
+	return nil, nil
 }

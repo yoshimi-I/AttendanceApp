@@ -10,7 +10,7 @@ import (
 
 type UserUsecase interface {
 	AddUser(user *request.UserDTO) (*response.UserDTO, error)
-	UserByID(id int) (*response.UserDTO, error)
+	UserByUserKey(userKey string) (*response.UserDTO, error)
 	IDByUserKey(userKey string) (id int, err error)
 }
 
@@ -25,7 +25,7 @@ func (u UserUsecaseImpl) AddUser(user *request.UserDTO) (*response.UserDTO, erro
 	addUser := &model.User{
 		Name:    user.Name,
 		Email:   user.Email,
-		UserKey: user.UserKeyKey,
+		UserKey: user.UserKey,
 	}
 	res, err := u.ur.PostUser(addUser)
 	if err != nil {
@@ -44,8 +44,8 @@ func (u UserUsecaseImpl) AddUser(user *request.UserDTO) (*response.UserDTO, erro
 
 }
 
-func (u UserUsecaseImpl) UserByID(id int) (*response.UserDTO, error) {
-	res, err := u.ur.FindByID(id)
+func (u UserUsecaseImpl) UserByUserKey(userKey string) (*response.UserDTO, error) {
+	res, err := u.ur.FindUserByUserKey(userKey)
 	if err != nil {
 		log.Printf("Faild to UserById in usecase : %v", err)
 		return nil, err

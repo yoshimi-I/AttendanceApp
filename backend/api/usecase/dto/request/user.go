@@ -1,7 +1,7 @@
 package request
 
 type UserDTO struct {
-	Name       string `json:"name"`
-	Email      string `json:"email"`
-	UserKeyKey string `json:"user_key"`
+	Name    string `json:"name"`
+	Email   string `json:"email"`
+	UserKey string `json:"user_key"`
 }
