@@ -30,7 +30,7 @@ const DateDetail = () => {
   }, [date]); // dateが変更されたときにのみ実行
 
   if (!data) {
-    return <div></div>;
+    return <div>何もありません</div>;
   }
 
   return (
