@@ -9,16 +9,32 @@ import (
 
 // まずは扱う関数のinterfaceを実装
 type HistoryUsecase interface {
-	AllHistory(userId int, year int) ([]response.ActivityTimeResponseDTO, error)
-	HistoryByDate(userId int, date string) (*response.HistoryByDateDto, error)
+	AllHistory(userKey string, year int) ([]response.ActivityTimeResponseDTO, error)
+	HistoryByDate(userKey string, date string) (*response.HistoryByDateDto, error)
 }
 
 // 構造体を実装
 type HistoryUsecaseImpl struct {
 	hr repository.HistoryRepository
+	ur repository.UserRepository
 }
 
-func (h HistoryUsecaseImpl) AllHistory(userId int, year int) ([]response.ActivityTimeResponseDTO, error) {
+// 関数を実装した構造体をnewする関数を実装,またこのとき返り値はinterface
+func NewHistoryUsecase(hr repository.HistoryRepository, ur repository.UserRepository) HistoryUsecase {
+	return &HistoryUsecaseImpl{
+		hr: hr,
+		ur: ur,
+	}
+}
+
+func (h HistoryUsecaseImpl) AllHistory(userKey string, year int) ([]response.ActivityTimeResponseDTO, error) {
+	// userKeyからuserIdを指定
+	userId, err := h.ur.FindIDByUserKey(userKey)
+	if err != nil {
+		log.Println("usr_id not found")
+		return nil, err
+	}
+
 	allHistoryList, err := h.hr.ReadAllHistory(userId, year)
 	if err != nil {
 		log.Println("failed to read all history from HistoryRepository")
@@ -59,7 +75,14 @@ func (h HistoryUsecaseImpl) AllHistory(userId int, year int) ([]response.Activit
 	return responseData, nil
 }
 
-func (h HistoryUsecaseImpl) HistoryByDate(userId int, date string) (*response.HistoryByDateDto, error) {
+func (h HistoryUsecaseImpl) HistoryByDate(userKey string, date string) (*response.HistoryByDateDto, error) {
+	// userKeyからuserIdを指定
+	userId, err := h.ur.FindIDByUserKey(userKey)
+	if err != nil {
+		log.Println("usr_id not found")
+		return nil, err
+	}
+
 	historyByDate, err := h.hr.ReadHistoryByDate(userId, date)
 	if err != nil {
 		log.Println("failed to read historyByDate from HistoryRepository")
@@ -89,9 +112,4 @@ func (h HistoryUsecaseImpl) HistoryByDate(userId int, date string) (*response.Hi
 
 	return responseDto, nil
 
-}
-
-// 関数を実装した構造体をnewする関数を実装,またこのとき返り値はinterface
-func NewHistoryUsecase(hr repository.HistoryRepository) HistoryUsecase {
-	return &HistoryUsecaseImpl{hr: hr}
 }

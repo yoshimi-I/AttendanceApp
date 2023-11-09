@@ -12,8 +12,10 @@ import (
 )
 
 type ActivityController interface {
-	AddStartActivity() http.HandlerFunc
-	AddEndActivity() http.HandlerFunc
+	AddStartWork() http.HandlerFunc
+	AddEndWork() http.HandlerFunc
+	AddStartBreak() http.HandlerFunc
+	AddEndBreak() http.HandlerFunc
 	UpdateActivity() http.HandlerFunc
 	DeleteActivity() http.HandlerFunc
 }
@@ -22,7 +24,7 @@ type ActivityControllerImpl struct {
 	ActivityUsecase usecase.ActivityUsecase
 }
 
-func (a ActivityControllerImpl) AddStartActivity() http.HandlerFunc {
+func (a ActivityControllerImpl) AddStartWork() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		var activity request.ActivityStartRequestDTO
 
@@ -33,7 +35,7 @@ func (a ActivityControllerImpl) AddStartActivity() http.HandlerFunc {
 			return
 		}
 
-		res, err := a.ActivityUsecase.AddStartActivity(&activity)
+		res, err := a.ActivityUsecase.AddStarWork(&activity)
 		if err != nil {
 			log.Println("Error in ActivityUsecase")
 			http.Error(w, err.Error(), http.StatusInternalServerError)
@@ -50,7 +52,7 @@ func (a ActivityControllerImpl) AddStartActivity() http.HandlerFunc {
 	}
 }
 
-func (a ActivityControllerImpl) AddEndActivity() http.HandlerFunc {
+func (a ActivityControllerImpl) AddEndWork() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		var activity request.ActivityEndRequestDTO
 
@@ -61,16 +63,80 @@ func (a ActivityControllerImpl) AddEndActivity() http.HandlerFunc {
 			return
 		}
 
-		// IDをURLから取得
-		idStr := chi.URLParam(r, "activityId")
-		id, err := strconv.Atoi(idStr)
+		// KeyをURLから取得
+		activityIdStr := chi.URLParam(r, "activityId")
+		activityId, err := strconv.Atoi(activityIdStr)
 		if err != nil {
-			log.Println("Can't get ID")
-			http.Error(w, "Invalid ID", http.StatusBadRequest)
+			log.Println("Can't get key")
+			http.Error(w, "Invalid key", http.StatusBadRequest)
 			return
 		}
 
-		res, err := a.ActivityUsecase.AddEndActivity(&activity, id)
+		res, err := a.ActivityUsecase.AddEndWork(&activity, activityId)
+		if err != nil {
+			log.Println("Error in ActivityUsecase")
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+			return
+		}
+
+		w.Header().Set("Content-Type", "application/json")
+		if err := json.NewEncoder(w).Encode(res); err != nil {
+			log.Println("Error in json Encode")
+			http.Error(w, "Failed to encode response", http.StatusInternalServerError)
+			return
+		}
+	}
+}
+
+func (a ActivityControllerImpl) AddStartBreak() http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		var activity request.ActivityStartRequestDTO
+
+		// bodyを取得
+		if err := json.NewDecoder(r.Body).Decode(&activity); err != nil {
+			log.Println("Can't get body")
+			http.Error(w, "Invalid request body", http.StatusBadRequest)
+			return
+		}
+
+		res, err := a.ActivityUsecase.AddStartBreak(&activity)
+		if err != nil {
+			log.Println("Error in ActivityUsecase")
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+			return
+		}
+
+		w.Header().Set("Content-Type", "application/json")
+		if err := json.NewEncoder(w).Encode(res); err != nil {
+			log.Printf("Can't encode json: %v", err)
+			http.Error(w, "Failed to encode response", http.StatusInternalServerError)
+			return
+		}
+
+	}
+}
+
+func (a ActivityControllerImpl) AddEndBreak() http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		var activity request.ActivityEndRequestDTO
+
+		// bodyを取得
+		if err := json.NewDecoder(r.Body).Decode(&activity); err != nil {
+			log.Println("Can't get body")
+			http.Error(w, "Invalid request body", http.StatusBadRequest)
+			return
+		}
+
+		// KeyをURLから取得
+		activityId := chi.URLParam(r, "activityId")
+		id, err := strconv.Atoi(activityId)
+		if err != nil {
+			log.Println("Can't get key")
+			http.Error(w, "Invalid key", http.StatusBadRequest)
+			return
+		}
+
+		res, err := a.ActivityUsecase.AddEndBreak(&activity, id)
 		if err != nil {
 			log.Println("Error in ActivityUsecase")
 			http.Error(w, err.Error(), http.StatusInternalServerError)
@@ -95,11 +161,11 @@ func (a ActivityControllerImpl) UpdateActivity() http.HandlerFunc {
 		}
 
 		// IDをURLから取得
-		idStr := chi.URLParam(r, "activityId")
-		id, err := strconv.Atoi(idStr)
+		activityId := chi.URLParam(r, "activityId")
+		id, err := strconv.Atoi(activityId)
 		if err != nil {
-			log.Println("Can't get ID")
-			http.Error(w, "Invalid ID", http.StatusBadRequest)
+			log.Println("Can't get key")
+			http.Error(w, "Invalid key", http.StatusBadRequest)
 			return
 		}
 
@@ -120,11 +186,11 @@ func (a ActivityControllerImpl) UpdateActivity() http.HandlerFunc {
 func (a ActivityControllerImpl) DeleteActivity() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		// IDをURLから取得
-		idStr := chi.URLParam(r, "activityId")
-		id, err := strconv.Atoi(idStr)
+		activityId := chi.URLParam(r, "activityId")
+		id, err := strconv.Atoi(activityId)
 		if err != nil {
-			log.Println("Can't get ID")
-			http.Error(w, "Invalid ID", http.StatusBadRequest)
+			log.Println("Can't get key")
+			http.Error(w, "Invalid key", http.StatusBadRequest)
 			return
 		}
 

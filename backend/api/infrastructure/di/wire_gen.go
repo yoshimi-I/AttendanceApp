@@ -22,13 +22,13 @@ func InitializeControllers() (*ControllersSet, error) {
 		return nil, err
 	}
 	userRepository := repository.NewUserRepository(db)
-	userUsecase := usecase.NewUserUsecase(userRepository)
+	activityRepository := repository.NewActivityRepository(db)
+	userUsecase := usecase.NewUserUsecase(userRepository, activityRepository)
 	userController := controller.NewUserController(userUsecase)
 	historyRepository := repository.NewHistoryRepository(db)
-	historyUsecase := usecase.NewHistoryUsecase(historyRepository)
+	historyUsecase := usecase.NewHistoryUsecase(historyRepository, userRepository)
 	historyController := controller.NewHistoryController(historyUsecase)
-	activityRepository := repository.NewActivityRepository(db)
-	activityUsecase := usecase.NewActivityUsecase(activityRepository)
+	activityUsecase := usecase.NewActivityUsecase(activityRepository, userRepository)
 	activityController := controller.NewActivityController(activityUsecase)
 	controllersSet := &ControllersSet{
 		UserController:     userController,

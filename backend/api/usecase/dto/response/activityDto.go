@@ -3,6 +3,7 @@ package response
 import (
 	"log"
 	"time"
+	"work-management-app/domain/model"
 )
 
 type ActivityResponseDTO struct {
@@ -13,6 +14,7 @@ type ActivityResponseDTO struct {
 	EndTime        time.Time `json:"end_time"`
 	Year           int       `json:"year"`
 	Date           string    `json:"date"`
+	Status         string    `json:"status"`
 }
 
 // ActivityTimeResponseDTO アクティビティのレスポンスデータ
@@ -21,7 +23,7 @@ type ActivityTimeResponseDTO struct {
 	ActivityTime int    `json:"activity_time"`
 }
 
-func ConvertActivityTime(actionType int) string {
+func ConvertActivityTime(actionType model.ActionEnum) string {
 	var Type string
 	switch actionType {
 	case 1:

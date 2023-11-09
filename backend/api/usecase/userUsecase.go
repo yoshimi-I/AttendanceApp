@@ -16,21 +16,53 @@ type UserUsecase interface {
 
 type UserUsecaseImpl struct {
 	ur repository.UserRepository
+	ar repository.ActivityRepository
 }
 
-func NewUserUsecase(ur repository.UserRepository) UserUsecase {
-	return &UserUsecaseImpl{ur: ur}
+func NewUserUsecase(ur repository.UserRepository, ar repository.ActivityRepository) UserUsecase {
+	return &UserUsecaseImpl{ur: ur, ar: ar}
 }
+
 func (u UserUsecaseImpl) AddUser(user *request.UserDTO) (*response.UserDTO, error) {
-	addUser := &model.User{
-		Name:    user.Name,
-		Email:   user.Email,
-		UserKey: user.UserKey,
-	}
-	res, err := u.ur.PostUser(addUser)
+
+	var res *model.User
+	userKey := user.UserKey
+	// 重複を確認
+	findUser, err := u.ur.FindUserByUserKey(userKey)
+
 	if err != nil {
-		log.Printf("Failed to adduser in usecase: %v", err)
+		log.Printf("Failed to adduser in repository: %v", err)
 		return nil, err
+	}
+
+	// userがまだ登録されていない場合のみDBに保存
+	if findUser != nil {
+		res = findUser
+
+	} else {
+		addUser := &model.User{
+			Name:    user.Name,
+			Email:   user.Email,
+			UserKey: userKey,
+		}
+
+		// DBに保存
+		res, err = u.ur.PostUser(addUser)
+		if err != nil {
+			return nil, err
+		}
+
+		// その後ユーザーの状態を保持(最初はFinish)
+		addUserStatus := &model.UserStatus{
+			UserID:   res.ID,
+			StatusID: model.Finish,
+		}
+		log.Printf("Setting initial user status for user: %s", userKey)
+		_, err := u.ar.PostUserStatus(addUserStatus)
+		if err != nil {
+			return nil, err
+		}
+
 	}
 
 	// DTOに詰め替え

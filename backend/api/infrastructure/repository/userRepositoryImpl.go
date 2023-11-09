@@ -29,27 +29,33 @@ func (u UserRepositoryImpl) PostUser(user *model.User) (*model.User, error) {
 		return nil, err
 	}
 
-	return user, nil
+	return &model.User{
+		ID:      entity.ID,
+		Name:    entity.Name,
+		Email:   entity.Email,
+		UserKey: entity.UserKey,
+	}, nil
 }
 
-func (u UserRepositoryImpl) FindUserByUserKey(userKey string) (*model.User, error) {
+func (u *UserRepositoryImpl) FindUserByUserKey(userKey string) (*model.User, error) {
 	var user orm_model.User
 
-	if err := u.db.Where("user_key = ?", userKey).Find(&user).Error; err != nil {
-		if err == gorm.ErrRecordNotFound {
-			return nil, err
-		}
-		return nil, err
+	result := u.db.Where("user_key = ?", userKey).First(&user)
+
+	if errors.Is(result.Error, gorm.ErrRecordNotFound) {
+		return nil, nil
 	}
 
-	res := &model.User{
+	if result.Error != nil {
+		return nil, result.Error
+	}
+
+	return &model.User{
 		ID:      user.ID,
 		Name:    user.Name,
 		Email:   user.Email,
 		UserKey: user.UserKey,
-	}
-
-	return res, nil
+	}, nil
 }
 
 func (u UserRepositoryImpl) FindIDByUserKey(userKey string) (id int, err error) {

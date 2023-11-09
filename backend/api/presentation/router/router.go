@@ -23,25 +23,31 @@ func Router() *chi.Mux {
 	}
 
 	// ユーザーの登録
-	r.Get("/user", cr.UserController.CreateUser())
+	r.Post("/user", cr.UserController.CreateUser())
 
 	// 活動の全履歴を取得
-	r.Get("/study/allHistory/{userId}/{year}", cr.HistoryController.GetAllHistory())
+	r.Get("/study/allHistory/{userKey}/{year}", cr.HistoryController.GetAllHistory())
 
 	// 指定日の勉強履歴を取得
-	r.Get("/study/history/{userId}/{date}", cr.HistoryController.GetHistoryByDate())
+	r.Get("/study/history/{userKey}/{date}", cr.HistoryController.GetHistoryByDate())
 
-	// 活動の開始を追加
-	r.Post("/study/activity", cr.ActivityController.AddStartActivity())
+	// 作業の開始を追加
+	r.Post("/study/activity/work", cr.ActivityController.AddStartWork())
 
-	// 活動の終了を追加
-	r.Put("/study/activity/{activityId}/end", cr.ActivityController.AddEndActivity())
+	// 休憩の開始を追加
+	r.Post("/study/activity/break", cr.ActivityController.AddStartBreak())
+
+	// 作業の終了を追加
+	r.Put("/study/activity/work/{activityId}", cr.ActivityController.AddEndWork())
+
+	// 休憩の終了を追加
+	r.Put("/study/activity/break/{activityId}", cr.ActivityController.AddEndBreak())
 
 	// 指定の活動を更新
 	r.Put("/study/activity/{activityId}/update", cr.ActivityController.UpdateActivity())
 
 	// 指定の活動を削除
-	r.Delete("/study/activity/{activityId}/delete", cr.ActivityController.DeleteActivity())
+	r.Delete("/study/activity/{activityId}", cr.ActivityController.DeleteActivity())
 
 	return r
 }

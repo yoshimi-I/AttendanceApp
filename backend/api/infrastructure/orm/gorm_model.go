@@ -31,3 +31,17 @@ type Attendance struct {
 	CreatedAt      time.Time `gorm:"column:created_at"`
 	UpdatedAt      time.Time `gorm:"column:updated_at"`
 }
+
+type UserStatus struct {
+	UserID    int       `gorm:"primaryKey;column:user_id"`
+	StatusID  int       `gorm:"column:status_id"`
+	CreatedAt time.Time `gorm:"column:created_at"`
+	UpdatedAt time.Time `gorm:"column:updated_at"`
+}
+
+type UserStatusType struct {
+	UserStatusTypeID int       `gorm:"primaryKey;column:user_status_type_id"`
+	UserStatusType   int       `gorm:"column::user_status_id"`
+	CreatedAt        time.Time `gorm:"column:created_at"`
+	UpdatedAt        time.Time `gorm:"column:updated_at"`
+}

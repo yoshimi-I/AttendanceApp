@@ -6,26 +6,24 @@ import (
 )
 
 type ActivityStartRequestDTO struct {
-	UserID         int       `json:"user_id"`
-	AttendanceType int       `json:"attendance_type"`
-	StartTime      time.Time `json:"start_time"`
+	UserKey   string    `json:"user_key"`
+	StartTime time.Time `json:"start_time"`
 }
 
 type ActivityEndRequestDTO struct {
-	UserID         int       `json:"user_id"`
-	AttendanceType int       `json:"attendance_type"`
-	EndTime        time.Time `json:"end_time"`
+	UserKey string    `json:"user_key"`
+	EndTime time.Time `json:"end_time"`
 }
 
 type ActivityEditRequestDTO struct {
-	UserID         int       `json:"user_id"`
+	UserKey        string    `json:"user_key"`
 	AttendanceType int       `json:"attendance_type"`
 	StartTime      time.Time `json:"start_time"`
 	EndTime        time.Time `json:"end_time"`
 }
 
 type ActivityDeleteRequestDTO struct {
-	UserID int `json:"user_id"`
+	UserKey string `json:"user_key"`
 }
 
 func (a ActivityStartRequestDTO) Year() int {

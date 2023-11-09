@@ -17,4 +17,7 @@ type ActivityRepository interface {
 	PostEndActivity(attendance *model.Attendance) (*model.Attendance, error)
 	PutActivity(attendance *model.Attendance) (*model.Attendance, error)
 	DeleteActivity(id int) error
+	FindUserStatus(UserID int) (*model.UserStatus, error)
+	PostUserStatus(status *model.UserStatus) (*model.UserStatus, error)
+	PutUserStatus(status *model.UserStatus) (*model.UserStatus, error)
 }
