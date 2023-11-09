@@ -12,6 +12,7 @@ const UserIcon = () => {
     // Firebaseの認証状態の変更を監視
     const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
       setUser(currentUser);
+
     });
 
     return () => unsubscribe();

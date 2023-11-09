@@ -15,7 +15,7 @@ export default function Home() {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await fetch(`http://localhost:8080/study/allHistory/1/${year}`);
+        const response = await fetch(`http://localhost:8080/study/allHistory/hogehoge/${year}`);
         const data = await response.json();
         setSampleData(data);
         outPutData(data);

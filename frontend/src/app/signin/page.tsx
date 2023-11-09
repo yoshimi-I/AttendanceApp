@@ -20,6 +20,7 @@ import {
   signInWithPopup,
 } from "firebase/auth";
 import { app } from "../firebase";
+import { registerUser } from "../../logic/registerUser";
 
 const LoginPage = () => {
   const router = useRouter();
@@ -32,10 +33,18 @@ const LoginPage = () => {
     const auth = getAuth();
 
     try {
-      await signInWithEmailAndPassword(auth, email, password);
-      router.push("/mypage"); // ログインに成功したらmypageにリダイレクト
+      const userCredential = await signInWithEmailAndPassword(
+        auth,
+        email,
+        password
+      );
+      // ユーザー登録処理を呼び出し、完了を待つ
+      await registerUser(userCredential.user);
+      // 登録後にマイページへリダイレクト
+      router.push("/mypage");
     } catch (error) {
-      setError(error.message); // エラーが発生した場合はメッセージをstateにセット
+      // エラーが発生した場合はメッセージをstateにセット
+      setError(error.message);
     }
   };
 
@@ -44,10 +53,15 @@ const LoginPage = () => {
     const provider = new GoogleAuthProvider();
 
     try {
-      await signInWithPopup(auth, provider);
-      router.push("/mypage"); // Googleアカウントでの認証が成功したらmypageにリダイレクト
+      const userCredential = await signInWithPopup(auth, provider);
+      // ユーザー登録処理を呼び出し、完了を待つ
+      await registerUser(userCredential.user);
+      // 登録後にマイページへリダイレクト
+      router.push("/mypage");
     } catch (error) {
-      setError(error.message); // エラーが発生した場合はメッセージをstateにセット
+      // エラーが発生した場合はメッセージをstateにセット
+      console.error("Error during Google sign-in or user registration:", error);
+      setError(error.message);
     }
   };
 
@@ -121,9 +135,7 @@ const LoginPage = () => {
             Googleアカウントでログイン
           </Button>
           <Grid container>
-            <Grid item xs>
-              {/* パスワードを忘れた方へのリンクなどがあればここに */}
-            </Grid>
+            <Grid item xs></Grid>
             <Grid item>
               <Link href="/signup" passHref>
                 <Typography variant="body2" sx={{ cursor: "pointer" }}>
