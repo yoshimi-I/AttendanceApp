@@ -3,7 +3,7 @@ CREATE TABLE users (
                        id INT AUTO_INCREMENT PRIMARY KEY,
                        name VARCHAR(255) NOT NULL,
                        email VARCHAR(255) NOT NULL UNIQUE,
-                       firebase_id VARCHAR(255) UNIQUE,
+                       user_key VARCHAR(255) UNIQUE,
                        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
                        updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
 );
@@ -44,6 +44,7 @@ CREATE TABLE user_statuses (
                              id INT AUTO_INCREMENT PRIMARY KEY,
                              user_id INT,
                              status_id INT,
+                             created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
                              updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
                              FOREIGN KEY (user_id) REFERENCES users(id),
                              FOREIGN KEY (status_id) REFERENCES user_status_types (attendance_type_id)
