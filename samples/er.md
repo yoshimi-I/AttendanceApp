@@ -1,10 +1,9 @@
 ```mermaid
 erDiagram
     users ||--o{ attendances : ""
-    attendances ||--o{ attendance_types : ""
-    users ||--o{ user_statuses : ""
-    user_statuses ||--o{ user_status_types : ""
-
+    attendances ||--|| attendance_types : ""
+    users ||--||  user_statuses : ""
+    user_statuses ||--|| user_status_types : ""
     users {
         int id PK
         string name
@@ -35,14 +34,13 @@ erDiagram
 
     user_status_types {
         int user_status_type_id PK "1:作業中 　2:休憩中 　3:終了"
-        string action_type
+        string user_status_type
         timestamp created_at
         timestamp updated_at
     }
 
     user_statuses {
-        int id PK
-        int user_id FK "ユーザーID"
+        int user_id PK "ユーザーID"
         int status_id FK "ユーザーの現在の状態ID"
         timestamp updated_at "最終更新時間"
     }

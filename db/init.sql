@@ -27,7 +27,7 @@ CREATE TABLE user_status_types (
 -- ユーザーの作業履歴を見るテーブル
 CREATE TABLE attendances (
                              id INT AUTO_INCREMENT PRIMARY KEY,
-                             user_id INT,
+                             user_id INT PRIMARY KEY,
                              attendance_type INT,
                              start_time TIMESTAMP,
                              end_time TIMESTAMP,
@@ -41,13 +41,12 @@ CREATE TABLE attendances (
 
 -- Userの現在の状態を管理するテーブル
 CREATE TABLE user_statuses (
-                             id INT AUTO_INCREMENT PRIMARY KEY,
-                             user_id INT,
+                             user_id INT PRIMARY KEY,
                              status_id INT,
                              created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
                              updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
                              FOREIGN KEY (user_id) REFERENCES users(id),
-                             FOREIGN KEY (status_id) REFERENCES user_status_types (attendance_type_id)
+                             FOREIGN KEY (status_id) REFERENCES user_status_types (user_status_type_id)
 );
 
 -- Attendance_typesテーブルにデータをINSERT
