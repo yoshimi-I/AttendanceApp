@@ -19,7 +19,7 @@ CREATE TABLE attendance_types (
 -- Userの現在の状態の種類を管理するテーブル
 CREATE TABLE user_status_types (
                                    user_status_type_id INT PRIMARY KEY,
-                                   action_type VARCHAR(100) NOT NULL,
+                                   user_status_type VARCHAR(100) NOT NULL,
                                    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
                                    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
 );
