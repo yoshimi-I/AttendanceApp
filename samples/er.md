@@ -2,8 +2,11 @@
 erDiagram
     users ||--o{ attendances : ""
     attendances ||--|| attendance_types : ""
-    users ||--||  user_statuses : ""
+    users ||--o{ user_statuses : ""
     user_statuses ||--|| user_status_types : ""
+    users ||--o{ current_activity : ""
+    attendances ||--o{ current_activity : ""
+
     users {
         int id PK
         string name
@@ -40,9 +43,14 @@ erDiagram
     }
 
     user_statuses {
-        int user_id PK "ユーザーID"
+        int user_id PK,FK "ユーザーID"
         int status_id FK "ユーザーの現在の状態ID"
         timestamp updated_at "最終更新時間"
     }
+
+    current_activity {
+        int user_id PK, FK "ユーザーID"
+        int work_id FK "作業開始のattendance ID"
+        int break_id FK "休憩開始のattendance ID" }
 
 ```

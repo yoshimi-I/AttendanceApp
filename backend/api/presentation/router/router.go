@@ -32,16 +32,16 @@ func Router() *chi.Mux {
 	r.Get("/study/history/{userKey}/{date}", cr.HistoryController.GetHistoryByDate())
 
 	// 作業の開始を追加
-	r.Post("/study/activity/work", cr.ActivityController.AddStartWork())
+	r.Post("/study/activity/work/start", cr.ActivityController.AddStartWork())
 
 	// 休憩の開始を追加
-	r.Post("/study/activity/break", cr.ActivityController.AddStartBreak())
+	r.Post("/study/activity/break/start", cr.ActivityController.AddStartBreak())
 
 	// 作業の終了を追加
-	r.Put("/study/activity/work/{activityId}", cr.ActivityController.AddEndWork())
+	r.Put("/study/activity/work/end", cr.ActivityController.AddEndWork())
 
 	// 休憩の終了を追加
-	r.Put("/study/activity/break/{activityId}", cr.ActivityController.AddEndBreak())
+	r.Put("/study/activity/break/end", cr.ActivityController.AddEndBreak())
 
 	// 指定の活動を更新
 	r.Put("/study/activity/{activityId}/update", cr.ActivityController.UpdateActivity())
