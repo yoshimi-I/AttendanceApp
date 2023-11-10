@@ -51,7 +51,7 @@ func (a ActivityUsecaseImpl) AddStarWork(work *request.ActivityRequestDTO) (*res
 		return nil, err
 	}
 	// 終了の状態の時のみ,作業を開始できる
-	if nowUserStatus.StatusID.ToString() != "Finish" {
+	if nowUserStatus.StatusID != model.Finish {
 		log.Println(nowUserStatus.StatusID.ToString())
 		return nil, fmt.Errorf("作業の開始は現在行えません")
 	}
@@ -88,7 +88,6 @@ func (a ActivityUsecaseImpl) AddStarWork(work *request.ActivityRequestDTO) (*res
 	// DTOに詰め替え作業
 	responseDTO := &response.ActivityResponseDTO{
 		ID:             res.ID,
-		UserID:         res.UserID,
 		AttendanceType: "work_start",
 		Time:           res.Time,
 		Year:           res.Year,
@@ -118,7 +117,7 @@ func (a ActivityUsecaseImpl) AddEndWork(work *request.ActivityRequestDTO) (*resp
 		return nil, err
 	}
 
-	if nowUserStatus.StatusID.ToString() != "Work" {
+	if nowUserStatus.StatusID != model.Work {
 		return nil, fmt.Errorf("作業の終了は現在行えません")
 	}
 
@@ -155,7 +154,6 @@ func (a ActivityUsecaseImpl) AddEndWork(work *request.ActivityRequestDTO) (*resp
 	// DTOに詰め替え作業
 	responseDTO := &response.ActivityResponseDTO{
 		ID:             res.ID,
-		UserID:         res.UserID,
 		AttendanceType: "work_end",
 		Time:           res.Time,
 		Year:           res.Year,
@@ -187,7 +185,7 @@ func (a ActivityUsecaseImpl) AddStartBreak(breakInfo *request.ActivityRequestDTO
 		return nil, err
 	}
 
-	if nowUserStatus.StatusID.ToString() != "Work" {
+	if nowUserStatus.StatusID != model.Work {
 		return nil, fmt.Errorf("休憩の開始は現在行えません")
 	}
 
@@ -224,7 +222,6 @@ func (a ActivityUsecaseImpl) AddStartBreak(breakInfo *request.ActivityRequestDTO
 	// DTOに詰め替え作業
 	responseDTO := &response.ActivityResponseDTO{
 		ID:             res.ID,
-		UserID:         res.UserID,
 		AttendanceType: "break_start",
 		Time:           res.Time,
 		Year:           res.Year,
@@ -291,7 +288,6 @@ func (a ActivityUsecaseImpl) AddEndBreak(breakInfo *request.ActivityRequestDTO) 
 	// DTOに詰め替え作業
 	responseDTO := &response.ActivityResponseDTO{
 		ID:             res.ID,
-		UserID:         res.UserID,
 		AttendanceType: "break_start",
 		Time:           res.Time,
 		Year:           res.Year,
@@ -319,7 +315,6 @@ func (a ActivityUsecaseImpl) Update(activity *request.ActivityEditRequestDTO, id
 	// DTOに詰め替え作業
 	responseDTO := &response.ActivityResponseDTO{
 		ID:             res.ID,
-		UserID:         record.UserID,
 		AttendanceType: response.ConvertActivityTime(record.AttendanceType),
 		Time:           res.Time,
 		Year:           record.Year,

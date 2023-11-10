@@ -8,7 +8,6 @@ import (
 
 type ActivityResponseDTO struct {
 	ID             int       `json:"id"`
-	UserID         int       `json:"user_id"`
 	AttendanceType string    `json:"attendance_type"`
 	Time           time.Time `json:"time"`
 	Year           int       `json:"year"`

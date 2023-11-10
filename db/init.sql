@@ -42,6 +42,7 @@ CREATE TABLE attendances (
 CREATE TABLE user_statuses (
                                user_id INT PRIMARY KEY,
                                status_id INT,
+                               created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
                                updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
                                FOREIGN KEY (user_id) REFERENCES users(id),
                                FOREIGN KEY (status_id) REFERENCES user_status_types(user_status_type_id)

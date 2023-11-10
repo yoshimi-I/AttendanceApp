@@ -30,11 +30,11 @@ func IntToStatusEnum(value int) StatusEnum {
 func (e StatusEnum) ToString() string {
 	switch e {
 	case Work:
-		return "Work"
+		return "作業中"
 	case Break:
-		return "Break"
+		return "休憩中"
 	case Finish:
-		return "Finish"
+		return "終了"
 	default:
 		return "Unknown"
 	}
