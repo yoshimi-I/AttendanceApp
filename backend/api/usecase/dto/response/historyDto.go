@@ -6,10 +6,9 @@ type AllHistoryDto struct {
 }
 
 type ActivityDetail struct {
-	Id        int    `json:"id"`
-	Type      string `json:"type"`
-	StartTime string `json:"start_time"`
-	EndTime   string `json:"end_time"`
+	Id   int    `json:"id"`
+	Type string `json:"type"`
+	Time string `json:"time"`
 }
 
 type HistoryByDateDto struct {

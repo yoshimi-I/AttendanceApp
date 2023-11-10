@@ -3,7 +3,6 @@ package usecase
 import (
 	"fmt"
 	"log"
-	"time"
 	"work-management-app/domain/model"
 	"work-management-app/domain/repository"
 	"work-management-app/usecase/dto/request"
@@ -11,10 +10,10 @@ import (
 )
 
 type ActivityUsecase interface {
-	AddStarWork(work *request.ActivityStartRequestDTO) (*response.ActivityResponseDTO, error)
-	AddEndWork(work *request.ActivityEndRequestDTO, id int) (*response.ActivityResponseDTO, error)
-	AddStartBreak(Break *request.ActivityStartRequestDTO) (*response.ActivityResponseDTO, error)
-	AddEndBreak(Break *request.ActivityEndRequestDTO, id int) (*response.ActivityResponseDTO, error)
+	AddStarWork(work *request.ActivityRequestDTO) (*response.ActivityResponseDTO, error)
+	AddEndWork(work *request.ActivityRequestDTO) (*response.ActivityResponseDTO, error)
+	AddStartBreak(breakInfo *request.ActivityRequestDTO) (*response.ActivityResponseDTO, error)
+	AddEndBreak(breakInfo *request.ActivityRequestDTO) (*response.ActivityResponseDTO, error)
 	Update(activity *request.ActivityEditRequestDTO, id int) (*response.ActivityResponseDTO, error)
 	DeleteByActivityID(activityID int) error
 }
@@ -32,7 +31,7 @@ func NewActivityUsecase(ar repository.ActivityRepository, ur repository.UserRepo
 }
 
 // AddStarWork　作業の開始を登録
-func (a ActivityUsecaseImpl) AddStarWork(work *request.ActivityStartRequestDTO) (*response.ActivityResponseDTO, error) {
+func (a ActivityUsecaseImpl) AddStarWork(work *request.ActivityRequestDTO) (*response.ActivityResponseDTO, error) {
 
 	var res *model.Attendance
 	var err error
@@ -74,14 +73,13 @@ func (a ActivityUsecaseImpl) AddStarWork(work *request.ActivityStartRequestDTO) 
 	// 作業の登録
 	attendance := &model.Attendance{
 		UserID:         userID,
-		AttendanceType: model.WorkStartEnd,
-		StartTime:      work.StartTime,
-		EndTime:        work.StartTime, // nilではなく開始時刻を使用
+		AttendanceType: model.WorkStart,
+		Time:           work.Time,
 		Date:           work.Date(),
 		Year:           work.Year(),
 	}
 
-	res, err = a.ar.PostStartActivity(attendance)
+	res, err = a.ar.PostActivity(attendance)
 	if err != nil {
 		log.Printf("Failed to post start activity: %v", err)
 		return nil, fmt.Errorf("failed to post start activity: %w", err)
@@ -92,8 +90,7 @@ func (a ActivityUsecaseImpl) AddStarWork(work *request.ActivityStartRequestDTO) 
 		ID:             res.ID,
 		UserID:         res.UserID,
 		AttendanceType: "work_start",
-		StartTime:      res.StartTime,
-		EndTime:        res.EndTime,
+		Time:           res.Time,
 		Year:           res.Year,
 		Date:           res.Date,
 		Status:         userStatus.StatusID.ToString(),
@@ -102,18 +99,10 @@ func (a ActivityUsecaseImpl) AddStarWork(work *request.ActivityStartRequestDTO) 
 }
 
 // AddEndWork 作業の終了を登録
-func (a ActivityUsecaseImpl) AddEndWork(work *request.ActivityEndRequestDTO, id int) (*response.ActivityResponseDTO, error) {
+func (a ActivityUsecaseImpl) AddEndWork(work *request.ActivityRequestDTO) (*response.ActivityResponseDTO, error) {
 
 	var res *model.Attendance
-	var attendance *model.Attendance
 	userKey := work.UserKey
-
-	record, err := a.ar.FindActivity(id)
-
-	if err != nil {
-		log.Printf("Can't call repository FindActivity: %v", err)
-		return nil, err
-	}
 
 	// userKeyからuserIdを指定
 	userID, err := a.ur.FindIDByUserKey(userKey)
@@ -142,81 +131,46 @@ func (a ActivityUsecaseImpl) AddEndWork(work *request.ActivityEndRequestDTO, id 
 		UserID:   userID,
 		StatusID: model.Finish,
 	}
-	userStatus, err := a.ar.PutUserStatus(updateUserStatus)
+
+	userStatus, err := a.ar.PostUserStatus(updateUserStatus)
 	if err != nil {
 		return nil, err
 	}
 
-	// 日付を跨いだ場合の処理を記載
-	if record.Date != work.Date() {
-		var firstAttendance *model.Attendance
-		currentDate := time.Now()
+	// 作業の登録
+	attendance := &model.Attendance{
+		UserID:         userID,
+		AttendanceType: model.WorkEnd,
+		Time:           work.Time,
+		Date:           work.Date(),
+		Year:           work.Year(),
+	}
 
-		// 0:00を表現
-		dayStartTime := time.Date(currentDate.Year(), currentDate.Month(), currentDate.Day(), 0, 0, 0, 0, time.UTC)
-
-		// 23:59を表現
-		dayEndTime := time.Date(currentDate.Year(), currentDate.Month(), currentDate.Day(), 23, 59, 0, 0, time.UTC)
-
-		firstAttendance = &model.Attendance{
-			ID:        id,
-			StartTime: res.StartTime,
-			EndTime:   dayEndTime, // 23:59を入れる
-		}
-
-		if err != nil {
-			return nil, err
-		}
-
-		secondAttendance := &model.Attendance{
-			AttendanceType: model.WorkStartEnd,
-			StartTime:      dayStartTime, // 0:00
-			EndTime:        work.EndTime,
-			Date:           work.Date(),
-			Year:           work.Year(),
-		}
-
-		// 2つの値をDBに保存
-		_, err = a.ar.PostEndActivity(firstAttendance)
-		res, err = a.ar.PostStartActivity(secondAttendance)
-		if err != nil {
-			log.Printf("Failed to crossing over to the next day: %v", err)
-			return nil, fmt.Errorf("failed to crossing over to the next day: %w", err)
-		}
-
-	} else {
-		attendance = &model.Attendance{
-			ID:        id,
-			StartTime: record.StartTime,
-			EndTime:   work.EndTime,
-		}
-		res, err = a.ar.PostEndActivity(attendance)
-		if err != nil {
-			log.Printf("Failed to post end activity: %v", err)
-			return nil, fmt.Errorf("failed to post end activity: %w", err)
-		}
+	res, err = a.ar.PostActivity(attendance)
+	if err != nil {
+		log.Printf("Failed to post start activity: %v", err)
+		return nil, fmt.Errorf("failed to post start activity: %w", err)
 	}
 
 	// DTOに詰め替え作業
 	responseDTO := &response.ActivityResponseDTO{
-		ID:             record.ID,
-		UserID:         record.UserID,
+		ID:             res.ID,
+		UserID:         res.UserID,
 		AttendanceType: "work_end",
-		StartTime:      record.StartTime,
-		EndTime:        res.EndTime,
-		Year:           record.Year,
-		Date:           record.Date,
+		Time:           res.Time,
+		Year:           res.Year,
+		Date:           res.Date,
 		Status:         userStatus.StatusID.ToString(),
 	}
 	return responseDTO, nil
 }
 
 // AddStartBreak　休憩の開始を登録
-func (a ActivityUsecaseImpl) AddStartBreak(Break *request.ActivityStartRequestDTO) (*response.ActivityResponseDTO, error) {
+func (a ActivityUsecaseImpl) AddStartBreak(breakInfo *request.ActivityRequestDTO) (*response.ActivityResponseDTO, error) {
 
 	var res *model.Attendance
 	var err error
-	userKey := Break.UserKey
+	userKey := breakInfo.UserKey
 
 	// userKeyからuserIdを指定
 	userID, err := a.ur.FindIDByUserKey(userKey)
@@ -251,19 +205,20 @@ func (a ActivityUsecaseImpl) AddStartBreak(Break *request.ActivityStartRequestDT
 		return nil, err
 	}
 
+	// 作業の登録
 	attendance := &model.Attendance{
 		UserID:         userID,
-		AttendanceType: model.BreakStartEnd,
-		StartTime:      Break.StartTime,
-		EndTime:        Break.StartTime, // nilではなく開始時刻を使用
-		Date:           Break.Date(),
-		Year:           Break.Year(),
+		AttendanceType: model.BreakStart,
+		Time:           breakInfo.Time,
+		Date:           breakInfo.Date(),
+		Year:           breakInfo.Year(),
 	}
 
-	res, err = a.ar.PostStartActivity(attendance)
+	// 休憩時間を登録
+	res, err = a.ar.PostActivity(attendance)
 	if err != nil {
-		log.Printf("Failed to post start activity: %v", err)
-		return nil, fmt.Errorf("failed to post start activity: %w", err)
+		log.Printf("Failed to post start break: %v", err)
+		return nil, fmt.Errorf("failed to post start break: %w", err)
 	}
 
 	// DTOに詰め替え作業
@@ -271,8 +226,7 @@ func (a ActivityUsecaseImpl) AddStartBreak(Break *request.ActivityStartRequestDT
 		ID:             res.ID,
 		UserID:         res.UserID,
 		AttendanceType: "break_start",
-		StartTime:      res.StartTime,
-		EndTime:        res.EndTime,
+		Time:           res.Time,
 		Year:           res.Year,
 		Date:           res.Date,
 		Status:         userStatus.StatusID.ToString(),
@@ -281,11 +235,10 @@ func (a ActivityUsecaseImpl) AddStartBreak(Break *request.ActivityStartRequestDT
 }
 
 // AddEndBreak 作業の終了,勤務の終了を登録
-func (a ActivityUsecaseImpl) AddEndBreak(Break *request.ActivityEndRequestDTO, id int) (*response.ActivityResponseDTO, error) {
+func (a ActivityUsecaseImpl) AddEndBreak(breakInfo *request.ActivityRequestDTO) (*response.ActivityResponseDTO, error) {
 
 	var res *model.Attendance
-	var attendance *model.Attendance
-	userKey := Break.UserKey
+	userKey := breakInfo.UserKey
 
 	// userKeyからuserIdを指定
 	userID, err := a.ur.FindIDByUserKey(userKey)
@@ -319,72 +272,30 @@ func (a ActivityUsecaseImpl) AddEndBreak(Break *request.ActivityEndRequestDTO, i
 		return nil, err
 	}
 
-	record, err := a.ar.FindActivity(id)
-
-	if err != nil {
-		log.Printf("Can't call repository FindActivity: %v", err)
-		return nil, err
+	// 作業の登録
+	attendance := &model.Attendance{
+		UserID:         userID,
+		AttendanceType: model.BreakStart,
+		Time:           breakInfo.Time,
+		Date:           breakInfo.Date(),
+		Year:           breakInfo.Year(),
 	}
 
-	// 日付を跨いだ場合の処理を記載
-	if record.Date != Break.Date() {
-		var firstAttendance *model.Attendance
-		currentDate := time.Now()
-
-		// 0:00を表現
-		dayStartTime := time.Date(currentDate.Year(), currentDate.Month(), currentDate.Day(), 0, 0, 0, 0, time.UTC)
-
-		// 23:59を表現
-		dayEndTime := time.Date(currentDate.Year(), currentDate.Month(), currentDate.Day(), 23, 59, 0, 0, time.UTC)
-
-		firstAttendance = &model.Attendance{
-			ID:        id,
-			StartTime: record.StartTime,
-			EndTime:   dayEndTime, // 23:59を入れる
-		}
-
-		if err != nil {
-			return nil, err
-		}
-
-		secondAttendance := &model.Attendance{
-			AttendanceType: model.BreakStartEnd,
-			StartTime:      dayStartTime, // 0:00
-			EndTime:        Break.EndTime,
-			Date:           Break.Date(),
-			Year:           Break.Year(),
-		}
-
-		// 2つの値をDBに保存
-		_, err = a.ar.PostEndActivity(firstAttendance)
-		res, err = a.ar.PostStartActivity(secondAttendance)
-		if err != nil {
-			log.Printf("Failed to crossing over to the next day: %v", err)
-			return nil, fmt.Errorf("failed to crossing over to the next day: %w", err)
-		}
-
-	} else {
-		attendance = &model.Attendance{
-			ID:        id,
-			StartTime: record.StartTime,
-			EndTime:   Break.EndTime,
-		}
-		res, err = a.ar.PostEndActivity(attendance)
-		if err != nil {
-			log.Printf("Failed to post end activity: %v", err)
-			return nil, fmt.Errorf("failed to post end activity: %w", err)
-		}
+	// 休憩時間を登録
+	res, err = a.ar.PostActivity(attendance)
+	if err != nil {
+		log.Printf("Failed to post start break: %v", err)
+		return nil, fmt.Errorf("failed to post start break: %w", err)
 	}
 
 	// DTOに詰め替え作業
 	responseDTO := &response.ActivityResponseDTO{
-		ID:             record.ID,
-		UserID:         record.UserID,
-		AttendanceType: "break_end",
-		StartTime:      record.StartTime,
-		EndTime:        res.EndTime,
-		Year:           record.Year,
-		Date:           record.Date,
+		ID:             res.ID,
+		UserID:         res.UserID,
+		AttendanceType: "break_start",
+		Time:           res.Time,
+		Year:           res.Year,
+		Date:           res.Date,
 		Status:         userStatus.StatusID.ToString(),
 	}
 	return responseDTO, nil
@@ -397,11 +308,10 @@ func (a ActivityUsecaseImpl) Update(activity *request.ActivityEditRequestDTO, id
 		return nil, fmt.Errorf("failed to find existing activity: %v", err)
 	}
 	attendance := &model.Attendance{
-		ID:        id,
-		StartTime: activity.StartTime,
-		EndTime:   activity.EndTime,
+		ID:   id,
+		Time: activity.Time,
 	}
-	res, err := a.ar.PostEndActivity(attendance)
+	res, err := a.ar.PostActivity(attendance)
 	if err != nil {
 		return nil, fmt.Errorf("failed to update activity end time: %v", err)
 	}
@@ -411,8 +321,7 @@ func (a ActivityUsecaseImpl) Update(activity *request.ActivityEditRequestDTO, id
 		ID:             res.ID,
 		UserID:         record.UserID,
 		AttendanceType: response.ConvertActivityTime(record.AttendanceType),
-		StartTime:      res.StartTime,
-		EndTime:        res.EndTime,
+		Time:           res.Time,
 		Year:           record.Year,
 		Date:           record.Date,
 	}

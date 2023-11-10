@@ -5,8 +5,10 @@ type ActionEnum int
 
 // 定数を定義し、iota を使用して連続した整数値を生成
 const (
-	WorkStartEnd ActionEnum = iota + 1 // iotaは0から始まるので、+1して1から始める
-	BreakStartEnd
+	WorkStart ActionEnum = iota + 1 // iotaは0から始まるので、+1して1から始める
+	WorkEnd
+	BreakStart
+	BreakEnd
 	Pray
 )
 
@@ -19,10 +21,14 @@ func (a ActionEnum) ToInt() int {
 func IntToActionEnum(value int) ActionEnum {
 	switch value {
 	case 1:
-		return WorkStartEnd
+		return WorkStart
 	case 2:
-		return BreakStartEnd
+		return WorkEnd
 	case 3:
+		return BreakStart
+	case 4:
+		return BreakEnd
+	case 5:
 		return Pray
 	default:
 		return 0
@@ -31,10 +37,14 @@ func IntToActionEnum(value int) ActionEnum {
 
 func (a ActionEnum) ToString() string {
 	switch a {
-	case WorkStartEnd:
-		return "WorkStartEnd"
-	case BreakStartEnd:
-		return "BreakStartEnd"
+	case WorkStart:
+		return "WorkStart"
+	case WorkEnd:
+		return "WorkEnd"
+	case BreakStart:
+		return "BreakStart"
+	case BreakEnd:
+		return "BreakEnd"
 	case Pray:
 		return "Pray"
 	default:

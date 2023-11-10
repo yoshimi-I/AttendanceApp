@@ -10,8 +10,7 @@ type ActivityResponseDTO struct {
 	ID             int       `json:"id"`
 	UserID         int       `json:"user_id"`
 	AttendanceType string    `json:"attendance_type"`
-	StartTime      time.Time `json:"start_time"`
-	EndTime        time.Time `json:"end_time"`
+	Time           time.Time `json:"time"`
 	Year           int       `json:"year"`
 	Date           string    `json:"date"`
 	Status         string    `json:"status"`
@@ -19,6 +18,7 @@ type ActivityResponseDTO struct {
 
 // ActivityTimeResponseDTO アクティビティのレスポンスデータ
 type ActivityTimeResponseDTO struct {
+	Year         int    `json:"year"`
 	Date         string `json:"day"` // フロントに合わせて修正
 	ActivityTime int    `json:"activity_time"`
 }
@@ -27,13 +27,18 @@ func ConvertActivityTime(actionType model.ActionEnum) string {
 	var Type string
 	switch actionType {
 	case 1:
-		Type = "作業"
+		Type = "作業開始"
 	case 2:
-		Type = "休憩"
+		Type = "作業終了"
 	case 3:
-		Type = "その他"
+		Type = "休憩開始"
+	case 4:
+		Type = "休憩終了"
+	case 5:
+		Type = "お祈り"
 	default:
 		log.Printf("Invalid AttendanceType: %d", actionType)
+		return "undefined"
 	}
 	return Type
 }
