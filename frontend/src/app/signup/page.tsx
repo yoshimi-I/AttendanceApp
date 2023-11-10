@@ -1,5 +1,5 @@
 "use client";
-import React, { useState } from "react";
+import { useState } from "react";
 import Link from "next/link";
 import {
   Container,
@@ -14,7 +14,7 @@ import {
   Alert,
 } from "@mui/material";
 import LockOutlinedIcon from "@mui/icons-material/LockOutlined";
-import { getAuth, createUserWithEmailAndPassword } from "firebase/auth";
+import { createUserWithEmailAndPassword } from "firebase/auth";
 import { auth } from "../firebase";
 
 const SignUp = () => {

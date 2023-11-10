@@ -13,7 +13,7 @@ RUN bun install
 COPY . .
 
 # bunを使用してNext.jsのビルド
-RUN bun build ./src/app/mypage/page.tsx --outdir=out
+RUN bun next build
 
 # 実行ステージ
 FROM oven/bun:1.0.0 as final

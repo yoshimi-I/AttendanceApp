@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { useRouter } from "next/navigation";
 import { Dialog, DialogActions, DialogTitle, Button, IconButton } from '@mui/material';
 import LogoutIcon from '@mui/icons-material/Logout';

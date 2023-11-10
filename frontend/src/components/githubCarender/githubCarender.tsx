@@ -35,11 +35,11 @@ export const ActivityCalendar: React.FC<ActivityCalendarProps> = ({
   const [dateText, setDateText] = useState<string[]>([]);
   const [showMonthBar, setShowMonthBar] = useState<boolean>(true);
   const getDayOfYear = (date: string) => {
-    var days = [31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31];
-    var year = parseInt(date.substring(0, 4));
+    const days = [31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31];
+    const year = parseInt(date.substring(0, 4));
     setCurrentYear(year);
-    var month = parseInt(date.substring(5, 7));
-    var day = parseInt(date.substring(8));
+    let month = parseInt(date.substring(5, 7));
+    let day = parseInt(date.substring(8));
     if (month > 2 && year % 4 === 0 && (year % 100 !== 0 || year % 400 === 0)) {
       day = day + 1;
     }
@@ -79,8 +79,8 @@ export const ActivityCalendar: React.FC<ActivityCalendarProps> = ({
   }
 
   const dateFromDay = (day: number) => {
-    var date = new Date(currentYear, 0);
-    let newDate = new Date(date.setDate(day)).toLocaleDateString("en-US", {
+    const date = new Date(currentYear, 0);
+    const newDate = new Date(date.setDate(day)).toLocaleDateString("en-US", {
       year: "numeric",
       month: "short",
       day: "2-digit",
@@ -90,7 +90,7 @@ export const ActivityCalendar: React.FC<ActivityCalendarProps> = ({
 
   const initialise = async () => {
     sampleData?.map((item) => {
-      let activityDay = getDayOfYear(item.day);
+      const activityDay = getDayOfYear(item.day);
       tempGraphData[activityDay] = item.activity_time;
     });
     setGraphData(tempGraphData);
