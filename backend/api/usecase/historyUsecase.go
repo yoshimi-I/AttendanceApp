@@ -66,12 +66,18 @@ func (h HistoryUsecaseImpl) AllHistory(userKey string, year int) ([]response.Act
 			startDayTime = time.Date(activityTime.Year(), activityTime.Month(), activityTime.Day(), 0, 0, 0, 0, activityTime.Location())
 
 			// attendanceTypeが作業開始から始まってるかどうかを確認
-			// 違っている場合は日付を跨いで何かをしている
-			// 休憩開始,作業終了から記録が始まる場合は作業をしていたことになる
+			// 休憩開始,作業終了から記録が始まる場合は日付を跨いで作業している
 			// つまり0:00からの経過時間を足す必要がある
 			if attendanceType == model.BreakStart || attendanceType == model.WorkEnd {
 				duration := activityTime.Sub(startDayTime).Seconds() //経過時間を秒に変換
 				durationMap[date] += int(duration)
+
+				// さらに前日のものも追加する必要がある
+				// 前日の最終時間を取得
+				endDayTime := startDayTime.Add(-time.Second)
+				duration = endDayTime.Sub(lastStartTime).Seconds() //経過時間を秒に変換
+				dateStr := lastStartTime.Format("2006-01-02")
+				durationMap[dateStr] += int(duration) + 1 //23:59:59から引いたので最後に+1する
 			} else {
 				// 作業開始から記録が始まっているので作業開始時間を保持
 				lastStartTime = activityTime

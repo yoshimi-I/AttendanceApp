@@ -38,10 +38,10 @@ func Router() *chi.Mux {
 	r.Post("/study/activity/break/start", cr.ActivityController.AddStartBreak())
 
 	// 作業の終了を追加
-	r.Put("/study/activity/work/end", cr.ActivityController.AddEndWork())
+	r.Post("/study/activity/work/end", cr.ActivityController.AddEndWork())
 
 	// 休憩の終了を追加
-	r.Put("/study/activity/break/end", cr.ActivityController.AddEndBreak())
+	r.Post("/study/activity/break/end", cr.ActivityController.AddEndBreak())
 
 	// 指定の活動を更新
 	r.Put("/study/activity/{activityId}/update", cr.ActivityController.UpdateActivity())
