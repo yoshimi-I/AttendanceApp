@@ -13,12 +13,12 @@ import CoffeeIcon from "@mui/icons-material/LocalCafe";
 import EditButton from "../edit/time/edit";
 import { auth } from "../../lib/firebase/firebase";
 import { useAuthState } from "react-firebase-hooks/auth";
-import { TimeToString } from '../../util/timeToString';
+import { TimeToString } from "../../util/timeToString";
 
 interface Activity {
   id: number;
   type: string;
-  time: string;
+  time: Date;
 }
 
 interface ActivitiesComponentProps {
@@ -28,14 +28,13 @@ interface ActivitiesComponentProps {
   };
 }
 
-
 const ActivitiesByDate: React.FC<ActivitiesComponentProps> = ({ data }) => {
   const { date, activities } = data;
   const [user, loading, error] = useAuthState(auth);
 
   const handleEditSuccess = (updatedActivity) => {
     // 編集が成功した後の状態更新などの処理をここに追加
-    console.log('Activity updated:', updatedActivity);
+    console.log("Activity updated:", updatedActivity);
   };
 
   if (loading) {
@@ -43,7 +42,7 @@ const ActivitiesByDate: React.FC<ActivitiesComponentProps> = ({ data }) => {
   }
 
   if (error || !user) {
-    console.error('Firebase auth error:', error);
+    console.error("Firebase auth error:", error);
     return <p>Error: {error?.message || "No user data available"}</p>;
   }
 
@@ -178,9 +177,9 @@ const ActivitiesByDate: React.FC<ActivitiesComponentProps> = ({ data }) => {
                         >
                           <EditButton
                             id={activity.id}
-                            userKey={user.uid}  //ここを書いて
-                            defaultTime={activity.time} // ここも書いて
-                            onEditSuccess={handleEditSuccess} // ここも書いて
+                            userKey={user.uid}
+                            defaultTime={activity.time}
+                            onEditSuccess={handleEditSuccess}
                           />
                         </Box>
                       </Box>
