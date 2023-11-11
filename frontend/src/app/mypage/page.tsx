@@ -8,11 +8,12 @@ import { useAuthState } from "react-firebase-hooks/auth";
 import { useRouter } from "next/navigation";
 import { ActivityCalendar } from "../../components/githubCarender/githubCarender";
 
+
 export default function Home() {
   const [user, loading, error] = useAuthState(auth);
   const router = useRouter();
   const [sampleData, setSampleData] = useState([]);
-  const [status, setStatus] = useState(""); // 状態を保持するための新しいuseState
+  const [status, setStatus] = useState("");
   const year = new Date().getFullYear();
   const baseUrl = process.env.NEXT_PUBLIC_API_BASE_URL;
 
@@ -57,7 +58,7 @@ export default function Home() {
       <CurrentTime />
       <UserIcon />
       {status && <p>{status}</p>}
-      <AttendanceButtons />
+      <AttendanceButtons/>
       <ActivityCalendar sampleData={sampleData} />
     </main>
   );
