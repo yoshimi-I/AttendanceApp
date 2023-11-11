@@ -15,7 +15,7 @@ import {
 } from "@mui/material";
 import LockOutlinedIcon from "@mui/icons-material/LockOutlined";
 import { createUserWithEmailAndPassword } from "firebase/auth";
-import { auth } from "../firebase";
+import { auth } from "../../lib/firebase/firebase";
 
 const SignUp = () => {
   const [formData, setFormData] = useState({

@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { User, onAuthStateChanged } from "firebase/auth";
 import Image from "next/image";
-import { auth } from "../../app/firebase";
+import { auth } from "../../lib/firebase/firebase";
 import { AccountCircle } from "@mui/icons-material";
 import LogoutDialog from "../logout/logoutButton";
 

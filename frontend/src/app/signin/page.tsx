@@ -19,7 +19,7 @@ import {
   signInWithEmailAndPassword,
   signInWithPopup,
 } from "firebase/auth";
-import { app } from "../firebase";
+import { app } from "../../lib/firebase/firebase";
 import { registerUser } from "../../lib/firebase/getFirebaseInfo";
 
 const LoginPage = () => {

@@ -5,19 +5,20 @@ import {
   List,
   ListItem,
   ListItemText,
-  Divider,
   Box,
-  IconButton,
 } from "@mui/material";
-import { Fragment } from "react";
+import { Fragment, useContext } from "react";
 import SchoolIcon from "@mui/icons-material/School";
 import CoffeeIcon from "@mui/icons-material/LocalCafe";
-import EditIcon from "@mui/icons-material/Edit";
+import EditButton from "../edit/time/edit";
+import { auth } from "../../lib/firebase/firebase";
+import { useAuthState } from "react-firebase-hooks/auth";
+import TimeToString from "../../util/timeToString";
 
 interface Activity {
   id: number;
   type: string;
-  time: string;
+  time: Date;
 }
 
 interface ActivitiesComponentProps {
@@ -27,8 +28,24 @@ interface ActivitiesComponentProps {
   };
 }
 
+
 const ActivitiesByDate: React.FC<ActivitiesComponentProps> = ({ data }) => {
   const { date, activities } = data;
+  const [user, loading, error] = useAuthState(auth);
+
+  const handleEditSuccess = (updatedActivity) => {
+    // 編集が成功した後の状態更新などの処理をここに追加
+    console.log('Activity updated:', updatedActivity);
+  };
+
+  if (loading) {
+    return <p>Loading...</p>;
+  }
+
+  if (error || !user) {
+    console.error('Firebase auth error:', error);
+    return <p>Error: {error?.message || "No user data available"}</p>;
+  }
 
   return (
     <Container maxWidth="sm" sx={{ mt: 4, mb: 4 }}>
@@ -148,7 +165,7 @@ const ActivitiesByDate: React.FC<ActivitiesComponentProps> = ({ data }) => {
                               color: "text.secondary",
                             }}
                           >
-                            {activity.time}
+                            {TimeToString(activity.time)}
                           </Typography>
                         </Box>
                         <Box
@@ -159,14 +176,12 @@ const ActivitiesByDate: React.FC<ActivitiesComponentProps> = ({ data }) => {
                             justifyContent: "center", // 中央寄せ
                           }}
                         >
-                          <IconButton
-                            aria-label="edit"
-                            onClick={() => {
-                              console.log("編集ボタンがクリックされました。");
-                            }}
-                          >
-                            <EditIcon sx={{ fontSize:30 }} />
-                          </IconButton>
+                          <EditButton
+                            id={activity.id}
+                            userKey={user.uid}
+                            defaultTime={activity.time}
+                            onEditSuccess={handleEditSuccess}
+                          />
                         </Box>
                       </Box>
                     }

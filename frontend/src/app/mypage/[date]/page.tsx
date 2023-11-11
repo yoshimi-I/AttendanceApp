@@ -2,7 +2,7 @@
 import { useParams } from "next/navigation";
 import { useEffect, useState } from "react";
 import { useAuthState } from "react-firebase-hooks/auth";
-import { auth } from "../../firebase";
+import { auth } from "../../../lib/firebase/firebase";
 import ActivitiesByDate from "../../../components/activity/activitiesByDate";
 import ReturnButton from "../../../components/return/returnButton";
 import router from "next/router";
@@ -48,7 +48,7 @@ const DateDetail = () => {
   }, [user, loading, error, date]);
 
   if (!data) {
-    return
+    return;
   }
 
   return (
