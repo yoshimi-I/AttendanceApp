@@ -1,14 +1,16 @@
 package response
 
+import "time"
+
 type AllHistoryDto struct {
 	Day      string `json:"day"`
 	Activity int    `json:"activity"`
 }
 
 type ActivityDetail struct {
-	Id   int    `json:"id"`
-	Type string `json:"type"`
-	Time string `json:"time"`
+	Id   int       `json:"id"`
+	Type string    `json:"type"`
+	Time time.Time `json:"time"`
 }
 
 type HistoryByDateDto struct {

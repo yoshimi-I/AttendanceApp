@@ -135,7 +135,7 @@ func (h HistoryUsecaseImpl) HistoryByDate(userKey string, date string) (*respons
 		activity := response.ActivityDetail{
 			Id:   Id,
 			Type: activityType,
-			Time: response.FormatChange(activityTime),
+			Time: activityTime,
 		}
 
 		activities = append(activities, activity)
