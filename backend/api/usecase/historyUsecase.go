@@ -99,6 +99,11 @@ func (h HistoryUsecaseImpl) AllHistory(userKey string, year int) ([]response.Act
 	// DTOに変換
 	for date, duration := range durationMap {
 		durationHour := duration / 3600
+
+		// 1h切ってても作業があれば1にする
+		if durationHour == 0 {
+			durationHour += 1
+		}
 		responseData = append(responseData, response.ActivityTimeResponseDTO{
 			Year:         year,
 			Date:         date,

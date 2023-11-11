@@ -131,7 +131,7 @@ func (a ActivityUsecaseImpl) AddEndWork(work *request.ActivityRequestDTO) (*resp
 		StatusID: model.Finish,
 	}
 
-	userStatus, err := a.ar.PostUserStatus(updateUserStatus)
+	userStatus, err := a.ar.PutUserStatus(updateUserStatus)
 	if err != nil {
 		return nil, err
 	}
@@ -231,7 +231,7 @@ func (a ActivityUsecaseImpl) AddStartBreak(breakInfo *request.ActivityRequestDTO
 	return responseDTO, nil
 }
 
-// AddEndBreak 作業の終了,勤務の終了を登録
+// AddEndBreak 休憩の終了を登録
 func (a ActivityUsecaseImpl) AddEndBreak(breakInfo *request.ActivityRequestDTO) (*response.ActivityResponseDTO, error) {
 
 	var res *model.Attendance
@@ -251,7 +251,7 @@ func (a ActivityUsecaseImpl) AddEndBreak(breakInfo *request.ActivityRequestDTO) 
 		return nil, err
 	}
 
-	if nowUserStatus.StatusID.ToString() != "Break" {
+	if nowUserStatus.StatusID != model.Break {
 		return nil, fmt.Errorf("休憩の終了は現在行えません")
 	}
 
@@ -272,7 +272,7 @@ func (a ActivityUsecaseImpl) AddEndBreak(breakInfo *request.ActivityRequestDTO) 
 	// 作業の登録
 	attendance := &model.Attendance{
 		UserID:         userID,
-		AttendanceType: model.BreakStart,
+		AttendanceType: model.BreakEnd,
 		Time:           breakInfo.Time,
 		Date:           breakInfo.Date(),
 		Year:           breakInfo.Year(),

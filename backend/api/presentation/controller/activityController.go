@@ -38,7 +38,7 @@ func (a ActivityControllerImpl) AddStartWork() http.HandlerFunc {
 		res, err := a.ActivityUsecase.AddStarWork(&activity)
 		if err != nil {
 			log.Println("Error in ActivityUsecase")
-			http.Error(w, err.Error(), http.StatusInternalServerError)
+			http.Error(w, `{"error":"作業開始は現在押せません"}`, http.StatusBadRequest)
 			return
 		}
 
@@ -66,7 +66,7 @@ func (a ActivityControllerImpl) AddEndWork() http.HandlerFunc {
 		res, err := a.ActivityUsecase.AddEndWork(&activity)
 		if err != nil {
 			log.Println("Error in ActivityUsecase")
-			http.Error(w, err.Error(), http.StatusInternalServerError)
+			http.Error(w, `{"error":"作業終了は現在押せません"}`, http.StatusBadRequest)
 			return
 		}
 
@@ -93,7 +93,7 @@ func (a ActivityControllerImpl) AddStartBreak() http.HandlerFunc {
 		res, err := a.ActivityUsecase.AddStartBreak(&activity)
 		if err != nil {
 			log.Println("Error in ActivityUsecase")
-			http.Error(w, err.Error(), http.StatusInternalServerError)
+			http.Error(w, `{"error":"休憩開始は現在押せません"}`, http.StatusBadRequest)
 			return
 		}
 
@@ -121,7 +121,7 @@ func (a ActivityControllerImpl) AddEndBreak() http.HandlerFunc {
 		res, err := a.ActivityUsecase.AddEndBreak(&activity)
 		if err != nil {
 			log.Println("Error in ActivityUsecase")
-			http.Error(w, err.Error(), http.StatusInternalServerError)
+			http.Error(w, `{"error":"休憩終了は現在押せません"}`, http.StatusBadRequest)
 			return
 		}
 
