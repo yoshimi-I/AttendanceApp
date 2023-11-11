@@ -13,12 +13,12 @@ import CoffeeIcon from "@mui/icons-material/LocalCafe";
 import EditButton from "../edit/time/edit";
 import { auth } from "../../lib/firebase/firebase";
 import { useAuthState } from "react-firebase-hooks/auth";
-import TimeToString from "../../util/timeToString";
+import { TimeToString } from '../../util/timeToString';
 
 interface Activity {
   id: number;
   type: string;
-  time: Date;
+  time: string;
 }
 
 interface ActivitiesComponentProps {
@@ -178,9 +178,9 @@ const ActivitiesByDate: React.FC<ActivitiesComponentProps> = ({ data }) => {
                         >
                           <EditButton
                             id={activity.id}
-                            userKey={user.uid}
-                            defaultTime={activity.time}
-                            onEditSuccess={handleEditSuccess}
+                            userKey={user.uid}  //ここを書いて
+                            defaultTime={activity.time} // ここも書いて
+                            onEditSuccess={handleEditSuccess} // ここも書いて
                           />
                         </Box>
                       </Box>
