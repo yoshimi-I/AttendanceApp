@@ -7,7 +7,7 @@ DSN=$(MYSQL_USER):$(MYSQL_PASSWORD)@tcp($(MYSQL_HOST):$(MYSQL_PORT))/$(MYSQL_DAT
 all-d:
 	docker-compose up -d
 # フォアグラウンドで立ち上げる
-all-fg:
+all:
 	docker-compose up
 # dbとapiだけ立ち上げる
 db-api:

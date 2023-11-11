@@ -8,5 +8,6 @@ import (
 func FormatChange(t time.Time) string {
 	hour := t.Hour()
 	minute := t.Minute()
-	return fmt.Sprintf("%d時%02d分", hour, minute)
+	return fmt.Sprintf("%02d：%02d", hour, minute)
+	
 }

@@ -37,7 +37,7 @@ func (u UserRepositoryImpl) PostUser(user *model.User) (*model.User, error) {
 	}, nil
 }
 
-func (u *UserRepositoryImpl) FindUserByUserKey(userKey string) (*model.User, error) {
+func (u UserRepositoryImpl) FindUserByUserKey(userKey string) (*model.User, error) {
 	var user orm_model.User
 
 	result := u.db.Where("user_key = ?", userKey).First(&user)

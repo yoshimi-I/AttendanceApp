@@ -32,8 +32,7 @@ func (a ActivityRepositoryImpl) FindActivity(id int) (*model.Attendance, error) 
 		ID:             attendance.ID,
 		UserID:         attendance.UserID,
 		AttendanceType: model.IntToActionEnum(attendance.AttendanceType),
-		StartTime:      attendance.StartTime,
-		EndTime:        attendance.EndTime,
+		Time:           attendance.Time,
 		Year:           attendance.Year,
 		Date:           attendance.Date,
 	}
@@ -41,13 +40,12 @@ func (a ActivityRepositoryImpl) FindActivity(id int) (*model.Attendance, error) 
 	return res, nil
 }
 
-// PostStartActivity 活動の開始を追加する
-func (a ActivityRepositoryImpl) PostStartActivity(attendance *model.Attendance) (*model.Attendance, error) {
+// PostActivity 活動を追加する
+func (a ActivityRepositoryImpl) PostActivity(attendance *model.Attendance) (*model.Attendance, error) {
 	entity := &orm_model.Attendance{
 		UserID:         attendance.UserID,
 		AttendanceType: attendance.AttendanceType.ToInt(),
-		StartTime:      attendance.StartTime,
-		EndTime:        attendance.EndTime,
+		Time:           attendance.Time,
 		Date:           attendance.Date,
 		Year:           attendance.Year,
 	}
@@ -60,26 +58,10 @@ func (a ActivityRepositoryImpl) PostStartActivity(attendance *model.Attendance) 
 	return attendance, nil
 }
 
-// PostEndActivity 活動の終了を追加する
-func (a ActivityRepositoryImpl) PostEndActivity(attendance *model.Attendance) (*model.Attendance, error) {
-	id := attendance.ID
-
-	entity := &orm_model.Attendance{
-		StartTime: attendance.StartTime,
-		EndTime:   attendance.EndTime,
-	}
-	if err := a.db.Model(&orm_model.Attendance{}).Where("id = ?", id).Updates(entity).Error; err != nil {
-		return nil, err
-	}
-
-	return attendance, nil
-}
-
 // PutActivity 活動を編集する
 func (a ActivityRepositoryImpl) PutActivity(attendance *model.Attendance) (*model.Attendance, error) {
 	entity := &orm_model.Attendance{
-		StartTime: attendance.StartTime,
-		EndTime:   attendance.EndTime,
+		Time: attendance.Time,
 	}
 	id := attendance.ID
 
@@ -100,12 +82,12 @@ func (a ActivityRepositoryImpl) DeleteActivity(id int) error {
 }
 
 // FindUserStatus 現在のユーザーの状態を確認
-func (a ActivityRepositoryImpl) FindUserStatus(UserID int) (*model.UserStatus, error) {
+func (a ActivityRepositoryImpl) FindUserStatus(userID int) (*model.UserStatus, error) {
 	var status orm_model.UserStatus
 
-	if err := a.db.Where("user_id = ?", UserID).First(&status).Error; err != nil {
+	if err := a.db.Where("user_id = ?", userID).First(&status).Error; err != nil {
 		if err == gorm.ErrRecordNotFound {
-			return nil, fmt.Errorf("no record found with UserID: %d", UserID)
+			return nil, fmt.Errorf("no record found with UserID: %d", userID)
 		}
 		return nil, err
 	}
@@ -140,6 +122,7 @@ func (a ActivityRepositoryImpl) PutUserStatus(status *model.UserStatus) (*model.
 	entity := &orm_model.UserStatus{
 		StatusID: status.StatusID.ToInt(),
 	}
+	fmt.Println("やあ")
 	if err := a.db.Model(&orm_model.UserStatus{}).Where("user_id = ?", userId).Updates(entity).Error; err != nil {
 		return nil, err
 	}

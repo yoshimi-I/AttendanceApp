@@ -26,7 +26,7 @@ type ActivityControllerImpl struct {
 
 func (a ActivityControllerImpl) AddStartWork() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		var activity request.ActivityStartRequestDTO
+		var activity request.ActivityRequestDTO
 
 		// bodyを取得
 		if err := json.NewDecoder(r.Body).Decode(&activity); err != nil {
@@ -38,7 +38,7 @@ func (a ActivityControllerImpl) AddStartWork() http.HandlerFunc {
 		res, err := a.ActivityUsecase.AddStarWork(&activity)
 		if err != nil {
 			log.Println("Error in ActivityUsecase")
-			http.Error(w, err.Error(), http.StatusInternalServerError)
+			http.Error(w, `{"error":"作業開始は現在押せません"}`, http.StatusBadRequest)
 			return
 		}
 
@@ -54,7 +54,7 @@ func (a ActivityControllerImpl) AddStartWork() http.HandlerFunc {
 
 func (a ActivityControllerImpl) AddEndWork() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		var activity request.ActivityEndRequestDTO
+		var activity request.ActivityRequestDTO
 
 		// bodyを取得
 		if err := json.NewDecoder(r.Body).Decode(&activity); err != nil {
@@ -63,19 +63,10 @@ func (a ActivityControllerImpl) AddEndWork() http.HandlerFunc {
 			return
 		}
 
-		// KeyをURLから取得
-		activityIdStr := chi.URLParam(r, "activityId")
-		activityId, err := strconv.Atoi(activityIdStr)
-		if err != nil {
-			log.Println("Can't get key")
-			http.Error(w, "Invalid key", http.StatusBadRequest)
-			return
-		}
-
-		res, err := a.ActivityUsecase.AddEndWork(&activity, activityId)
+		res, err := a.ActivityUsecase.AddEndWork(&activity)
 		if err != nil {
 			log.Println("Error in ActivityUsecase")
-			http.Error(w, err.Error(), http.StatusInternalServerError)
+			http.Error(w, `{"error":"作業終了は現在押せません"}`, http.StatusBadRequest)
 			return
 		}
 
@@ -90,7 +81,7 @@ func (a ActivityControllerImpl) AddEndWork() http.HandlerFunc {
 
 func (a ActivityControllerImpl) AddStartBreak() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		var activity request.ActivityStartRequestDTO
+		var activity request.ActivityRequestDTO
 
 		// bodyを取得
 		if err := json.NewDecoder(r.Body).Decode(&activity); err != nil {
@@ -102,7 +93,7 @@ func (a ActivityControllerImpl) AddStartBreak() http.HandlerFunc {
 		res, err := a.ActivityUsecase.AddStartBreak(&activity)
 		if err != nil {
 			log.Println("Error in ActivityUsecase")
-			http.Error(w, err.Error(), http.StatusInternalServerError)
+			http.Error(w, `{"error":"休憩開始は現在押せません"}`, http.StatusBadRequest)
 			return
 		}
 
@@ -118,7 +109,7 @@ func (a ActivityControllerImpl) AddStartBreak() http.HandlerFunc {
 
 func (a ActivityControllerImpl) AddEndBreak() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		var activity request.ActivityEndRequestDTO
+		var activity request.ActivityRequestDTO
 
 		// bodyを取得
 		if err := json.NewDecoder(r.Body).Decode(&activity); err != nil {
@@ -127,19 +118,10 @@ func (a ActivityControllerImpl) AddEndBreak() http.HandlerFunc {
 			return
 		}
 
-		// KeyをURLから取得
-		activityId := chi.URLParam(r, "activityId")
-		id, err := strconv.Atoi(activityId)
-		if err != nil {
-			log.Println("Can't get key")
-			http.Error(w, "Invalid key", http.StatusBadRequest)
-			return
-		}
-
-		res, err := a.ActivityUsecase.AddEndBreak(&activity, id)
+		res, err := a.ActivityUsecase.AddEndBreak(&activity)
 		if err != nil {
 			log.Println("Error in ActivityUsecase")
-			http.Error(w, err.Error(), http.StatusInternalServerError)
+			http.Error(w, `{"error":"休憩終了は現在押せません"}`, http.StatusBadRequest)
 			return
 		}
 

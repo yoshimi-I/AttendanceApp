@@ -30,8 +30,7 @@ func (s *HistoryRepoImpl) ReadAllHistory(userID int, year int) ([]model.Attendan
 			ID:             activity.ID,
 			UserID:         activity.UserID,
 			AttendanceType: model.IntToActionEnum(activity.AttendanceType),
-			StartTime:      activity.StartTime,
-			EndTime:        activity.EndTime,
+			Time:           activity.Time,
 			Date:           activity.Date,
 		}
 		res = append(res, resItem)
@@ -51,8 +50,7 @@ func (s *HistoryRepoImpl) ReadHistoryByDate(userID int, date string) ([]model.At
 			ID:             activity.ID,
 			UserID:         activity.UserID,
 			AttendanceType: model.IntToActionEnum(activity.AttendanceType),
-			StartTime:      activity.StartTime,
-			EndTime:        activity.EndTime,
+			Time:           activity.Time,
 			Date:           activity.Date,
 		}
 		res = append(res, resItem)

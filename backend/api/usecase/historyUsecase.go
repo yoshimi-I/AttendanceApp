@@ -3,6 +3,8 @@ package usecase
 import (
 	"fmt"
 	"log"
+	"time"
+	"work-management-app/domain/model"
 	"work-management-app/domain/repository"
 	"work-management-app/usecase/dto/response"
 )
@@ -45,31 +47,67 @@ func (h HistoryUsecaseImpl) AllHistory(userKey string, year int) ([]response.Act
 		fmt.Println("no data")
 	}
 
+	// ここから合計時間のロジック
+	var lastStartTime time.Time // 最後の作業開始時間
+	var startDayTime time.Time  // 作業日の0:00:00
+
 	durationMap := make(map[string]int)
-
 	for _, v := range allHistoryList {
-		date := v.Date                     // yyyy-mm-dd
-		attendanceType := v.AttendanceType // 作業か,休憩かを判断
-		duration := v.EndTime.Sub(v.StartTime)
 
-		hours := int(duration.Minutes()) / 60 // 分(h)切り捨て.その後60で割る
-		// 存在するかどうかのチェック
-		if _, ok := durationMap[date]; ok {
-			if attendanceType == 1 {
-				durationMap[date] += hours
+		attendanceType := v.AttendanceType
+
+		activityTime := v.Time
+		date := v.Date // 2023-11-12
+
+		// まずはdateがkeyとして存在するかを確認
+		if _, exist := durationMap[date]; !exist {
+			durationMap[date] = 0
+			// その日の0時0分0秒を取得
+			startDayTime = time.Date(activityTime.Year(), activityTime.Month(), activityTime.Day(), 0, 0, 0, 0, activityTime.Location())
+
+			// attendanceTypeが作業開始から始まってるかどうかを確認
+			// 休憩開始,作業終了から記録が始まる場合は日付を跨いで作業している
+			// つまり0:00からの経過時間を足す必要がある
+			if attendanceType == model.BreakStart || attendanceType == model.WorkEnd {
+				duration := activityTime.Sub(startDayTime).Seconds() //経過時間を秒に変換
+				durationMap[date] += int(duration)
+
+				// さらに前日のものも追加する必要がある
+				// 前日の最終時間を取得
+				endDayTime := startDayTime.Add(-time.Second)
+				duration = endDayTime.Sub(lastStartTime).Seconds() //経過時間を秒に変換
+				dateStr := lastStartTime.Format("2006-01-02")
+				durationMap[dateStr] += int(duration) + 1 //23:59:59から引いたので最後に+1する
 			} else {
-				durationMap[date] -= hours
+				// 作業開始から記録が始まっているので作業開始時間を保持
+				lastStartTime = activityTime
 			}
+
 		} else {
-			durationMap[date] = hours
+			// dateの中で2回目以降のアクション
+			// 休憩開始,作業終了をした時点で,作業時間をリセットして追加
+			if attendanceType == model.BreakStart || attendanceType == model.WorkEnd {
+				duration := activityTime.Sub(lastStartTime).Seconds()
+				durationMap[date] += int(duration)
+			} else {
+				// 作業を開始した,または休憩を終了したので時間の計測を再開
+				lastStartTime = activityTime
+			}
 		}
 	}
 
 	// DTOに変換
 	for date, duration := range durationMap {
+		durationHour := duration / 3600
+
+		// 1h切ってても作業があれば1にする
+		if durationHour == 0 {
+			durationHour += 1
+		}
 		responseData = append(responseData, response.ActivityTimeResponseDTO{
+			Year:         year,
 			Date:         date,
-			ActivityTime: duration,
+			ActivityTime: durationHour,
 		})
 	}
 	return responseData, nil
@@ -92,14 +130,12 @@ func (h HistoryUsecaseImpl) HistoryByDate(userKey string, date string) (*respons
 	var activities []response.ActivityDetail
 	for _, v := range historyByDate {
 		Id := v.ID
-		StartTime := v.StartTime
-		EndTime := v.EndTime
-		Type := response.ConvertActivityTime(v.AttendanceType)
+		activityTime := v.Time
+		activityType := response.ConvertActivityTime(v.AttendanceType)
 		activity := response.ActivityDetail{
-			Id:        Id,
-			Type:      Type,
-			StartTime: response.FormatChange(StartTime),
-			EndTime:   response.FormatChange(EndTime),
+			Id:   Id,
+			Type: activityType,
+			Time: response.FormatChange(activityTime),
 		}
 
 		activities = append(activities, activity)

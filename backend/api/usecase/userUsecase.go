@@ -46,13 +46,13 @@ func (u UserUsecaseImpl) AddUser(user *request.UserDTO) (*response.UserDTO, erro
 			UserKey: userKey,
 		}
 
-		// DBに保存
+		// DBにuser情報を保存
 		res, err = u.ur.PostUser(addUser)
 		if err != nil {
 			return nil, err
 		}
 
-		// その後ユーザーの状態を保持(最初はFinish)
+		// その後ユーザーの状態を保存(最初はFinish)
 		addUserStatus := &model.UserStatus{
 			UserID:   res.ID,
 			StatusID: model.Finish,

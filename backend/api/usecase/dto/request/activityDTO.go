@@ -5,53 +5,43 @@ import (
 	"time"
 )
 
-type ActivityStartRequestDTO struct {
-	UserKey   string    `json:"user_key"`
-	StartTime time.Time `json:"start_time"`
-}
-
-type ActivityEndRequestDTO struct {
+type ActivityRequestDTO struct {
 	UserKey string    `json:"user_key"`
-	EndTime time.Time `json:"end_time"`
+	Time    time.Time `json:"time"`
 }
 
 type ActivityEditRequestDTO struct {
 	UserKey        string    `json:"user_key"`
 	AttendanceType int       `json:"attendance_type"`
-	StartTime      time.Time `json:"start_time"`
-	EndTime        time.Time `json:"end_time"`
+	Time           time.Time `json:"time"`
 }
 
 type ActivityDeleteRequestDTO struct {
 	UserKey string `json:"user_key"`
 }
 
-func (a ActivityStartRequestDTO) Year() int {
-	return a.StartTime.Year()
+// Year 年を返す (2023)
+func (a ActivityRequestDTO) Year() int {
+	return a.Time.Year()
 }
 
-func (a ActivityStartRequestDTO) Date() string {
-	return fmt.Sprintf("%d-%02d-%02d", a.StartTime.Year(), a.StartTime.Month(), a.StartTime.Day())
+// Date 日程を返す ("2023-12-25")
+func (a ActivityRequestDTO) Date() string {
+	return fmt.Sprintf("%d-%02d-%02d", a.Time.Year(), a.Time.Month(), a.Time.Day())
 }
 
-func (a ActivityEndRequestDTO) Year() int {
-	return a.EndTime.Year()
-}
-
-func (a ActivityEndRequestDTO) Date() string {
-	return fmt.Sprintf("%d-%02d-%02d", a.EndTime.Year(), a.EndTime.Month(), a.EndTime.Day())
-}
-
-func (a ActivityEndRequestDTO) ShiftTime(year, month, day int) string {
-	afTime := a.EndTime.AddDate(year, month, day)
+// ShiftTime 移動先の日程を返す  ("2023-12-28")
+func (a ActivityRequestDTO) ShiftTime(year, month, day int) string {
+	afTime := a.Time.AddDate(year, month, day)
 	return fmt.Sprintf("%d-%02d-%02d", afTime.Year(), afTime.Month(), afTime.Day())
-
 }
 
+// Year 年を返す (2023)
 func (a ActivityEditRequestDTO) Year() int {
-	return a.StartTime.Year()
+	return a.Time.Year()
 }
 
+// Date 日程を返す ("2023-12-25")
 func (a ActivityEditRequestDTO) Date() string {
-	return fmt.Sprintf("%d-%02d-%02d", a.StartTime.Year(), a.StartTime.Month(), a.StartTime.Day())
+	return fmt.Sprintf("%d-%02d-%02d", a.Time.Year(), a.Time.Month(), a.Time.Day())
 }
