@@ -20,7 +20,7 @@ import {
   signInWithPopup,
 } from "firebase/auth";
 import { app } from "../firebase";
-import { registerUser } from "../../logic/registerUser";
+import { registerUser } from "../../hooks/registerUser";
 
 const LoginPage = () => {
   const router = useRouter();

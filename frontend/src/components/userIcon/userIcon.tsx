@@ -2,8 +2,8 @@ import { useEffect, useState } from "react";
 import { User, onAuthStateChanged } from "firebase/auth";
 import Image from "next/image";
 import { auth } from "../../app/firebase";
-import { AccountCircle } from '@mui/icons-material';
-import LogoutDialog from "../../logic/logout";
+import { AccountCircle } from "@mui/icons-material";
+import LogoutDialog from "../../hooks/logout";
 
 const UserIcon = () => {
   const [user, setUser] = useState<User | null>(null);
@@ -12,7 +12,6 @@ const UserIcon = () => {
     // Firebaseの認証状態の変更を監視
     const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
       setUser(currentUser);
-
     });
 
     return () => unsubscribe();
@@ -23,17 +22,32 @@ const UserIcon = () => {
   }
 
   return (
-    <div style={{ position: "absolute", top: 0, right: 0, padding: "10px", display: "flex", alignItems: "center" }}>
+    <div
+      style={{
+        position: "absolute",
+        top: 0,
+        right: 0,
+        padding: "10px",
+        display: "flex",
+        alignItems: "center",
+      }}
+    >
       {user.photoURL ? (
         <Image
           src={user.photoURL}
           alt="User Icon"
           width={40}
           height={40}
-          style={{ borderRadius: "50%", cursor: 'pointer', marginRight: '10px' }}
+          style={{
+            borderRadius: "50%",
+            cursor: "pointer",
+            marginRight: "10px",
+          }}
         />
       ) : (
-        <AccountCircle style={{ fontSize: 40, cursor: 'pointer', marginRight: '10px' }} />
+        <AccountCircle
+          style={{ fontSize: 40, cursor: "pointer", marginRight: "10px" }}
+        />
       )}
       <LogoutDialog />
     </div>

@@ -3,7 +3,7 @@ import Button from "@mui/material/Button";
 import { getAuth } from "firebase/auth";
 import Snackbar from "@mui/material/Snackbar";
 import Alert, { AlertColor } from "@mui/material/Alert";
-import { getJSTDate } from "../../logic/japanTime";
+import { getJSTDate } from "../../hooks/japanTime";
 
 type ButtonType = "作業開始" | "作業終了" | "休憩開始" | "休憩終了";
 const baseUrl = process.env.NEXT_PUBLIC_API_BASE_URL;
@@ -15,7 +15,7 @@ interface AttendanceButtonProps {
 
 const AttendanceButton: React.FC<AttendanceButtonProps> = ({
   type,
-  userStatus
+  userStatus,
 }) => {
   let color: "primary" | "secondary" | "inherit";
   let endpoint: string;
@@ -80,7 +80,7 @@ const AttendanceButton: React.FC<AttendanceButtonProps> = ({
         const responseData = await response.json();
         setSnackbarMessage("登録に成功しました");
         setSnackbarSeverity("success");
-        userStatus(responseData.status)
+        userStatus(responseData.status);
       }
     } catch (error) {
       setSnackbarMessage("エラーが発生しました: " + error.message);
