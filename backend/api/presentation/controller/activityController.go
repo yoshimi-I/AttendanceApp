@@ -2,9 +2,11 @@ package controller
 
 import (
 	"encoding/json"
+	"fmt"
 	"log"
 	"net/http"
 	"strconv"
+	"time"
 	"work-management-app/usecase"
 	"work-management-app/usecase/dto/request"
 
@@ -35,6 +37,12 @@ func (a ActivityControllerImpl) AddStartWork() http.HandlerFunc {
 			return
 		}
 
+		// 日本時間に変換
+		loc, _ := time.LoadLocation("Asia/Tokyo")
+		activity.Time = activity.Time.In(loc)
+
+		fmt.Println("controller", activity)
+
 		res, err := a.ActivityUsecase.AddStarWork(&activity)
 		if err != nil {
 			log.Println("Error in ActivityUsecase")
@@ -63,6 +71,12 @@ func (a ActivityControllerImpl) AddEndWork() http.HandlerFunc {
 			return
 		}
 
+		// 日本時間に変換
+		loc, _ := time.LoadLocation("Asia/Tokyo")
+		activity.Time = activity.Time.In(loc)
+
+		fmt.Println("controller", activity)
+
 		res, err := a.ActivityUsecase.AddEndWork(&activity)
 		if err != nil {
 			log.Println("Error in ActivityUsecase")
@@ -89,6 +103,10 @@ func (a ActivityControllerImpl) AddStartBreak() http.HandlerFunc {
 			http.Error(w, "Invalid request body", http.StatusBadRequest)
 			return
 		}
+
+		// 日本時間に変換
+		loc, _ := time.LoadLocation("Asia/Tokyo")
+		activity.Time = activity.Time.In(loc)
 
 		res, err := a.ActivityUsecase.AddStartBreak(&activity)
 		if err != nil {
@@ -117,6 +135,10 @@ func (a ActivityControllerImpl) AddEndBreak() http.HandlerFunc {
 			http.Error(w, "Invalid request body", http.StatusBadRequest)
 			return
 		}
+
+		// 日本時間に変換
+		loc, _ := time.LoadLocation("Asia/Tokyo")
+		activity.Time = activity.Time.In(loc)
 
 		res, err := a.ActivityUsecase.AddEndBreak(&activity)
 		if err != nil {
@@ -150,6 +172,10 @@ func (a ActivityControllerImpl) UpdateActivity() http.HandlerFunc {
 			http.Error(w, "Invalid key", http.StatusBadRequest)
 			return
 		}
+
+		// 日本時間に変換
+		loc, _ := time.LoadLocation("Asia/Tokyo")
+		activity.Time = activity.Time.In(loc)
 
 		res, err := a.ActivityUsecase.Update(&activity, id)
 		if err != nil {
