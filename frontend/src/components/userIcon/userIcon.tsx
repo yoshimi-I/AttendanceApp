@@ -3,7 +3,7 @@ import { User, onAuthStateChanged } from "firebase/auth";
 import Image from "next/image";
 import { auth } from "../../app/firebase";
 import { AccountCircle } from "@mui/icons-material";
-import LogoutDialog from "../../hooks/logout";
+import LogoutDialog from "../../lib/logout";
 
 const UserIcon = () => {
   const [user, setUser] = useState<User | null>(null);
