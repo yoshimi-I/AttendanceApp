@@ -24,6 +24,8 @@ services:
       dockerfile: Dockerfile
     volumes:
       - ./backend/api/:/backend/api/
+    environment:
+      - TZ=Asia/Tokyo
     ports:
       - 8080:8080
     depends_on:
@@ -35,6 +37,8 @@ services:
       - ./frontend/.next:/frontend/.next
     ports:
       - 3000:3000
+    environment:
+      - TZ=Asia/Tokyo
     depends_on:
       - backend
 
