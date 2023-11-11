@@ -5,6 +5,7 @@ import { useAuthState } from "react-firebase-hooks/auth";
 import { auth } from "../../firebase";
 import ActivitiesByDate from "../../../components/activity/activitiesByDate";
 import ReturnButton from "../../../components/return/returnButton";
+import router from "next/router";
 
 const DateDetail = () => {
   const [data, setData] = useState(null);
@@ -21,7 +22,7 @@ const DateDetail = () => {
     }
     if (!user) {
       // ユーザーがログインしていない場合、ログインページにリダイレクト
-      // router.push("/signin");
+      router.push("/signin");
       return;
     }
 
