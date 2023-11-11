@@ -8,10 +8,11 @@ import DialogContent from "@mui/material/DialogContent";
 import DialogTitle from "@mui/material/DialogTitle";
 import TextField from "@mui/material/TextField";
 import Button from "@mui/material/Button";
+import { TimeToString } from "../../../util/timeToString";
 
 const EditButton = ({ id, userKey, onEditSuccess, defaultTime }) => {
   const [open, setOpen] = useState(false);
-  const [editedTime, setEditedTime] = useState("");
+  const [editedTime, setEditedTime] = useState(TimeToString(defaultTime));
 
   const handleClickOpen = () => {
     setOpen(true);
@@ -38,7 +39,7 @@ const EditButton = ({ id, userKey, onEditSuccess, defaultTime }) => {
 
   return (
     <>
-      <IconButton aria-label="edit" onClick={handleClickOpen} size="large">
+      <IconButton aria-label="edit" onClick={handleClickOpen} size="large" >
         <EditIcon sx={{ fontSize: 30 }} />
       </IconButton>
 
@@ -46,19 +47,22 @@ const EditButton = ({ id, userKey, onEditSuccess, defaultTime }) => {
         open={open}
         onClose={handleClose}
         maxWidth="sm"
-        fullWidth // ダイアログの幅を最大にします
+        fullWidth
         sx={{
           "& .MuiDialog-paper": {
-            width: "100%", // ダイアログの幅を100%に設定
-            maxWidth: "400px", // 最大幅を400pxに設定
+            width: "100%",
+            maxWidth: "400px",
+            padding: "20px",
+            backgroundColor: "#F5F5F5",
           },
         }}
       >
-        <DialogTitle>時間を編集</DialogTitle>
+        <DialogTitle sx={{ color: "#333", fontWeight: "bold" }}>時間を編集</DialogTitle>
         <DialogContent
           sx={{
-            display: "flex", // コンテンツをフレックスボックスにします
-            flexDirection: "column", // アイテムを縦に並べます
+            display: "flex",
+            flexDirection: "column",
+            gap: "20px",
           }}
         >
           <TextField
@@ -67,21 +71,23 @@ const EditButton = ({ id, userKey, onEditSuccess, defaultTime }) => {
             id="time"
             label="時間"
             type="time"
-            fullWidth // 入力フィールドの幅を最大にします
+            fullWidth
             InputLabelProps={{
-              shrink: true, // ラベルを縮小して時間が表示されるようにします
+              shrink: true,
             }}
-            variant="outlined" // アウトラインスタイルのTextFieldに変更
+            variant="outlined"
             value={editedTime}
             onChange={(e) => setEditedTime(e.target.value)}
             sx={{
-              marginBottom: 2, // 下部のマージンを追加
+              '& .MuiOutlinedInput-root': {
+                borderRadius: '8px',
+              },
             }}
           />
         </DialogContent>
-        <DialogActions>
-          <Button onClick={handleClose}>キャンセル</Button>
-          <Button onClick={handleEdit}>送信</Button>
+        <DialogActions sx={{ justifyContent: "space-between" }}>
+          <Button onClick={handleClose} variant="outlined" color="secondary">キャンセル</Button>
+          <Button onClick={handleEdit} variant="contained" color="primary">送信</Button>
         </DialogActions>
       </Dialog>
     </>
