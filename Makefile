@@ -12,6 +12,10 @@ all:
 # dbとapiだけ立ち上げる
 db-api:
 	docker-compose up db backend
+
+# フロントエンドだけ立ち上げる
+front:
+	docker-compose up frontend
 # Dockerを停止する
 stop:
 	docker-compose stop
