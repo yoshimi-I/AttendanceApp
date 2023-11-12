@@ -5,6 +5,7 @@ import (
 	"log"
 	"work-management-app/domain/model"
 	"work-management-app/domain/repository"
+	"work-management-app/usecase/customErr"
 	"work-management-app/usecase/dto/request"
 	"work-management-app/usecase/dto/response"
 )
@@ -14,8 +15,8 @@ type ActivityUsecase interface {
 	AddEndWork(work *request.ActivityRequestDTO) (*response.ActivityResponseDTO, error)
 	AddStartBreak(breakInfo *request.ActivityRequestDTO) (*response.ActivityResponseDTO, error)
 	AddEndBreak(breakInfo *request.ActivityRequestDTO) (*response.ActivityResponseDTO, error)
-	Update(activity *request.ActivityEditRequestDTO, id int) (*response.ActivityResponseDTO, error)
-	DeleteByActivityID(activityID int) error
+	Update(activity *request.ActivityEditRequestDTO) (*response.ActivityResponseDTO, error)
+	DeleteByActivityID(activity *request.ActivityDeleteRequestDTO) error
 }
 
 type ActivityUsecaseImpl struct {
@@ -298,16 +299,30 @@ func (a ActivityUsecaseImpl) AddEndBreak(breakInfo *request.ActivityRequestDTO) 
 }
 
 // Update 作業,休憩の修正
-func (a ActivityUsecaseImpl) Update(activity *request.ActivityEditRequestDTO, id int) (*response.ActivityResponseDTO, error) {
-	record, err := a.ar.FindActivity(id)
+func (a ActivityUsecaseImpl) Update(activity *request.ActivityEditRequestDTO) (*response.ActivityResponseDTO, error) {
+	activityID := activity.ActivityID
+	userKey := activity.UserKey
+
+	//userKeyからuserIDを取得
+	userID, err := a.ur.FindIDByUserKey(userKey)
+
+	// activityが存在するかどうかを確認
+	record, err := a.ar.FindActivity(activityID)
 	if err != nil {
-		return nil, fmt.Errorf("failed to find existing activity: %v", err)
+		return nil, customErr.ActivityNotFoundError{Message: "failed to find existing activity"}
 	}
+
+	// 編集処理をする人が本当に本人かどうかを確認
+	if userID != record.UserID {
+		return nil, customErr.UserAuthenticationError{Message: "user authentication failed"}
+	}
+
 	attendance := &model.Attendance{
-		ID:   id,
+		ID:   activityID,
 		Time: activity.Time,
 	}
-	res, err := a.ar.PostActivity(attendance)
+
+	res, err := a.ar.PutActivity(attendance)
 	if err != nil {
 		return nil, fmt.Errorf("failed to update activity end time: %v", err)
 	}
@@ -324,11 +339,24 @@ func (a ActivityUsecaseImpl) Update(activity *request.ActivityEditRequestDTO, id
 }
 
 // DeleteByActivityID 作業,休憩の削除
-func (a ActivityUsecaseImpl) DeleteByActivityID(activityID int) error {
-	_, err := a.ar.FindActivity(activityID)
+func (a ActivityUsecaseImpl) DeleteByActivityID(activity *request.ActivityDeleteRequestDTO) error {
+	activityID := activity.ActivityID
+	userKey := activity.UserKey
+
+	//userKeyからuserIDを取得
+	userID, err := a.ur.FindIDByUserKey(userKey)
+
+	// activityが存在するかどうかを確認
+	record, err := a.ar.FindActivity(activityID)
 	if err != nil {
-		return fmt.Errorf("failed to find existing activity: %v", err)
+		return customErr.ActivityNotFoundError{Message: "failed to find existing activity"}
 	}
+
+	// 編集処理をする人が本当に本人かどうかを確認
+	if userID != record.UserID {
+		return customErr.UserAuthenticationError{Message: "user authentication failed"}
+	}
+
 	err = a.ar.DeleteActivity(activityID)
 	if err != nil {
 		return fmt.Errorf("failed to delete activity: %v", err)

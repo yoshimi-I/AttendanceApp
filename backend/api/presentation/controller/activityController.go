@@ -5,12 +5,10 @@ import (
 	"fmt"
 	"log"
 	"net/http"
-	"strconv"
 	"time"
 	"work-management-app/usecase"
+	"work-management-app/usecase/customErr"
 	"work-management-app/usecase/dto/request"
-
-	"github.com/go-chi/chi/v5"
 )
 
 type ActivityController interface {
@@ -159,17 +157,10 @@ func (a ActivityControllerImpl) AddEndBreak() http.HandlerFunc {
 func (a ActivityControllerImpl) UpdateActivity() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		var activity request.ActivityEditRequestDTO
+
+		// bodyを取得
 		if err := json.NewDecoder(r.Body).Decode(&activity); err != nil {
 			http.Error(w, "Invalid request body", http.StatusBadRequest)
-			return
-		}
-
-		// IDをURLから取得
-		activityId := chi.URLParam(r, "activityId")
-		id, err := strconv.Atoi(activityId)
-		if err != nil {
-			log.Println("Can't get key")
-			http.Error(w, "Invalid key", http.StatusBadRequest)
 			return
 		}
 
@@ -177,9 +168,16 @@ func (a ActivityControllerImpl) UpdateActivity() http.HandlerFunc {
 		loc, _ := time.LoadLocation("Asia/Tokyo")
 		activity.Time = activity.Time.In(loc)
 
-		res, err := a.ActivityUsecase.Update(&activity, id)
+		res, err := a.ActivityUsecase.Update(&activity)
 		if err != nil {
-			http.Error(w, err.Error(), http.StatusInternalServerError)
+			switch err.(type) {
+			case customErr.UserAuthenticationError:
+				http.Error(w, err.Error(), http.StatusUnauthorized)
+			case customErr.ActivityNotFoundError:
+				http.Error(w, err.Error(), http.StatusNotFound)
+			default:
+				http.Error(w, err.Error(), http.StatusInternalServerError)
+			}
 			return
 		}
 
@@ -193,22 +191,28 @@ func (a ActivityControllerImpl) UpdateActivity() http.HandlerFunc {
 
 func (a ActivityControllerImpl) DeleteActivity() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		// IDをURLから取得
-		activityId := chi.URLParam(r, "activityId")
-		id, err := strconv.Atoi(activityId)
-		if err != nil {
-			log.Println("Can't get key")
-			http.Error(w, "Invalid key", http.StatusBadRequest)
+		var activity request.ActivityDeleteRequestDTO
+
+		// bodyを取得
+		if err := json.NewDecoder(r.Body).Decode(&activity); err != nil {
+			http.Error(w, "Invalid request body", http.StatusBadRequest)
 			return
 		}
 
-		err = a.ActivityUsecase.DeleteByActivityID(id)
+		err := a.ActivityUsecase.DeleteByActivityID(&activity)
 		if err != nil {
-			log.Println("Error in ActivityUsecase")
-			http.Error(w, err.Error(), http.StatusInternalServerError)
+			switch err.(type) {
+			case customErr.UserAuthenticationError:
+				http.Error(w, err.Error(), http.StatusUnauthorized)
+			case customErr.ActivityNotFoundError:
+				http.Error(w, err.Error(), http.StatusNotFound)
+			default:
+				http.Error(w, err.Error(), http.StatusInternalServerError)
+			}
 			return
 		}
 
+		// 成功したときのレスポンスはステータスコードだけ
 		w.WriteHeader(http.StatusNoContent) // 204 No Content
 	}
 }

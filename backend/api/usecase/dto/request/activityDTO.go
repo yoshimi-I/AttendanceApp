@@ -11,13 +11,14 @@ type ActivityRequestDTO struct {
 }
 
 type ActivityEditRequestDTO struct {
-	UserKey        string    `json:"user_key"`
-	AttendanceType int       `json:"attendance_type"`
-	Time           time.Time `json:"time"`
+	ActivityID int       `json:"activity_id"`
+	UserKey    string    `json:"user_key"`
+	Time       time.Time `json:"time"`
 }
 
 type ActivityDeleteRequestDTO struct {
-	UserKey string `json:"user_key"`
+	ActivityID int    `json:"activity_id"`
+	UserKey    string `json:"user_key"`
 }
 
 // Year 年を返す (2023)

@@ -44,10 +44,10 @@ func Router() *chi.Mux {
 	r.Post("/study/activity/break/end", cr.ActivityController.AddEndBreak())
 
 	// 指定の活動を更新
-	r.Put("/study/activity/{activityId}/update", cr.ActivityController.UpdateActivity())
+	r.Put("/study/activity/update", cr.ActivityController.UpdateActivity())
 
 	// 指定の活動を削除
-	r.Delete("/study/activity/{activityId}", cr.ActivityController.DeleteActivity())
+	r.Delete("/study/activity/delete", cr.ActivityController.DeleteActivity())
 
 	return r
 }
