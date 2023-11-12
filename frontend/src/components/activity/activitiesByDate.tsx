@@ -11,9 +11,9 @@ import { Fragment, useContext } from "react";
 import SchoolIcon from "@mui/icons-material/School";
 import CoffeeIcon from "@mui/icons-material/LocalCafe";
 import EditButton from "../edit/time/edit";
-import { auth } from "../../lib/firebase/firebase";
-import { useAuthState } from "react-firebase-hooks/auth";
 import { TimeToString } from "../../util/timeToString";
+import DeleteButton from "../edit/time/delete";
+import { User } from "firebase/auth";
 
 interface Activity {
   id: number;
@@ -26,25 +26,25 @@ interface ActivitiesComponentProps {
     date: string;
     activities: Activity[];
   };
+  user: User | null | undefined;
+  refreshData: (user: User) => void;
 }
 
-const ActivitiesByDate: React.FC<ActivitiesComponentProps> = ({ data }) => {
+const ActivitiesByDate: React.FC<ActivitiesComponentProps> = ({
+  data,
+  user,
+  refreshData,
+}) => {
   const { date, activities } = data;
-  const [user, loading, error] = useAuthState(auth);
 
-  const handleEditSuccess = (updatedActivity) => {
-    // 編集が成功した後の状態更新などの処理をここに追加
-    console.log("Activity updated:", updatedActivity);
+  if (!user) {
+    console.error("User is null or undefined.");
+    return;
+  }
+
+  const handleSuccess = () => {
+    refreshData(user); // データを更新
   };
-
-  if (loading) {
-    return <p>Loading...</p>;
-  }
-
-  if (error || !user) {
-    console.error("Firebase auth error:", error);
-    return <p>Error: {error?.message || "No user data available"}</p>;
-  }
 
   return (
     <Container maxWidth="sm" sx={{ mt: 4, mb: 4 }}>
@@ -73,8 +73,9 @@ const ActivitiesByDate: React.FC<ActivitiesComponentProps> = ({ data }) => {
                 elevation={2}
                 sx={{
                   mb: 2,
+                  width: "100%",
                   overflow: "hidden",
-                  borderRadius: "20px", // PaperのborderRadiusも調整
+                  borderRadius: "20px",
                   boxShadow: "4",
                   padding: "5px",
                   margin: "20px",
@@ -87,12 +88,12 @@ const ActivitiesByDate: React.FC<ActivitiesComponentProps> = ({ data }) => {
                         sx={{
                           display: "flex",
                           alignItems: "center",
-                          width: "100%", // 親要素の幅に合わせる
+                          width: "100%",
                         }}
                       >
                         <Box
                           sx={{
-                            flex: 4, // 全体の4割のスペースを取る
+                            flex: 4,
                             display: "flex",
                             alignItems: "center",
                             justifyContent: "flex-start",
@@ -169,7 +170,7 @@ const ActivitiesByDate: React.FC<ActivitiesComponentProps> = ({ data }) => {
                         </Box>
                         <Box
                           sx={{
-                            flex: 2, // 全体の1割のスペースを取る
+                            flex: 1, // 全体の1割のスペースを取る
                             display: "flex",
                             alignItems: "center",
                             justifyContent: "center", // 中央寄せ
@@ -179,7 +180,21 @@ const ActivitiesByDate: React.FC<ActivitiesComponentProps> = ({ data }) => {
                             id={activity.id}
                             userKey={user.uid}
                             defaultTime={activity.time}
-                            onEditSuccess={handleEditSuccess}
+                            onEditSuccess={handleSuccess}
+                          />
+                        </Box>
+                        <Box
+                          sx={{
+                            flex: 1,
+                            display: "flex",
+                            alignItems: "center",
+                            justifyContent: "center",
+                          }}
+                        >
+                          <DeleteButton
+                            id={activity.id}
+                            userKey={user.uid}
+                            onDeleteSuccess={handleSuccess}
                           />
                         </Box>
                       </Box>

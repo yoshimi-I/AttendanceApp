@@ -6,6 +6,7 @@ import { auth } from "../../../lib/firebase/firebase";
 import ActivitiesByDate from "../../../components/activity/activitiesByDate";
 import ReturnButton from "../../../components/return/returnButton";
 import router from "next/router";
+import { User } from "firebase/auth";
 
 const DateDetail = () => {
   const [data, setData] = useState(null);
@@ -13,6 +14,21 @@ const DateDetail = () => {
   const params = useParams();
   const date = params.date;
   const baseUrl = process.env.NEXT_PUBLIC_API_BASE_URL;
+
+  const fetchData = async (user: User) => {
+    try {
+      const response = await fetch(
+        `${baseUrl}/study/history/${user.uid}/${date}`
+      );
+      if (!response.ok) {
+        throw new Error("Network response was not ok");
+      }
+      const result = await response.json();
+      setData(result);
+    } catch (error) {
+      console.error("Fetch error:", error);
+    }
+  };
 
   useEffect(() => {
     if (loading) return;
@@ -27,23 +43,10 @@ const DateDetail = () => {
     }
 
     // ユーザーがログインしている場合、APIリクエストを実行
-    const fetchData = async () => {
-      try {
-        const response = await fetch(
-          `${baseUrl}/study/history/${user.uid}/${date}`
-        );
-        if (!response.ok) {
-          throw new Error("Network response was not ok");
-        }
-        const result = await response.json();
-        setData(result);
-      } catch (error) {
-        console.error("Fetch error:", error);
-      }
-    };
+    fetchData(user);
 
     if (date) {
-      fetchData();
+      fetchData(user);
     }
   }, [user, loading, error, date]);
 
@@ -53,7 +56,7 @@ const DateDetail = () => {
 
   return (
     <div>
-      <ActivitiesByDate data={data} />
+      <ActivitiesByDate data={data} user={user} refreshData={fetchData} />
       <ReturnButton />
     </div>
   );
