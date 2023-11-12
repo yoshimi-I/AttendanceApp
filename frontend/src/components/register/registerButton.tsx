@@ -3,7 +3,6 @@ import Button from "@mui/material/Button";
 import { getAuth } from "firebase/auth";
 import Snackbar from "@mui/material/Snackbar";
 import Alert, { AlertColor } from "@mui/material/Alert";
-import { type } from "os";
 
 type ButtonType = "作業開始" | "作業終了" | "休憩開始" | "休憩終了";
 const baseUrl = process.env.NEXT_PUBLIC_API_BASE_URL;

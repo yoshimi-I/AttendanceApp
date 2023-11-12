@@ -7,7 +7,7 @@ import {
   ListItemText,
   Box,
 } from "@mui/material";
-import { Fragment, useContext } from "react";
+import { Fragment } from "react";
 import SchoolIcon from "@mui/icons-material/School";
 import CoffeeIcon from "@mui/icons-material/LocalCafe";
 import EditButton from "../edit/time/edit";
@@ -67,7 +67,7 @@ const ActivitiesByDate: React.FC<ActivitiesComponentProps> = ({
 
       {activities && activities.length > 0 ? (
         <List sx={{ width: "100%" }}>
-          {activities.map((activity, index) => (
+          {activities.map((activity) => (
             <Fragment key={activity.id}>
               <Paper
                 elevation={2}
