@@ -4,8 +4,7 @@ erDiagram
     attendances ||--|| attendance_types : ""
     users ||--o{ user_statuses : ""
     user_statuses ||--|| user_status_types : ""
-    users ||--o{ current_activity : ""
-    attendances ||--o{ current_activity : ""
+
 
     users {
         int id PK
@@ -20,8 +19,7 @@ erDiagram
         int id PK
         int user_id FK
         int attendance_type FK
-        timestamp start_time "フロント側から受け取った開始時間"
-        timestamp end_time "フロント側から受け取った終了時間"
+        timestamp time "フロント側から受け取った時間時間"
         string date "YYYY-MM-DD形式の日付"
         int year "年を表す"
         timestamp created_at "レコードの生成と同時に生まれるカラム"
@@ -29,7 +27,7 @@ erDiagram
     }
 
     attendance_types {
-        int attendance_type_id PK "1:作業 　2:休憩 　3:お祈り"
+        int attendance_type_id PK "1:作業開始 2:作業終了 3:休憩開始 4:休憩終了 5:お祈り"
         string action_type
         timestamp created_at
         timestamp updated_at
@@ -47,10 +45,5 @@ erDiagram
         int status_id FK "ユーザーの現在の状態ID"
         timestamp updated_at "最終更新時間"
     }
-
-    current_activity {
-        int user_id PK, FK "ユーザーID"
-        int work_id FK "作業開始のattendance ID"
-        int break_id FK "休憩開始のattendance ID" }
 
 ```
