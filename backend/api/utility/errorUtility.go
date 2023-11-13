@@ -1,4 +1,4 @@
-package customErr
+package utility
 
 type UserAuthenticationError struct {
 	Message string
@@ -13,6 +13,14 @@ type ActivityNotFoundError struct {
 }
 
 func (e ActivityNotFoundError) Error() string {
+	return e.Message
+}
+
+type InvalidActivityError struct {
+	Message string
+}
+
+func (e InvalidActivityError) Error() string {
 	return e.Message
 }
 

@@ -3,11 +3,12 @@ package usecase
 import (
 	"fmt"
 	"log"
+	"time"
 	"work-management-app/domain/model"
 	"work-management-app/domain/repository"
-	"work-management-app/usecase/customErr"
 	"work-management-app/usecase/dto/request"
 	"work-management-app/usecase/dto/response"
+	"work-management-app/utility"
 )
 
 type ActivityUsecase interface {
@@ -22,12 +23,14 @@ type ActivityUsecase interface {
 type ActivityUsecaseImpl struct {
 	ar repository.ActivityRepository
 	ur repository.UserRepository
+	hr repository.HistoryRepository
 }
 
-func NewActivityUsecase(ar repository.ActivityRepository, ur repository.UserRepository) ActivityUsecase {
+func NewActivityUsecase(ar repository.ActivityRepository, ur repository.UserRepository, hr repository.HistoryRepository) ActivityUsecase {
 	return &ActivityUsecaseImpl{
 		ar: ar,
 		ur: ur,
+		hr: hr,
 	}
 }
 
@@ -302,6 +305,7 @@ func (a ActivityUsecaseImpl) AddEndBreak(breakInfo *request.ActivityRequestDTO) 
 func (a ActivityUsecaseImpl) Update(activity *request.ActivityEditRequestDTO) (*response.ActivityResponseDTO, error) {
 	activityID := activity.ActivityID
 	userKey := activity.UserKey
+	newTime := activity.Time
 
 	//userKeyからuserIDを取得
 	userID, err := a.ur.FindIDByUserKey(userKey)
@@ -309,17 +313,46 @@ func (a ActivityUsecaseImpl) Update(activity *request.ActivityEditRequestDTO) (*
 	// activityが存在するかどうかを確認
 	record, err := a.ar.FindActivity(activityID)
 	if err != nil {
-		return nil, customErr.ActivityNotFoundError{Message: "failed to find existing activity"}
+		return nil, utility.ActivityNotFoundError{Message: "failed to find existing activity"}
 	}
 
 	// 編集処理をする人が本当に本人かどうかを確認
 	if userID != record.UserID {
-		return nil, customErr.UserAuthenticationError{Message: "user authentication failed"}
+		return nil, utility.UserAuthenticationError{Message: "user authentication failed"}
+	}
+
+	// Dateからユーザーの行動を取得
+	timeStr := activity.Date()
+	historyByDate, err := a.hr.ReadHistoryByDate(userID, timeStr)
+
+	// 編集時データのバリデーションチェック
+	var beforeTime, afterTime time.Time
+	for i, history := range historyByDate {
+		if history.ID == activityID {
+			if i == 0 {
+				// 最初の値かどうかを確認
+				// 開始時刻を代入
+				beforeTime = utility.StartTime()
+				afterTime = historyByDate[i+1].Time
+			} else if i == len(historyByDate) {
+				// 最後の値かどうか
+				// 現在の日本時間を代入
+				beforeTime = historyByDate[i-1].Time
+				afterTime = utility.NowTime()
+			} else {
+				beforeTime = historyByDate[i-1].Time
+				afterTime = historyByDate[i+1].Time
+			}
+		}
+	}
+
+	if !utility.IsTimeInRange(beforeTime, newTime, afterTime) {
+		return nil, utility.InvalidActivityError{}
 	}
 
 	attendance := &model.Attendance{
 		ID:   activityID,
-		Time: activity.Time,
+		Time: newTime,
 	}
 
 	res, err := a.ar.PutActivity(attendance)
@@ -349,12 +382,12 @@ func (a ActivityUsecaseImpl) DeleteByActivityID(activity *request.ActivityDelete
 	// activityが存在するかどうかを確認
 	record, err := a.ar.FindActivity(activityID)
 	if err != nil {
-		return customErr.ActivityNotFoundError{Message: "failed to find existing activity"}
+		return utility.ActivityNotFoundError{Message: "failed to find existing activity"}
 	}
 
 	// 編集処理をする人が本当に本人かどうかを確認
 	if userID != record.UserID {
-		return customErr.UserAuthenticationError{Message: "user authentication failed"}
+		return utility.UserAuthenticationError{Message: "user authentication failed"}
 	}
 
 	err = a.ar.DeleteActivity(activityID)
