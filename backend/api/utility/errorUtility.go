@@ -1,26 +1,38 @@
 package utility
 
-type UserAuthenticationError struct {
+// AuthenticationError 401エラー
+type AuthenticationError struct {
 	Message string
 }
 
-func (e UserAuthenticationError) Error() string {
+func (e AuthenticationError) Error() string {
 	return e.Message
 }
 
-type ActivityNotFoundError struct {
+// NotFoundError 404エラー
+type NotFoundError struct {
 	Message string
 }
 
-func (e ActivityNotFoundError) Error() string {
+func (e NotFoundError) Error() string {
 	return e.Message
 }
 
-type InvalidActivityError struct {
+// BadRequestError 400エラー
+type BadRequestError struct {
 	Message string
 }
 
-func (e InvalidActivityError) Error() string {
+func (e BadRequestError) Error() string {
+	return e.Message
+}
+
+// ForbiddenError 403エラー
+type ForbiddenError struct {
+	Message string
+}
+
+func (e ForbiddenError) Error() string {
 	return e.Message
 }
 

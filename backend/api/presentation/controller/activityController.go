@@ -171,11 +171,11 @@ func (a ActivityControllerImpl) UpdateActivity() http.HandlerFunc {
 		res, err := a.ActivityUsecase.Update(&activity)
 		if err != nil {
 			switch err.(type) {
-			case utility.UserAuthenticationError:
+			case utility.AuthenticationError:
 				http.Error(w, err.Error(), http.StatusUnauthorized)
-			case utility.ActivityNotFoundError:
+			case utility.NotFoundError:
 				http.Error(w, err.Error(), http.StatusNotFound)
-			case utility.InvalidActivityError:
+			case utility.BadRequestError:
 				http.Error(w, err.Error(), http.StatusBadRequest)
 			default:
 				http.Error(w, err.Error(), http.StatusInternalServerError)
@@ -204,10 +204,12 @@ func (a ActivityControllerImpl) DeleteActivity() http.HandlerFunc {
 		err := a.ActivityUsecase.DeleteByActivityID(&activity)
 		if err != nil {
 			switch err.(type) {
-			case utility.UserAuthenticationError:
+			case utility.AuthenticationError:
 				http.Error(w, err.Error(), http.StatusUnauthorized)
-			case utility.ActivityNotFoundError:
+			case utility.NotFoundError:
 				http.Error(w, err.Error(), http.StatusNotFound)
+			case utility.ForbiddenError:
+				http.Error(w, err.Error(), http.StatusForbidden)
 			default:
 				http.Error(w, err.Error(), http.StatusInternalServerError)
 			}

@@ -313,17 +313,17 @@ func (a ActivityUsecaseImpl) Update(activity *request.ActivityEditRequestDTO) (*
 	// activityが存在するかどうかを確認
 	record, err := a.ar.FindActivity(activityID)
 	if err != nil {
-		return nil, utility.ActivityNotFoundError{Message: "failed to find existing activity"}
+		return nil, utility.NotFoundError{Message: "failed to find existing activity"}
 	}
 
 	// 編集処理をする人が本当に本人かどうかを確認
 	if userID != record.UserID {
-		return nil, utility.UserAuthenticationError{Message: "user authentication failed"}
+		return nil, utility.AuthenticationError{Message: "user authentication failed"}
 	}
 
 	// Dateからユーザーの行動を取得
-	timeStr := activity.Date()
-	historyByDate, err := a.hr.ReadHistoryByDate(userID, timeStr)
+	dateStr := record.Date
+	historyByDate, err := a.hr.ReadHistoryByDate(userID, dateStr)
 
 	// 編集時データのバリデーションチェック
 	var beforeTime, afterTime time.Time
@@ -347,9 +347,10 @@ func (a ActivityUsecaseImpl) Update(activity *request.ActivityEditRequestDTO) (*
 	}
 
 	if !utility.IsTimeInRange(beforeTime, newTime, afterTime) {
-		return nil, utility.InvalidActivityError{}
+		return nil, utility.BadRequestError{}
 	}
 
+	// 編集するデータを詰め替える
 	attendance := &model.Attendance{
 		ID:   activityID,
 		Time: newTime,
@@ -375,6 +376,7 @@ func (a ActivityUsecaseImpl) Update(activity *request.ActivityEditRequestDTO) (*
 func (a ActivityUsecaseImpl) DeleteByActivityID(activity *request.ActivityDeleteRequestDTO) error {
 	activityID := activity.ActivityID
 	userKey := activity.UserKey
+	var err error
 
 	//userKeyからuserIDを取得
 	userID, err := a.ur.FindIDByUserKey(userKey)
@@ -382,19 +384,64 @@ func (a ActivityUsecaseImpl) DeleteByActivityID(activity *request.ActivityDelete
 	// activityが存在するかどうかを確認
 	record, err := a.ar.FindActivity(activityID)
 	if err != nil {
-		return utility.ActivityNotFoundError{Message: "failed to find existing activity"}
+		return utility.NotFoundError{Message: "failed to find existing activity"}
 	}
 
-	// 編集処理をする人が本当に本人かどうかを確認
+	// 編集処理をする人の権限確認
 	if userID != record.UserID {
-		return utility.UserAuthenticationError{Message: "user authentication failed"}
+		return utility.AuthenticationError{Message: "user authentication failed"}
 	}
 
-	err = a.ar.DeleteActivity(activityID)
-	if err != nil {
-		return fmt.Errorf("failed to delete activity: %v", err)
-	}
+	// 削除時データのバリデーションチェック
+	// 削除はその日の一番新しいものしかできないようにする(整合性を保つため)
+	dateStr := record.Date // "2023-12-25"
+	historyByDate, err := a.hr.ReadHistoryByDate(userID, dateStr)
 
+	// 当日の削除の場合は現在の状態も更新
+	// 別の日の削除の場合は状態の変更はしない
+	for i, history := range historyByDate {
+
+		// 削除したいデータが日付ごとの最新のデータでない場合はエラーを返す
+		if activityID == history.ID {
+			if i != len(historyByDate)-1 {
+				return utility.ForbiddenError{}
+			}
+			if dateStr == history.Date {
+
+				// 更新したい処理を確認
+				var newAction model.StatusEnum
+				// 削除したい処理を確認
+				deleteAction := history.AttendanceType
+				switch deleteAction {
+				case model.WorkStart:
+					newAction = model.Finish
+				case model.WorkEnd:
+					newAction = model.Work
+				case model.BreakStart:
+					newAction = model.Work
+				case model.BreakEnd:
+					newAction = model.Break
+				default:
+					return err
+				}
+				// 現在の状態の更新を行う
+				updateUserStatus := &model.UserStatus{
+					UserID:   userID,
+					StatusID: newAction,
+				}
+				_, err := a.ar.PutUserStatus(updateUserStatus)
+				if err != nil {
+					return err
+				}
+				// 削除処理を行う
+				err = a.ar.DeleteActivity(activityID)
+			} else {
+				// 削除処理を行う
+				err = a.ar.DeleteActivity(activityID)
+			}
+		}
+
+	}
 	return nil
 
 }

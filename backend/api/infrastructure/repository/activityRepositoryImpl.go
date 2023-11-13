@@ -122,7 +122,6 @@ func (a ActivityRepositoryImpl) PutUserStatus(status *model.UserStatus) (*model.
 	entity := &orm_model.UserStatus{
 		StatusID: status.StatusID.ToInt(),
 	}
-	fmt.Println("やあ")
 	if err := a.db.Model(&orm_model.UserStatus{}).Where("user_id = ?", userId).Updates(entity).Error; err != nil {
 		return nil, err
 	}
