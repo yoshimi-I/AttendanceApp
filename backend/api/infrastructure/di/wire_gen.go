@@ -28,7 +28,7 @@ func InitializeControllers() (*ControllersSet, error) {
 	historyRepository := repository.NewHistoryRepository(db)
 	historyUsecase := usecase.NewHistoryUsecase(historyRepository, userRepository)
 	historyController := controller.NewHistoryController(historyUsecase)
-	activityUsecase := usecase.NewActivityUsecase(activityRepository, userRepository)
+	activityUsecase := usecase.NewActivityUsecase(activityRepository, userRepository, historyRepository)
 	activityController := controller.NewActivityController(activityUsecase)
 	controllersSet := &ControllersSet{
 		UserController:     userController,
