@@ -4,7 +4,7 @@ import "time"
 
 type Attendance struct {
 	ID             int
-	UserID         int
+	UserId         int
 	AttendanceType ActionEnum
 	Time           time.Time
 	Year           int

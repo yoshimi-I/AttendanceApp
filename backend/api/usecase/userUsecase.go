@@ -12,6 +12,7 @@ type UserUsecase interface {
 	AddUser(user *request.UserDTO) (*response.UserDTO, error)
 	UserByUserKey(userKey string) (*response.UserDTO, error)
 	IDByUserKey(userKey string) (id int, err error)
+	UserStatusByUserKey(userKey string) (*response.UserStatusDTO, error)
 }
 
 type UserUsecaseImpl struct {
@@ -54,11 +55,11 @@ func (u UserUsecaseImpl) AddUser(user *request.UserDTO) (*response.UserDTO, erro
 
 		// その後ユーザーの状態を保存(最初はFinish)
 		addUserStatus := &model.UserStatus{
-			UserID:   res.ID,
-			StatusID: model.Finish,
+			UserId:   res.Id,
+			StatusId: model.Finish,
 		}
 		log.Printf("Setting initial user status for user: %s", userKey)
-		_, err := u.ar.PostUserStatus(addUserStatus)
+		_, err := u.ur.PostUserStatus(addUserStatus)
 		if err != nil {
 			return nil, err
 		}
@@ -67,10 +68,10 @@ func (u UserUsecaseImpl) AddUser(user *request.UserDTO) (*response.UserDTO, erro
 
 	// DTOに詰め替え
 	responseDTO := &response.UserDTO{
-		Id:         res.ID,
-		Name:       res.Name,
-		Email:      res.Email,
-		UserKeyKey: res.UserKey,
+		Id:      res.Id,
+		Name:    res.Name,
+		Email:   res.Email,
+		UserKey: res.UserKey,
 	}
 	return responseDTO, nil
 
@@ -85,10 +86,10 @@ func (u UserUsecaseImpl) UserByUserKey(userKey string) (*response.UserDTO, error
 
 	// DTO詰め替え
 	responseDTO := &response.UserDTO{
-		Id:         res.ID,
-		Name:       res.Name,
-		Email:      res.Email,
-		UserKeyKey: res.UserKey,
+		Id:      res.Id,
+		Name:    res.Name,
+		Email:   res.Email,
+		UserKey: res.UserKey,
 	}
 	return responseDTO, nil
 }
@@ -100,4 +101,23 @@ func (u UserUsecaseImpl) IDByUserKey(userKey string) (id int, err error) {
 		return 0, err
 	}
 	return res, nil
+}
+
+func (u UserUsecaseImpl) UserStatusByUserKey(userKey string) (*response.UserStatusDTO, error) {
+	// userKeyからuserIdを指定
+	userId, err := u.ur.FindIDByUserKey(userKey)
+	if err != nil {
+		log.Println("usr_id not found")
+		return nil, err
+	}
+	userStatus, err := u.ur.FindUserStatus(userId)
+	if err != nil {
+		return nil, err
+	}
+
+	res := &response.UserStatusDTO{
+		Status: userStatus.StatusId.ToString(),
+	}
+	return res, nil
+
 }

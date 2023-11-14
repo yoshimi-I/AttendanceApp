@@ -29,8 +29,8 @@ func (a ActivityRepositoryImpl) FindActivity(id int) (*model.Attendance, error) 
 	}
 
 	res := &model.Attendance{
-		ID:             attendance.ID,
-		UserID:         attendance.UserID,
+		ID:             attendance.Id,
+		UserId:         attendance.UserId,
 		AttendanceType: model.IntToActionEnum(attendance.AttendanceType),
 		Time:           attendance.Time,
 		Year:           attendance.Year,
@@ -43,7 +43,7 @@ func (a ActivityRepositoryImpl) FindActivity(id int) (*model.Attendance, error) 
 // PostActivity 活動を追加する
 func (a ActivityRepositoryImpl) PostActivity(attendance *model.Attendance) (*model.Attendance, error) {
 	entity := &orm_model.Attendance{
-		UserID:         attendance.UserID,
+		UserId:         attendance.UserId,
 		AttendanceType: attendance.AttendanceType.ToInt(),
 		Time:           attendance.Time,
 		Date:           attendance.Date,
@@ -54,7 +54,7 @@ func (a ActivityRepositoryImpl) PostActivity(attendance *model.Attendance) (*mod
 		return nil, err
 	}
 
-	attendance.ID = entity.ID
+	attendance.ID = entity.Id
 	return attendance, nil
 }
 
@@ -79,52 +79,4 @@ func (a ActivityRepositoryImpl) DeleteActivity(id int) error {
 	}
 
 	return nil
-}
-
-// FindUserStatus 現在のユーザーの状態を確認
-func (a ActivityRepositoryImpl) FindUserStatus(userID int) (*model.UserStatus, error) {
-	var status orm_model.UserStatus
-
-	if err := a.db.Where("user_id = ?", userID).First(&status).Error; err != nil {
-		if err == gorm.ErrRecordNotFound {
-			return nil, fmt.Errorf("no record found with UserID: %d", userID)
-		}
-		return nil, err
-	}
-
-	res := &model.UserStatus{
-		UserID:   status.UserID,
-		StatusID: model.IntToStatusEnum(status.StatusID),
-	}
-
-	return res, nil
-
-}
-
-// PostUserStatus ユーザーの状態を新規登録
-func (a ActivityRepositoryImpl) PostUserStatus(status *model.UserStatus) (*model.UserStatus, error) {
-
-	entity := &orm_model.UserStatus{
-		UserID:   status.UserID,
-		StatusID: status.StatusID.ToInt(),
-	}
-
-	if err := a.db.Create(entity).Error; err != nil {
-		return nil, err
-	}
-
-	return status, nil
-}
-
-// PutUserStatus ユーザーの状態を更新
-func (a ActivityRepositoryImpl) PutUserStatus(status *model.UserStatus) (*model.UserStatus, error) {
-	userId := status.UserID
-	entity := &orm_model.UserStatus{
-		StatusID: status.StatusID.ToInt(),
-	}
-	if err := a.db.Model(&orm_model.UserStatus{}).Where("user_id = ?", userId).Updates(entity).Error; err != nil {
-		return nil, err
-	}
-
-	return status, nil
 }

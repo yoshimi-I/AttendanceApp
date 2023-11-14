@@ -2,6 +2,7 @@ package controller
 
 import (
 	"encoding/json"
+	"github.com/go-chi/chi/v5"
 	"log"
 	"net/http"
 	"work-management-app/usecase"
@@ -10,6 +11,7 @@ import (
 
 type UserController interface {
 	CreateUser() http.HandlerFunc
+	GetStatus() http.HandlerFunc
 }
 
 type UserControllerImpl struct {
@@ -42,6 +44,24 @@ func (u UserControllerImpl) CreateUser() http.HandlerFunc {
 		w.Header().Set("Content-Type", "application/json")
 		if err := json.NewEncoder(w).Encode(res); err != nil {
 			log.Printf("Can't encode json: %v", err)
+			http.Error(w, "Failed to encode response", http.StatusInternalServerError)
+			return
+		}
+	}
+
+}
+
+func (u UserControllerImpl) GetStatus() http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		// パラメータ取得
+		userKey := chi.URLParam(r, "userKey")
+		res, err := u.uu.UserStatusByUserKey(userKey)
+		if err != nil {
+			http.Error(w, err.Error(), http.StatusNotFound)
+		}
+
+		w.Header().Set("Content-Type", "application/json")
+		if err := json.NewEncoder(w).Encode(res); err != nil {
 			http.Error(w, "Failed to encode response", http.StatusInternalServerError)
 			return
 		}

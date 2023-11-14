@@ -25,6 +25,9 @@ func Router() *chi.Mux {
 	// ユーザーの登録
 	r.Post("/user", cr.UserController.CreateUser())
 
+	// 現在の活動を取得
+	r.Get("/user/status/{userKey}", cr.UserController.GetStatus())
+
 	// 活動の全履歴を取得
 	r.Get("/study/allHistory/{userKey}/{year}", cr.HistoryController.GetAllHistory())
 

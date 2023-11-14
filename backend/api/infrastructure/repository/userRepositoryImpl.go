@@ -2,6 +2,7 @@ package repository
 
 import (
 	"errors"
+	"fmt"
 	"gorm.io/gorm"
 	"work-management-app/domain/model"
 	"work-management-app/domain/repository"
@@ -30,7 +31,7 @@ func (u UserRepositoryImpl) PostUser(user *model.User) (*model.User, error) {
 	}
 
 	return &model.User{
-		ID:      entity.ID,
+		Id:      entity.Id,
 		Name:    entity.Name,
 		Email:   entity.Email,
 		UserKey: entity.UserKey,
@@ -51,7 +52,7 @@ func (u UserRepositoryImpl) FindUserByUserKey(userKey string) (*model.User, erro
 	}
 
 	return &model.User{
-		ID:      user.ID,
+		Id:      user.Id,
 		Name:    user.Name,
 		Email:   user.Email,
 		UserKey: user.UserKey,
@@ -66,5 +67,53 @@ func (u UserRepositoryImpl) FindIDByUserKey(userKey string) (id int, err error) 
 		}
 		return 0, result.Error
 	}
-	return user.ID, nil
+	return user.Id, nil
+}
+
+// FindUserStatus 現在のユーザーの状態を確認
+func (u UserRepositoryImpl) FindUserStatus(userID int) (*model.UserStatus, error) {
+	var status orm_model.UserStatus
+
+	if err := u.db.Where("user_id = ?", userID).First(&status).Error; err != nil {
+		if err == gorm.ErrRecordNotFound {
+			return nil, fmt.Errorf("no record found with UserId: %d", userID)
+		}
+		return nil, err
+	}
+
+	res := &model.UserStatus{
+		UserId:   status.UserId,
+		StatusId: model.IntToStatusEnum(status.StatusId),
+	}
+
+	return res, nil
+
+}
+
+// PostUserStatus ユーザーの状態を新規登録
+func (u UserRepositoryImpl) PostUserStatus(status *model.UserStatus) (*model.UserStatus, error) {
+
+	entity := &orm_model.UserStatus{
+		UserId:   status.UserId,
+		StatusId: status.StatusId.ToInt(),
+	}
+
+	if err := u.db.Create(entity).Error; err != nil {
+		return nil, err
+	}
+
+	return status, nil
+}
+
+// PutUserStatus ユーザーの状態を更新
+func (u UserRepositoryImpl) PutUserStatus(status *model.UserStatus) (*model.UserStatus, error) {
+	userId := status.UserId
+	entity := &orm_model.UserStatus{
+		StatusId: status.StatusId.ToInt(),
+	}
+	if err := u.db.Model(&orm_model.UserStatus{}).Where("user_id = ?", userId).Updates(entity).Error; err != nil {
+		return nil, err
+	}
+
+	return status, nil
 }

@@ -49,14 +49,14 @@ func (a ActivityUsecaseImpl) AddStarWork(work *request.ActivityRequestDTO) (*res
 	}
 
 	// 現在の状態をまずは取得
-	nowUserStatus, err := a.ar.FindUserStatus(userID)
+	nowUserStatus, err := a.ur.FindUserStatus(userID)
 	if err != nil {
 		log.Println("usr_id not found")
 		return nil, err
 	}
 	// 終了の状態の時のみ,作業を開始できる
-	if nowUserStatus.StatusID != model.Finish {
-		log.Println(nowUserStatus.StatusID.ToString())
+	if nowUserStatus.StatusId != model.Finish {
+		log.Println(nowUserStatus.StatusId.ToString())
 		return nil, fmt.Errorf("作業の開始は現在行えません")
 	}
 
@@ -66,17 +66,17 @@ func (a ActivityUsecaseImpl) AddStarWork(work *request.ActivityRequestDTO) (*res
 
 	// ユーザーの状態(作業中)を登録
 	updateUserStatus := &model.UserStatus{
-		UserID:   userID,
-		StatusID: model.Work,
+		UserId:   userID,
+		StatusId: model.Work,
 	}
-	userStatus, err := a.ar.PutUserStatus(updateUserStatus)
+	userStatus, err := a.ur.PutUserStatus(updateUserStatus)
 	if err != nil {
 		return nil, err
 	}
 
 	// 作業の登録
 	attendance := &model.Attendance{
-		UserID:         userID,
+		UserId:         userID,
 		AttendanceType: model.WorkStart,
 		Time:           work.Time,
 		Date:           work.Date(),
@@ -96,7 +96,7 @@ func (a ActivityUsecaseImpl) AddStarWork(work *request.ActivityRequestDTO) (*res
 		Time:           res.Time,
 		Year:           res.Year,
 		Date:           res.Date,
-		Status:         userStatus.StatusID.ToString(),
+		Status:         userStatus.StatusId.ToString(),
 	}
 	return responseDTO, nil
 }
@@ -115,13 +115,13 @@ func (a ActivityUsecaseImpl) AddEndWork(work *request.ActivityRequestDTO) (*resp
 	}
 
 	// 現在の状態をまずは取得
-	nowUserStatus, err := a.ar.FindUserStatus(userID)
+	nowUserStatus, err := a.ur.FindUserStatus(userID)
 	if err != nil {
 		log.Println("user_status is not found")
 		return nil, err
 	}
 
-	if nowUserStatus.StatusID != model.Work {
+	if nowUserStatus.StatusId != model.Work {
 		return nil, fmt.Errorf("作業の終了は現在行えません")
 	}
 
@@ -131,18 +131,18 @@ func (a ActivityUsecaseImpl) AddEndWork(work *request.ActivityRequestDTO) (*resp
 
 	// ユーザーの状態(終了)を登録
 	updateUserStatus := &model.UserStatus{
-		UserID:   userID,
-		StatusID: model.Finish,
+		UserId:   userID,
+		StatusId: model.Finish,
 	}
 
-	userStatus, err := a.ar.PutUserStatus(updateUserStatus)
+	userStatus, err := a.ur.PutUserStatus(updateUserStatus)
 	if err != nil {
 		return nil, err
 	}
 
 	// 作業の登録
 	attendance := &model.Attendance{
-		UserID:         userID,
+		UserId:         userID,
 		AttendanceType: model.WorkEnd,
 		Time:           work.Time,
 		Date:           work.Date(),
@@ -162,7 +162,7 @@ func (a ActivityUsecaseImpl) AddEndWork(work *request.ActivityRequestDTO) (*resp
 		Time:           res.Time,
 		Year:           res.Year,
 		Date:           res.Date,
-		Status:         userStatus.StatusID.ToString(),
+		Status:         userStatus.StatusId.ToString(),
 	}
 	return responseDTO, nil
 }
@@ -182,14 +182,14 @@ func (a ActivityUsecaseImpl) AddStartBreak(breakInfo *request.ActivityRequestDTO
 	}
 
 	// 現在の状態をまずは取得
-	nowUserStatus, err := a.ar.FindUserStatus(userID)
+	nowUserStatus, err := a.ur.FindUserStatus(userID)
 	if err != nil {
 		log.Println("user_status is not found")
 
 		return nil, err
 	}
 
-	if nowUserStatus.StatusID != model.Work {
+	if nowUserStatus.StatusId != model.Work {
 		return nil, fmt.Errorf("休憩の開始は現在行えません")
 	}
 
@@ -199,17 +199,17 @@ func (a ActivityUsecaseImpl) AddStartBreak(breakInfo *request.ActivityRequestDTO
 
 	// ユーザーの状態(休憩中)を登録
 	updateUserStatus := &model.UserStatus{
-		UserID:   userID,
-		StatusID: model.Break,
+		UserId:   userID,
+		StatusId: model.Break,
 	}
-	userStatus, err := a.ar.PutUserStatus(updateUserStatus)
+	userStatus, err := a.ur.PutUserStatus(updateUserStatus)
 	if err != nil {
 		return nil, err
 	}
 
 	// 作業の登録
 	attendance := &model.Attendance{
-		UserID:         userID,
+		UserId:         userID,
 		AttendanceType: model.BreakStart,
 		Time:           breakInfo.Time,
 		Date:           breakInfo.Date(),
@@ -230,7 +230,7 @@ func (a ActivityUsecaseImpl) AddStartBreak(breakInfo *request.ActivityRequestDTO
 		Time:           res.Time,
 		Year:           res.Year,
 		Date:           res.Date,
-		Status:         userStatus.StatusID.ToString(),
+		Status:         userStatus.StatusId.ToString(),
 	}
 	return responseDTO, nil
 }
@@ -249,13 +249,13 @@ func (a ActivityUsecaseImpl) AddEndBreak(breakInfo *request.ActivityRequestDTO) 
 	}
 
 	// 現在の状態をまずは取得
-	nowUserStatus, err := a.ar.FindUserStatus(userID)
+	nowUserStatus, err := a.ur.FindUserStatus(userID)
 	if err != nil {
 		log.Println("user_status is not found")
 		return nil, err
 	}
 
-	if nowUserStatus.StatusID != model.Break {
+	if nowUserStatus.StatusId != model.Break {
 		return nil, fmt.Errorf("休憩の終了は現在行えません")
 	}
 
@@ -265,17 +265,17 @@ func (a ActivityUsecaseImpl) AddEndBreak(breakInfo *request.ActivityRequestDTO) 
 
 	// ユーザーの状態(作業中)を登録
 	updateUserStatus := &model.UserStatus{
-		UserID:   userID,
-		StatusID: model.Work,
+		UserId:   userID,
+		StatusId: model.Work,
 	}
-	userStatus, err := a.ar.PutUserStatus(updateUserStatus)
+	userStatus, err := a.ur.PutUserStatus(updateUserStatus)
 	if err != nil {
 		return nil, err
 	}
 
 	// 作業の登録
 	attendance := &model.Attendance{
-		UserID:         userID,
+		UserId:         userID,
 		AttendanceType: model.BreakEnd,
 		Time:           breakInfo.Time,
 		Date:           breakInfo.Date(),
@@ -296,7 +296,7 @@ func (a ActivityUsecaseImpl) AddEndBreak(breakInfo *request.ActivityRequestDTO) 
 		Time:           res.Time,
 		Year:           res.Year,
 		Date:           res.Date,
-		Status:         userStatus.StatusID.ToString(),
+		Status:         userStatus.StatusId.ToString(),
 	}
 	return responseDTO, nil
 }
@@ -317,7 +317,7 @@ func (a ActivityUsecaseImpl) Update(activity *request.ActivityEditRequestDTO) (*
 	}
 
 	// 編集処理をする人が本当に本人かどうかを確認
-	if userID != record.UserID {
+	if userID != record.UserId {
 		return nil, utility.AuthenticationError{Message: "user authentication failed"}
 	}
 
@@ -388,7 +388,7 @@ func (a ActivityUsecaseImpl) DeleteByActivityID(activity *request.ActivityDelete
 	}
 
 	// 編集処理をする人の権限確認
-	if userID != record.UserID {
+	if userID != record.UserId {
 		return utility.AuthenticationError{Message: "user authentication failed"}
 	}
 
@@ -426,10 +426,10 @@ func (a ActivityUsecaseImpl) DeleteByActivityID(activity *request.ActivityDelete
 				}
 				// 現在の状態の更新を行う
 				updateUserStatus := &model.UserStatus{
-					UserID:   userID,
-					StatusID: newAction,
+					UserId:   userID,
+					StatusId: newAction,
 				}
-				_, err := a.ar.PutUserStatus(updateUserStatus)
+				_, err := a.ur.PutUserStatus(updateUserStatus)
 				if err != nil {
 					return err
 				}

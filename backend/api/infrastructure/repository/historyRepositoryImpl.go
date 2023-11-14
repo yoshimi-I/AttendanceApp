@@ -27,8 +27,8 @@ func (s *HistoryRepoImpl) ReadAllHistory(userID int, year int) ([]model.Attendan
 	}
 	for _, activity := range activities {
 		resItem := model.Attendance{
-			ID:             activity.ID,
-			UserID:         activity.UserID,
+			ID:             activity.Id,
+			UserId:         activity.UserId,
 			AttendanceType: model.IntToActionEnum(activity.AttendanceType),
 			Time:           activity.Time,
 			Date:           activity.Date,
@@ -47,8 +47,8 @@ func (s *HistoryRepoImpl) ReadHistoryByDate(userID int, date string) ([]model.At
 	}
 	for _, activity := range activities {
 		resItem := model.Attendance{
-			ID:             activity.ID,
-			UserID:         activity.UserID,
+			ID:             activity.Id,
+			UserId:         activity.UserId,
 			AttendanceType: model.IntToActionEnum(activity.AttendanceType),
 			Time:           activity.Time,
 			Date:           activity.Date,
