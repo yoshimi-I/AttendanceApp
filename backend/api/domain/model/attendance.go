@@ -3,7 +3,7 @@ package model
 import "time"
 
 type Attendance struct {
-	ID             int
+	Id             int
 	UserId         int
 	AttendanceType ActionEnum
 	Time           time.Time

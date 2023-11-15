@@ -24,6 +24,7 @@ func NewUserUsecase(ur repository.UserRepository, ar repository.ActivityReposito
 	return &UserUsecaseImpl{ur: ur, ar: ar}
 }
 
+// AddUser ユーザーを登録
 func (u UserUsecaseImpl) AddUser(user *request.UserDTO) (*response.UserDTO, error) {
 
 	var res *model.User
@@ -68,7 +69,6 @@ func (u UserUsecaseImpl) AddUser(user *request.UserDTO) (*response.UserDTO, erro
 
 	// DTOに詰め替え
 	responseDTO := &response.UserDTO{
-		Id:      res.Id,
 		Name:    res.Name,
 		Email:   res.Email,
 		UserKey: res.UserKey,
@@ -77,6 +77,7 @@ func (u UserUsecaseImpl) AddUser(user *request.UserDTO) (*response.UserDTO, erro
 
 }
 
+// UserByUserKey ユーザーをユーザーキーから取得
 func (u UserUsecaseImpl) UserByUserKey(userKey string) (*response.UserDTO, error) {
 	res, err := u.ur.FindUserByUserKey(userKey)
 	if err != nil {
@@ -86,7 +87,6 @@ func (u UserUsecaseImpl) UserByUserKey(userKey string) (*response.UserDTO, error
 
 	// DTO詰め替え
 	responseDTO := &response.UserDTO{
-		Id:      res.Id,
 		Name:    res.Name,
 		Email:   res.Email,
 		UserKey: res.UserKey,
@@ -94,6 +94,7 @@ func (u UserUsecaseImpl) UserByUserKey(userKey string) (*response.UserDTO, error
 	return responseDTO, nil
 }
 
+// IDByUserKey ユーザーキーからユーザーのIDを取得
 func (u UserUsecaseImpl) IDByUserKey(userKey string) (id int, err error) {
 	res, err := u.ur.FindIDByUserKey(userKey)
 	if err != nil {
@@ -103,6 +104,7 @@ func (u UserUsecaseImpl) IDByUserKey(userKey string) (id int, err error) {
 	return res, nil
 }
 
+// UserStatusByUserKey ユーザーの現在の状態を取得
 func (u UserUsecaseImpl) UserStatusByUserKey(userKey string) (*response.UserStatusDTO, error) {
 	// userKeyからuserIdを指定
 	userId, err := u.ur.FindIDByUserKey(userKey)

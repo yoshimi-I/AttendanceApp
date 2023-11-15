@@ -91,7 +91,7 @@ func (a ActivityUsecaseImpl) AddStarWork(work *request.ActivityRequestDTO) (*res
 
 	// DTOに詰め替え作業
 	responseDTO := &response.ActivityResponseDTO{
-		ID:             res.ID,
+		Id:             res.Id,
 		AttendanceType: "work_start",
 		Time:           res.Time,
 		Year:           res.Year,
@@ -157,7 +157,7 @@ func (a ActivityUsecaseImpl) AddEndWork(work *request.ActivityRequestDTO) (*resp
 
 	// DTOに詰め替え作業
 	responseDTO := &response.ActivityResponseDTO{
-		ID:             res.ID,
+		Id:             res.Id,
 		AttendanceType: "work_end",
 		Time:           res.Time,
 		Year:           res.Year,
@@ -225,7 +225,7 @@ func (a ActivityUsecaseImpl) AddStartBreak(breakInfo *request.ActivityRequestDTO
 
 	// DTOに詰め替え作業
 	responseDTO := &response.ActivityResponseDTO{
-		ID:             res.ID,
+		Id:             res.Id,
 		AttendanceType: "break_start",
 		Time:           res.Time,
 		Year:           res.Year,
@@ -291,7 +291,7 @@ func (a ActivityUsecaseImpl) AddEndBreak(breakInfo *request.ActivityRequestDTO) 
 
 	// DTOに詰め替え作業
 	responseDTO := &response.ActivityResponseDTO{
-		ID:             res.ID,
+		Id:             res.Id,
 		AttendanceType: "break_start",
 		Time:           res.Time,
 		Year:           res.Year,
@@ -303,7 +303,7 @@ func (a ActivityUsecaseImpl) AddEndBreak(breakInfo *request.ActivityRequestDTO) 
 
 // Update 作業,休憩の修正
 func (a ActivityUsecaseImpl) Update(activity *request.ActivityEditRequestDTO) (*response.ActivityResponseDTO, error) {
-	activityID := activity.ActivityID
+	activityID := activity.ActivityId
 	userKey := activity.UserKey
 	newTime := activity.Time
 
@@ -328,7 +328,7 @@ func (a ActivityUsecaseImpl) Update(activity *request.ActivityEditRequestDTO) (*
 	// 編集時データのバリデーションチェック
 	var beforeTime, afterTime time.Time
 	for i, history := range historyByDate {
-		if history.ID == activityID {
+		if history.Id == activityID {
 			if i == 0 {
 				// 最初の値かどうかを確認
 				// 開始時刻を代入
@@ -352,7 +352,7 @@ func (a ActivityUsecaseImpl) Update(activity *request.ActivityEditRequestDTO) (*
 
 	// 編集するデータを詰め替える
 	attendance := &model.Attendance{
-		ID:   activityID,
+		Id:   activityID,
 		Time: newTime,
 	}
 
@@ -363,7 +363,7 @@ func (a ActivityUsecaseImpl) Update(activity *request.ActivityEditRequestDTO) (*
 
 	// DTOに詰め替え作業
 	responseDTO := &response.ActivityResponseDTO{
-		ID:             res.ID,
+		Id:             res.Id,
 		AttendanceType: response.ConvertActivityTime(record.AttendanceType),
 		Time:           res.Time,
 		Year:           record.Year,
@@ -374,7 +374,7 @@ func (a ActivityUsecaseImpl) Update(activity *request.ActivityEditRequestDTO) (*
 
 // DeleteByActivityID 作業,休憩の削除
 func (a ActivityUsecaseImpl) DeleteByActivityID(activity *request.ActivityDeleteRequestDTO) error {
-	activityID := activity.ActivityID
+	activityID := activity.ActivityId
 	userKey := activity.UserKey
 	var err error
 
@@ -402,7 +402,7 @@ func (a ActivityUsecaseImpl) DeleteByActivityID(activity *request.ActivityDelete
 	for i, history := range historyByDate {
 
 		// 削除したいデータが日付ごとの最新のデータでない場合はエラーを返す
-		if activityID == history.ID {
+		if activityID == history.Id {
 			if i != len(historyByDate)-1 {
 				return utility.ForbiddenError{}
 			}

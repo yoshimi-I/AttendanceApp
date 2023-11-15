@@ -146,7 +146,7 @@ func (h HistoryUsecaseImpl) HistoryByDate(userKey string, date string) (*respons
 
 	var activities []response.ActivityDetail
 	for _, v := range historyByDate {
-		ID := v.ID
+		ID := v.Id
 		activityTime := v.Time
 		activityType := response.ConvertActivityTime(v.AttendanceType)
 		activity := response.ActivityDetail{

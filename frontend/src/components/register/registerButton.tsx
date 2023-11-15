@@ -56,7 +56,6 @@ const AttendanceButton: React.FC<AttendanceButtonProps> = ({
     }
 
     const currentTime = new Date();
-    console.log(currentTime);
     const url = `${baseUrl}${endpoint}`;
 
     try {
@@ -80,7 +79,6 @@ const AttendanceButton: React.FC<AttendanceButtonProps> = ({
         setSnackbarMessage("登録に成功しました");
         setSnackbarSeverity("success");
         userStatus(responseData.status);
-        console.log(responseData);
       }
     } catch (error) {
       setSnackbarMessage("エラーが発生しました: " + error.message);

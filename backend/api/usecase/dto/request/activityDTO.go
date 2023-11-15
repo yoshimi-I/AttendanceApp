@@ -11,13 +11,13 @@ type ActivityRequestDTO struct {
 }
 
 type ActivityEditRequestDTO struct {
-	ActivityID int       `json:"activity_id"`
+	ActivityId int       `json:"activity_id"`
 	UserKey    string    `json:"user_key"`
 	Time       time.Time `json:"time"`
 }
 
 type ActivityDeleteRequestDTO struct {
-	ActivityID int    `json:"activity_id"`
+	ActivityId int    `json:"activity_id"`
 	UserKey    string `json:"user_key"`
 }
 

@@ -29,7 +29,7 @@ func (a ActivityRepositoryImpl) FindActivity(id int) (*model.Attendance, error) 
 	}
 
 	res := &model.Attendance{
-		ID:             attendance.Id,
+		Id:             attendance.Id,
 		UserId:         attendance.UserId,
 		AttendanceType: model.IntToActionEnum(attendance.AttendanceType),
 		Time:           attendance.Time,
@@ -54,7 +54,7 @@ func (a ActivityRepositoryImpl) PostActivity(attendance *model.Attendance) (*mod
 		return nil, err
 	}
 
-	attendance.ID = entity.Id
+	attendance.Id = entity.Id
 	return attendance, nil
 }
 
@@ -63,7 +63,7 @@ func (a ActivityRepositoryImpl) PutActivity(attendance *model.Attendance) (*mode
 	entity := &orm_model.Attendance{
 		Time: attendance.Time,
 	}
-	id := attendance.ID
+	id := attendance.Id
 
 	if err := a.db.Model(&orm_model.Attendance{}).Where("id = ?", id).Updates(entity).Error; err != nil {
 		return nil, err
