@@ -8,27 +8,30 @@ package di
 
 import (
 	"github.com/google/wire"
-	"work-management-app/infrastructure"
-	"work-management-app/infrastructure/repository"
+	usecase2 "work-management-app/application/usecase"
+	"work-management-app/domain/service"
+	"work-management-app/infrastructure/database"
+	repository2 "work-management-app/infrastructure/database/repository"
 	"work-management-app/presentation/controller"
-	"work-management-app/usecase"
 )
 
 // Injectors from wire.go:
 
 func InitializeControllers() (*ControllersSet, error) {
-	db, err := infrastructure.InitDB()
+	db, err := database.InitDB()
 	if err != nil {
 		return nil, err
 	}
-	userRepository := repository.NewUserRepository(db)
-	activityRepository := repository.NewActivityRepository(db)
-	userUsecase := usecase.NewUserUsecase(userRepository, activityRepository)
+	userRepository := repository2.NewUserRepository(db)
+	activityRepository := repository2.NewActivityRepository(db)
+	userUsecase := usecase2.NewUserUsecase(userRepository, activityRepository)
 	userController := controller.NewUserController(userUsecase)
-	historyRepository := repository.NewHistoryRepository(db)
-	historyUsecase := usecase.NewHistoryUsecase(historyRepository, userRepository)
+	historyRepository := repository2.NewHistoryRepository(db)
+	historyDomainService := service.NewHistoryDomainService()
+	historyUsecase := usecase2.NewHistoryUsecase(historyRepository, userRepository, historyDomainService)
 	historyController := controller.NewHistoryController(historyUsecase)
-	activityUsecase := usecase.NewActivityUsecase(activityRepository, userRepository, historyRepository)
+	activityDomainService := service.NewActivityDomainService(activityRepository, historyRepository)
+	activityUsecase := usecase2.NewActivityUsecase(activityRepository, userRepository, activityDomainService)
 	activityController := controller.NewActivityController(activityUsecase)
 	controllersSet := &ControllersSet{
 		UserController:     userController,
@@ -41,13 +44,16 @@ func InitializeControllers() (*ControllersSet, error) {
 // wire.go:
 
 // infrastructure
-var infrastructureSet = wire.NewSet(infrastructure.InitDB)
+var infrastructureSet = wire.NewSet(database.InitDB)
+
+// domainService
+var domainServiceSet = wire.NewSet(service.NewActivityDomainService, service.NewHistoryDomainService)
 
 // repository
-var repositorySet = wire.NewSet(repository.NewActivityRepository, repository.NewHistoryRepository, repository.NewUserRepository)
+var repositorySet = wire.NewSet(repository2.NewActivityRepository, repository2.NewHistoryRepository, repository2.NewUserRepository)
 
-// usecase
-var usecaseSet = wire.NewSet(usecase.NewActivityUsecase, usecase.NewHistoryUsecase, usecase.NewUserUsecase)
+// application
+var usecaseSet = wire.NewSet(usecase2.NewActivityUsecase, usecase2.NewHistoryUsecase, usecase2.NewUserUsecase)
 
 // controller
 var controllerSet = wire.NewSet(controller.NewActivityController, controller.NewHistoryController, controller.NewUserController)

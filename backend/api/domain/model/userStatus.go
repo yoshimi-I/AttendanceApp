@@ -1,6 +1,6 @@
 package model
 
 type UserStatus struct {
-	UserId   int
+	UserID   int
 	StatusId StatusEnum
 }

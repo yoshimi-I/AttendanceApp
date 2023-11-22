@@ -28,6 +28,23 @@ func NowTime() time.Time {
 	return now.In(jst)
 }
 
+// NowYear 現在の年を返す
+func NowYear() int {
+	return NowTime().Year()
+}
+
+// TimeToDate 引数の日付を文字列型で返す ("2023-12-25")
+func TimeToDate(nowTime time.Time) time.Time {
+	now := time.Now()
+	jst, _ := time.LoadLocation("Asia/Tokyo")
+	return now.In(jst)
+}
+
+// TimeToYear 引数の日付を年に変換
+func TimeToYear(nowTime time.Time) int {
+	return NowTime().Year()
+}
+
 // NowDateStr 現在の日付を文字列型で返す ("2023-12-25")
 func NowDateStr() string {
 	now := time.Now()
@@ -44,7 +61,7 @@ func PreDateStr(nowDate string) (string, error) {
 	if err != nil {
 		return "", err
 	}
-	
+
 	previousDay := date.AddDate(0, 0, -1)
 	return previousDay.Format(layout), err
 }

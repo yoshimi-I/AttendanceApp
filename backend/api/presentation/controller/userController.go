@@ -5,8 +5,8 @@ import (
 	"github.com/go-chi/chi/v5"
 	"log"
 	"net/http"
-	"work-management-app/usecase"
-	"work-management-app/usecase/dto/request"
+	"work-management-app/application/dto/request"
+	"work-management-app/application/usecase"
 )
 
 type UserController interface {
