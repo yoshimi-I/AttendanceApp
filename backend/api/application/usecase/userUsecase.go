@@ -2,10 +2,10 @@ package usecase
 
 import (
 	"log"
+	"work-management-app/application/dto/request"
+	"work-management-app/application/dto/response"
 	"work-management-app/domain/model"
 	"work-management-app/domain/repository"
-	"work-management-app/usecase/dto/request"
-	"work-management-app/usecase/dto/response"
 )
 
 type UserUsecase interface {
@@ -81,7 +81,7 @@ func (u UserUsecaseImpl) AddUser(user *request.UserDTO) (*response.UserDTO, erro
 func (u UserUsecaseImpl) UserByUserKey(userKey string) (*response.UserDTO, error) {
 	res, err := u.ur.FindUserByUserKey(userKey)
 	if err != nil {
-		log.Printf("Faild to UserById in usecase : %v", err)
+		log.Printf("Faild to UserById in application : %v", err)
 		return nil, err
 	}
 
@@ -98,7 +98,7 @@ func (u UserUsecaseImpl) UserByUserKey(userKey string) (*response.UserDTO, error
 func (u UserUsecaseImpl) IDByUserKey(userKey string) (id int, err error) {
 	res, err := u.ur.FindIDByUserKey(userKey)
 	if err != nil {
-		log.Printf("Faild to IDByUserKey in usecase : %v", err)
+		log.Printf("Faild to IDByUserKey in application : %v", err)
 		return 0, err
 	}
 	return res, nil

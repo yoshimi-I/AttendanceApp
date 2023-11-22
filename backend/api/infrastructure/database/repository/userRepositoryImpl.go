@@ -6,7 +6,7 @@ import (
 	"gorm.io/gorm"
 	"work-management-app/domain/model"
 	"work-management-app/domain/repository"
-	orm_model "work-management-app/infrastructure/orm"
+	"work-management-app/infrastructure/database/orm"
 )
 
 type UserRepositoryImpl struct {

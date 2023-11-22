@@ -4,10 +4,10 @@ import (
 	"fmt"
 	"log"
 	"time"
+	"work-management-app/application/dto/request"
+	"work-management-app/application/dto/response"
 	"work-management-app/domain/model"
 	"work-management-app/domain/repository"
-	"work-management-app/usecase/dto/request"
-	"work-management-app/usecase/dto/response"
 	"work-management-app/utility"
 )
 
@@ -54,6 +54,7 @@ func (a ActivityUsecaseImpl) AddStarWork(work *request.ActivityRequestDTO) (*res
 		log.Println("usr_id not found")
 		return nil, err
 	}
+
 	// 終了の状態の時のみ,作業を開始できる
 	if nowUserStatus.StatusId != model.Finish {
 		log.Println(nowUserStatus.StatusId.ToString())

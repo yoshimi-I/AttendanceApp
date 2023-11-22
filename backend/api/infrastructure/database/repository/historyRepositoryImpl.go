@@ -1,11 +1,10 @@
 package repository
 
 import (
+	"gorm.io/gorm"
 	"work-management-app/domain/model"
 	"work-management-app/domain/repository"
-	orm_model "work-management-app/infrastructure/orm"
-
-	"gorm.io/gorm"
+	"work-management-app/infrastructure/database/orm"
 )
 
 type HistoryRepoImpl struct {

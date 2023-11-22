@@ -8,16 +8,16 @@ package di
 
 import (
 	"github.com/google/wire"
-	"work-management-app/infrastructure"
-	"work-management-app/infrastructure/repository"
+	"work-management-app/application/usecase"
+	"work-management-app/infrastructure/database"
+	"work-management-app/infrastructure/database/repository"
 	"work-management-app/presentation/controller"
-	"work-management-app/usecase"
 )
 
 // Injectors from wire.go:
 
 func InitializeControllers() (*ControllersSet, error) {
-	db, err := infrastructure.InitDB()
+	db, err := database.InitDB()
 	if err != nil {
 		return nil, err
 	}
@@ -41,12 +41,12 @@ func InitializeControllers() (*ControllersSet, error) {
 // wire.go:
 
 // infrastructure
-var infrastructureSet = wire.NewSet(infrastructure.InitDB)
+var infrastructureSet = wire.NewSet(database.InitDB)
 
 // repository
 var repositorySet = wire.NewSet(repository.NewActivityRepository, repository.NewHistoryRepository, repository.NewUserRepository)
 
-// usecase
+// application
 var usecaseSet = wire.NewSet(usecase.NewActivityUsecase, usecase.NewHistoryUsecase, usecase.NewUserUsecase)
 
 // controller
