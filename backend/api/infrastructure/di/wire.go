@@ -7,7 +7,8 @@ package di
 
 import (
 	"github.com/google/wire"
-	"work-management-app/application/usecase"
+	usecase2 "work-management-app/application/usecase"
+	"work-management-app/domain/service"
 	"work-management-app/infrastructure/database"
 	repository2 "work-management-app/infrastructure/database/repository"
 	"work-management-app/presentation/controller"
@@ -16,6 +17,12 @@ import (
 // infrastructure
 var infrastructureSet = wire.NewSet(
 	database.InitDB,
+)
+
+// domainService
+var domainServiceSet = wire.NewSet(
+	service.NewActivityDomainService,
+	service.NewHistoryDomainService,
 )
 
 // repository
@@ -27,9 +34,9 @@ var repositorySet = wire.NewSet(
 
 // application
 var usecaseSet = wire.NewSet(
-	usecase.NewActivityUsecase,
-	usecase.NewHistoryUsecase,
-	usecase.NewUserUsecase,
+	usecase2.NewActivityUsecase,
+	usecase2.NewHistoryUsecase,
+	usecase2.usecase.NewUserUsecase,
 )
 
 // controller
@@ -48,6 +55,7 @@ type ControllersSet struct {
 func InitializeControllers() (*ControllersSet, error) {
 	wire.Build(
 		infrastructureSet,
+		domainServiceSet,
 		repositorySet,
 		usecaseSet,
 		controllerSet,

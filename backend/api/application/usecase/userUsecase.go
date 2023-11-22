@@ -6,6 +6,7 @@ import (
 	"work-management-app/application/dto/response"
 	"work-management-app/domain/model"
 	"work-management-app/domain/repository"
+	"work-management-app/utility"
 )
 
 type UserUsecase interface {
@@ -29,6 +30,7 @@ func (u UserUsecaseImpl) AddUser(user *request.UserDTO) (*response.UserDTO, erro
 
 	var res *model.User
 	userKey := user.UserKey
+
 	// 重複を確認
 	findUser, err := u.ur.FindUserByUserKey(userKey)
 
@@ -37,34 +39,33 @@ func (u UserUsecaseImpl) AddUser(user *request.UserDTO) (*response.UserDTO, erro
 		return nil, err
 	}
 
-	// userがまだ登録されていない場合のみDBに保存
+	// userがまだ登録されていない場合のみ保存
 	if findUser != nil {
-		res = findUser
+		return nil, utility.BadRequestError{}
+	}
 
-	} else {
-		addUser := &model.User{
-			Name:    user.Name,
-			Email:   user.Email,
-			UserKey: userKey,
-		}
+	addUser := &model.User{
+		Name:    user.Name,
+		Email:   user.Email,
+		UserKey: userKey,
+	}
 
-		// DBにuser情報を保存
-		res, err = u.ur.PostUser(addUser)
-		if err != nil {
-			return nil, err
-		}
+	// DBにuser情報を保存
+	res, err = u.ur.PostUser(addUser)
+	if err != nil {
+		return nil, err
+	}
 
-		// その後ユーザーの状態を保存(最初はFinish)
-		addUserStatus := &model.UserStatus{
-			UserId:   res.Id,
-			StatusId: model.Finish,
-		}
-		log.Printf("Setting initial user status for user: %s", userKey)
-		_, err := u.ur.PostUserStatus(addUserStatus)
-		if err != nil {
-			return nil, err
-		}
+	// その後ユーザーの状態を保存(最初はFinish)
+	addUserStatus := &model.UserStatus{
+		UserID:   res.Id,
+		StatusId: model.Finish,
+	}
 
+	log.Printf("Setting initial user status for user: %s", userKey)
+	_, err = u.ur.PostUserStatus(addUserStatus)
+	if err != nil {
+		return nil, err
 	}
 
 	// DTOに詰め替え

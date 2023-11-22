@@ -28,8 +28,8 @@ func (a ActivityRepositoryImpl) FindActivity(id int) (*model.Attendance, error) 
 	}
 
 	res := &model.Attendance{
-		Id:             attendance.Id,
-		UserId:         attendance.UserId,
+		ID:             attendance.ID,
+		UserID:         attendance.UserID,
 		AttendanceType: model.IntToActionEnum(attendance.AttendanceType),
 		Time:           attendance.Time,
 		Year:           attendance.Year,
@@ -42,7 +42,7 @@ func (a ActivityRepositoryImpl) FindActivity(id int) (*model.Attendance, error) 
 // PostActivity 活動を追加する
 func (a ActivityRepositoryImpl) PostActivity(attendance *model.Attendance) (*model.Attendance, error) {
 	entity := &orm_model.Attendance{
-		UserId:         attendance.UserId,
+		UserID:         attendance.UserID,
 		AttendanceType: attendance.AttendanceType.ToInt(),
 		Time:           attendance.Time,
 		Date:           attendance.Date,
@@ -53,7 +53,7 @@ func (a ActivityRepositoryImpl) PostActivity(attendance *model.Attendance) (*mod
 		return nil, err
 	}
 
-	attendance.Id = entity.Id
+	attendance.ID = entity.ID
 	return attendance, nil
 }
 
@@ -62,7 +62,7 @@ func (a ActivityRepositoryImpl) PutActivity(attendance *model.Attendance) (*mode
 	entity := &orm_model.Attendance{
 		Time: attendance.Time,
 	}
-	id := attendance.Id
+	id := attendance.ID
 
 	if err := a.db.Model(&orm_model.Attendance{}).Where("id = ?", id).Updates(entity).Error; err != nil {
 		return nil, err

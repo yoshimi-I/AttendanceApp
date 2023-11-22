@@ -2,7 +2,6 @@ package controller
 
 import (
 	"encoding/json"
-	"fmt"
 	"log"
 	"net/http"
 	"time"
@@ -35,12 +34,6 @@ func (a ActivityControllerImpl) AddStartWork() http.HandlerFunc {
 			return
 		}
 
-		// 日本時間に変換
-		loc, _ := time.LoadLocation("Asia/Tokyo")
-		activity.Time = activity.Time.In(loc)
-
-		fmt.Println("controller", activity)
-
 		res, err := a.ActivityUsecase.AddStarWork(&activity)
 		if err != nil {
 			log.Println("Error in ActivityUsecase")
@@ -69,12 +62,6 @@ func (a ActivityControllerImpl) AddEndWork() http.HandlerFunc {
 			return
 		}
 
-		// 日本時間に変換
-		loc, _ := time.LoadLocation("Asia/Tokyo")
-		activity.Time = activity.Time.In(loc)
-
-		fmt.Println("controller", activity)
-
 		res, err := a.ActivityUsecase.AddEndWork(&activity)
 		if err != nil {
 			log.Println("Error in ActivityUsecase")
@@ -101,10 +88,6 @@ func (a ActivityControllerImpl) AddStartBreak() http.HandlerFunc {
 			http.Error(w, "Invalid request body", http.StatusBadRequest)
 			return
 		}
-
-		// 日本時間に変換
-		loc, _ := time.LoadLocation("Asia/Tokyo")
-		activity.Time = activity.Time.In(loc)
 
 		res, err := a.ActivityUsecase.AddStartBreak(&activity)
 		if err != nil {
@@ -133,10 +116,6 @@ func (a ActivityControllerImpl) AddEndBreak() http.HandlerFunc {
 			http.Error(w, "Invalid request body", http.StatusBadRequest)
 			return
 		}
-
-		// 日本時間に変換
-		loc, _ := time.LoadLocation("Asia/Tokyo")
-		activity.Time = activity.Time.In(loc)
 
 		res, err := a.ActivityUsecase.AddEndBreak(&activity)
 		if err != nil {
@@ -210,6 +189,8 @@ func (a ActivityControllerImpl) DeleteActivity() http.HandlerFunc {
 				http.Error(w, err.Error(), http.StatusNotFound)
 			case utility.ForbiddenError:
 				http.Error(w, err.Error(), http.StatusForbidden)
+			case utility.BadRequestError:
+				http.Error(w, err.Error(), http.StatusBadRequest)
 			default:
 				http.Error(w, err.Error(), http.StatusInternalServerError)
 			}

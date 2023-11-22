@@ -31,7 +31,7 @@ func (u UserRepositoryImpl) PostUser(user *model.User) (*model.User, error) {
 	}
 
 	return &model.User{
-		Id:      entity.Id,
+		Id:      entity.ID,
 		Name:    entity.Name,
 		Email:   entity.Email,
 		UserKey: entity.UserKey,
@@ -52,7 +52,7 @@ func (u UserRepositoryImpl) FindUserByUserKey(userKey string) (*model.User, erro
 	}
 
 	return &model.User{
-		Id:      user.Id,
+		Id:      user.ID,
 		Name:    user.Name,
 		Email:   user.Email,
 		UserKey: user.UserKey,
@@ -67,7 +67,7 @@ func (u UserRepositoryImpl) FindIDByUserKey(userKey string) (id int, err error) 
 		}
 		return 0, result.Error
 	}
-	return user.Id, nil
+	return user.ID, nil
 }
 
 // FindUserStatus 現在のユーザーの状態を確認
@@ -76,14 +76,14 @@ func (u UserRepositoryImpl) FindUserStatus(userID int) (*model.UserStatus, error
 
 	if err := u.db.Where("user_id = ?", userID).First(&status).Error; err != nil {
 		if err == gorm.ErrRecordNotFound {
-			return nil, fmt.Errorf("no record found with UserId: %d", userID)
+			return nil, fmt.Errorf("no record found with UserID: %d", userID)
 		}
 		return nil, err
 	}
 
 	res := &model.UserStatus{
-		UserId:   status.UserId,
-		StatusId: model.IntToStatusEnum(status.StatusId),
+		UserID:   status.UserID,
+		StatusId: model.IntToStatusEnum(status.StatusID),
 	}
 
 	return res, nil
@@ -94,8 +94,8 @@ func (u UserRepositoryImpl) FindUserStatus(userID int) (*model.UserStatus, error
 func (u UserRepositoryImpl) PostUserStatus(status *model.UserStatus) (*model.UserStatus, error) {
 
 	entity := &orm_model.UserStatus{
-		UserId:   status.UserId,
-		StatusId: status.StatusId.ToInt(),
+		UserID:   status.UserID,
+		StatusID: status.StatusId.ToInt(),
 	}
 
 	if err := u.db.Create(entity).Error; err != nil {
@@ -107,9 +107,9 @@ func (u UserRepositoryImpl) PostUserStatus(status *model.UserStatus) (*model.Use
 
 // PutUserStatus ユーザーの状態を更新
 func (u UserRepositoryImpl) PutUserStatus(status *model.UserStatus) (*model.UserStatus, error) {
-	userId := status.UserId
+	userId := status.UserID
 	entity := &orm_model.UserStatus{
-		StatusId: status.StatusId.ToInt(),
+		StatusID: status.StatusId.ToInt(),
 	}
 	if err := u.db.Model(&orm_model.UserStatus{}).Where("user_id = ?", userId).Updates(entity).Error; err != nil {
 		return nil, err
