@@ -18,40 +18,58 @@
 .
 ├── README.md
 ├── api
-│   ├── config
-│   │   └── config.go
-│   ├── controller
-│   │   ├── activityController.go ルーティングでここのコントローラを呼ぶ
-│   │   └── historyController.go
-│   ├── di
-│   │   ├── wire.go
-│   │   └── wire_gen.go
 │   ├── domain
-│   │   ├── model // ビジネスモデル
-│   │   │   └── model.go 
-│   │   └── repository // DB操作の処理をinterfaceで定義
-│   │       ├── activityRepository.go 
-│   │       └── historyRepository.go
+│   │   ├── model
+│   │   │   ├── attendance.go
+│   │   │   ├── attendanceType.go
+│   │   │   ├── user.go
+│   │   │   ├── userStatus.go
+│   │   │   └── userStatusType.go
+│   │   └── repository
+│   │       ├── activityRepository.go
+│   │       ├── historyRepository.go
+│   │       └── userRepository.go
 │   ├── go.mod
 │   ├── go.sum
-│   ├── infrastructure 
-│   │   ├── connection.go
+│   ├── infrastructure
+│   │   ├── connectionDB.go
+│   │   ├── di
+│   │   │   ├── wire.go
+│   │   │   └── wire_gen.go
 │   │   ├── orm
-│   │   │   └── gorm_model.go // DBアクセス時に使用
-│   │   └── repository // domain層のrepositoryを実装する
+│   │   │   └── gorm_model.go
+│   │   └── repository
 │   │       ├── activityRepositoryImpl.go
-│   │       └── historyRepositoryImpl.go
+│   │       ├── historyRepositoryImpl.go
+│   │       └── userRepositoryImpl.go
 │   ├── main.go
-│   ├── router
-│   │   └── router.go  //ここでルーティング
+│   ├── presentation
+│   │   ├── controller
+│   │   │   ├── activityController.go
+│   │   │   ├── historyController.go
+│   │   │   └── userController.go
+│   │   ├── parameter
+│   │   └── router
+│   │       ├── middleware
+│   │       │   └── cors.go
+│   │       └── router.go
 │   ├── tmp
 │   │   └── main
-│   └── usecase //今回のアプリケーションのビジネスロジックはここに書く
-│       ├── activityUsecase.go
-│       ├── dto // model層のデータをdtoを通して書き換える
-│       │   ├── activityResponseDto.go
-│       │   └── historyResponseDto.go
-│       └── historyUsecase.go
+│   ├── usecase
+│   │   ├── activityUsecase.go
+│   │   ├── dto
+│   │   │   ├── request
+│   │   │   │   ├── activityDTO.go
+│   │   │   │   └── user.go
+│   │   │   └── response
+│   │   │       ├── activityDto.go
+│   │   │       ├── historyDto.go
+│   │   │       └── user.go
+│   │   ├── historyUsecase.go
+│   │   └── userUsecase.go
+│   └── utility
+│       ├── errorUtility.go
+│       └── timeUtility.go
 └── dockerfile
 
 ```
