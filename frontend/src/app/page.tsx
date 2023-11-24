@@ -9,7 +9,7 @@ const Home = () => {
         router.push('/mypage');
     }, [router]);
 
-    return null; // またはローディングコンポーネントを表示
+    return null;
 };
 
 export default Home;

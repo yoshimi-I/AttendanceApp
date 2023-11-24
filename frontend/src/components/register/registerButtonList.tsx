@@ -2,17 +2,21 @@
 import { Box } from "@mui/system";
 import AttendanceButton from "./registerButton";
 import { Paper, Typography } from "@mui/material";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 type AttendanceButtonsProps = {
   userStatus: string;
 };
 
-const AttendanceButtons: React.FC<AttendanceButtonsProps> = ({
+export const AttendanceButtons: React.FC<AttendanceButtonsProps> = ({
   userStatus: initialUserStatus,
 }) => {
   const [status, setStatus] = useState(initialUserStatus);
+  useEffect(() => {
+    setStatus(initialUserStatus); // 親コンポーネントからの更新を反映
+  }, [initialUserStatus]);
 
+  // 追加: 関数コンポーネントはReactNodeを返す必要があります
   return (
     <>
       <Box
@@ -58,5 +62,3 @@ const AttendanceButtons: React.FC<AttendanceButtonsProps> = ({
     </>
   );
 };
-
-export default AttendanceButtons;

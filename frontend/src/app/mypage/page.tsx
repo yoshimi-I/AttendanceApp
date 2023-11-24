@@ -1,12 +1,12 @@
 "use client";
 import { useEffect, useState } from "react";
 import CurrentTime from "../../components/time/currentTime";
-import AttendanceButtons from "../../components/register/registerButtonList";
 import UserIcon from "../../components/userIcon/userIcon";
 import { auth } from "../../lib/firebase/firebase";
 import { useAuthState } from "react-firebase-hooks/auth";
 import { useRouter } from "next/navigation";
 import { ActivityCalendar } from "../../components/githubCarender/githubCarender";
+import { AttendanceButtons } from "../../components/register/registerButtonList";
 
 export default function Home() {
   const [user, loading, error] = useAuthState(auth);
