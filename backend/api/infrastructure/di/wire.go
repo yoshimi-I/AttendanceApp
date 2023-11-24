@@ -7,10 +7,10 @@ package di
 
 import (
 	"github.com/google/wire"
-	usecase2 "work-management-app/application/usecase"
+	"work-management-app/application/usecase"
 	"work-management-app/domain/service"
 	"work-management-app/infrastructure/database"
-	repository2 "work-management-app/infrastructure/database/repository"
+	"work-management-app/infrastructure/database/repository"
 	"work-management-app/presentation/controller"
 )
 
@@ -27,16 +27,17 @@ var domainServiceSet = wire.NewSet(
 
 // repository
 var repositorySet = wire.NewSet(
-	repository2.NewActivityRepository,
-	repository2.NewHistoryRepository,
-	repository2.NewUserRepository,
+	repository.NewActivityRepository,
+	repository.NewHistoryRepository,
+	repository.NewUserRepository,
+	repository.NewTransaction,
 )
 
 // application
 var usecaseSet = wire.NewSet(
-	usecase2.NewActivityUsecase,
-	usecase2.NewHistoryUsecase,
-	usecase2.usecase.NewUserUsecase,
+	usecase.NewActivityUsecase,
+	usecase.NewHistoryUsecase,
+	usecase.NewUserUsecase,
 )
 
 // controller

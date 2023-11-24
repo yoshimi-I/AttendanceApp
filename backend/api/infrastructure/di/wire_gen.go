@@ -8,10 +8,10 @@ package di
 
 import (
 	"github.com/google/wire"
-	usecase2 "work-management-app/application/usecase"
+	"work-management-app/application/usecase"
 	"work-management-app/domain/service"
 	"work-management-app/infrastructure/database"
-	repository2 "work-management-app/infrastructure/database/repository"
+	"work-management-app/infrastructure/database/repository"
 	"work-management-app/presentation/controller"
 )
 
@@ -22,16 +22,17 @@ func InitializeControllers() (*ControllersSet, error) {
 	if err != nil {
 		return nil, err
 	}
-	userRepository := repository2.NewUserRepository(db)
-	activityRepository := repository2.NewActivityRepository(db)
-	userUsecase := usecase2.NewUserUsecase(userRepository, activityRepository)
+	userRepository := repository.NewUserRepository(db)
+	activityRepository := repository.NewActivityRepository(db)
+	transaction := repository.NewTransaction(db)
+	userUsecase := usecase.NewUserUsecase(userRepository, activityRepository, transaction)
 	userController := controller.NewUserController(userUsecase)
-	historyRepository := repository2.NewHistoryRepository(db)
+	historyRepository := repository.NewHistoryRepository(db)
 	historyDomainService := service.NewHistoryDomainService()
-	historyUsecase := usecase2.NewHistoryUsecase(historyRepository, userRepository, historyDomainService)
+	historyUsecase := usecase.NewHistoryUsecase(historyRepository, userRepository, historyDomainService)
 	historyController := controller.NewHistoryController(historyUsecase)
 	activityDomainService := service.NewActivityDomainService(activityRepository, historyRepository)
-	activityUsecase := usecase2.NewActivityUsecase(activityRepository, userRepository, activityDomainService)
+	activityUsecase := usecase.NewActivityUsecase(activityRepository, userRepository, activityDomainService, transaction)
 	activityController := controller.NewActivityController(activityUsecase)
 	controllersSet := &ControllersSet{
 		UserController:     userController,
@@ -50,10 +51,10 @@ var infrastructureSet = wire.NewSet(database.InitDB)
 var domainServiceSet = wire.NewSet(service.NewActivityDomainService, service.NewHistoryDomainService)
 
 // repository
-var repositorySet = wire.NewSet(repository2.NewActivityRepository, repository2.NewHistoryRepository, repository2.NewUserRepository)
+var repositorySet = wire.NewSet(repository.NewActivityRepository, repository.NewHistoryRepository, repository.NewUserRepository, repository.NewTransaction)
 
 // application
-var usecaseSet = wire.NewSet(usecase2.NewActivityUsecase, usecase2.NewHistoryUsecase, usecase2.NewUserUsecase)
+var usecaseSet = wire.NewSet(usecase.NewActivityUsecase, usecase.NewHistoryUsecase, usecase.NewUserUsecase)
 
 // controller
 var controllerSet = wire.NewSet(controller.NewActivityController, controller.NewHistoryController, controller.NewUserController)
