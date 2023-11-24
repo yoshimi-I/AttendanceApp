@@ -40,7 +40,14 @@ func (a ActivityRepositoryImpl) FindActivity(id int) (*model.Attendance, error) 
 }
 
 // PostActivity 活動を追加する
-func (a ActivityRepositoryImpl) PostActivity(attendance *model.Attendance) (*model.Attendance, error) {
+func (a ActivityRepositoryImpl) PostActivity(attendance *model.Attendance, tx repository.Transaction) (*model.Attendance, error) {
+
+	// 受け取ったトランザクションをormに整形
+	conn := ConvertOrm(tx)
+	if conn != nil {
+		conn = a.db
+	}
+
 	entity := &orm_model.Attendance{
 		UserID:         attendance.UserID,
 		AttendanceType: attendance.AttendanceType.ToInt(),
@@ -49,7 +56,7 @@ func (a ActivityRepositoryImpl) PostActivity(attendance *model.Attendance) (*mod
 		Year:           attendance.Year,
 	}
 
-	if err := a.db.Create(entity).Error; err != nil {
+	if err := conn.Create(entity).Error; err != nil {
 		return nil, err
 	}
 
@@ -58,13 +65,20 @@ func (a ActivityRepositoryImpl) PostActivity(attendance *model.Attendance) (*mod
 }
 
 // PutActivity 活動を編集する
-func (a ActivityRepositoryImpl) PutActivity(attendance *model.Attendance) (*model.Attendance, error) {
+func (a ActivityRepositoryImpl) PutActivity(attendance *model.Attendance, tx repository.Transaction) (*model.Attendance, error) {
+
+	// 受け取ったトランザクションをormに整形
+	conn := ConvertOrm(tx)
+	if conn != nil {
+		conn = a.db
+	}
+
 	entity := &orm_model.Attendance{
 		Time: attendance.Time,
 	}
 	id := attendance.ID
 
-	if err := a.db.Model(&orm_model.Attendance{}).Where("id = ?", id).Updates(entity).Error; err != nil {
+	if err := conn.Model(&orm_model.Attendance{}).Where("id = ?", id).Updates(entity).Error; err != nil {
 		return nil, err
 	}
 
@@ -72,8 +86,15 @@ func (a ActivityRepositoryImpl) PutActivity(attendance *model.Attendance) (*mode
 }
 
 // DeleteActivity　活動を削除する
-func (a ActivityRepositoryImpl) DeleteActivity(id int) error {
-	if err := a.db.Where("id = ?", id).Delete(&orm_model.Attendance{}).Error; err != nil {
+func (a ActivityRepositoryImpl) DeleteActivity(id int, tx repository.Transaction) error {
+
+	// 受け取ったトランザクションをormに整形
+	conn := ConvertOrm(tx)
+	if conn != nil {
+		conn = a.db
+	}
+	
+	if err := conn.Where("id = ?", id).Delete(&orm_model.Attendance{}).Error; err != nil {
 		return err
 	}
 

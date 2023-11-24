@@ -21,16 +21,18 @@ type ActivityUsecase interface {
 }
 
 type ActivityUsecaseImpl struct {
+	db repository.Transaction
 	ar repository.ActivityRepository
 	ur repository.UserRepository
 	as service.ActivityDomainService
 }
 
-func NewActivityUsecase(ar repository.ActivityRepository, ur repository.UserRepository, as service.ActivityDomainService) ActivityUsecase {
+func NewActivityUsecase(ar repository.ActivityRepository, ur repository.UserRepository, as service.ActivityDomainService, db repository.Transaction) ActivityUsecase {
 	return &ActivityUsecaseImpl{
 		ar: ar,
 		ur: ur,
 		as: as,
+		db: db,
 	}
 }
 
@@ -53,18 +55,39 @@ func (a ActivityUsecaseImpl) AddStarWork(work *request.ActivityRequestDTO) (*res
 		log.Println("usr_id not found")
 		return nil, err
 	}
+
 	// 終了の状態の時のみ,作業を開始できる
 	if nowUserStatus.StatusId != model.Finish {
 		log.Println(nowUserStatus.StatusId.ToString())
 		return nil, fmt.Errorf("you can't start work")
 	}
 
+	// トランザクション開始
+	tx, err := a.db.TxBegin()
 	if err != nil {
 		return nil, err
 	}
 
+	// エラーハンドリング用のdefer
+	defer func() {
+		if err != nil {
+			err := a.db.TxRollback()
+			if err != nil {
+				log.Panic(err)
+			}
+		} else {
+			err := a.db.TxCommit()
+			if err != nil {
+				log.Panic(err)
+			}
+		}
+	}()
+
 	// 作業開始を登録
-	res, err := a.as.AddStarWorkTime(userID)
+	res, err := a.as.AddStarWorkTime(userID, tx)
+	if err != nil {
+		return nil, err
+	}
 
 	// ユーザーの状態の更新
 	newUserStatus := &model.UserStatus{
@@ -72,7 +95,7 @@ func (a ActivityUsecaseImpl) AddStarWork(work *request.ActivityRequestDTO) (*res
 		StatusId: model.Work,
 	}
 
-	_, err = a.ur.PutUserStatus(newUserStatus)
+	_, err = a.ur.PutUserStatus(newUserStatus, tx)
 	if err != nil {
 		return nil, err
 	}
@@ -111,8 +134,29 @@ func (a ActivityUsecaseImpl) AddEndWork(work *request.ActivityRequestDTO) (*resp
 		return nil, fmt.Errorf("you can't end work")
 	}
 
+	// トランザクション開始
+	tx, err := a.db.TxBegin()
+	if err != nil {
+		return nil, err
+	}
+
+	// エラーハンドリング用のdefer
+	defer func() {
+		if err != nil {
+			err := a.db.TxRollback()
+			if err != nil {
+				log.Panic(err)
+			}
+		} else {
+			err := a.db.TxCommit()
+			if err != nil {
+				log.Panic(err)
+			}
+		}
+	}()
+
 	// ユーザーの作業終了を登録
-	res, err := a.as.AddEndWorkTime(userID)
+	res, err := a.as.AddEndWorkTime(userID, tx)
 	if err != nil {
 		return nil, err
 	}
@@ -123,7 +167,7 @@ func (a ActivityUsecaseImpl) AddEndWork(work *request.ActivityRequestDTO) (*resp
 		StatusId: model.Finish,
 	}
 
-	_, err = a.ur.PutUserStatus(newUserStatus)
+	_, err = a.ur.PutUserStatus(newUserStatus, tx)
 	if err != nil {
 		return nil, err
 	}
@@ -169,8 +213,28 @@ func (a ActivityUsecaseImpl) AddStartBreak(breakInfo *request.ActivityRequestDTO
 		return nil, err
 	}
 
+	// トランザクション開始
+	tx, err := a.db.TxBegin()
+	if err != nil {
+		return nil, err
+	}
+
+	// エラーハンドリング用のdefer
+	defer func() {
+		if err != nil {
+			err := a.db.TxRollback()
+			if err != nil {
+				log.Panic(err)
+			}
+		} else {
+			err := a.db.TxCommit()
+			if err != nil {
+				log.Panic(err)
+			}
+		}
+	}()
 	// 休憩開始を登録
-	res, err := a.as.AddStartBreakTime(userID)
+	res, err := a.as.AddStartBreakTime(userID, tx)
 	if err != nil {
 		log.Printf("you can't start break")
 		return nil, fmt.Errorf("failed to post start break: %w", err)
@@ -182,7 +246,7 @@ func (a ActivityUsecaseImpl) AddStartBreak(breakInfo *request.ActivityRequestDTO
 		StatusId: model.Break,
 	}
 
-	_, err = a.ur.PutUserStatus(newUserStatus)
+	_, err = a.ur.PutUserStatus(newUserStatus, tx)
 	if err != nil {
 		return nil, err
 	}
@@ -222,12 +286,29 @@ func (a ActivityUsecaseImpl) AddEndBreak(breakInfo *request.ActivityRequestDTO) 
 		return nil, fmt.Errorf("you can't end break")
 	}
 
+	// トランザクション開始
+	tx, err := a.db.TxBegin()
 	if err != nil {
 		return nil, err
 	}
 
+	// エラーハンドリング用のdefer
+	defer func() {
+		if err != nil {
+			err := a.db.TxRollback()
+			if err != nil {
+				log.Panic(err)
+			}
+		} else {
+			err := a.db.TxCommit()
+			if err != nil {
+				log.Panic(err)
+			}
+		}
+	}()
+
 	// ユーザーの作業終了を登録
-	res, err := a.as.AddEndBreakTime(userID)
+	res, err := a.as.AddEndBreakTime(userID, tx)
 	if err != nil {
 		log.Printf("Failed to post end break: %v", err)
 		return nil, fmt.Errorf("failed to post end break: %w", err)
@@ -239,7 +320,7 @@ func (a ActivityUsecaseImpl) AddEndBreak(breakInfo *request.ActivityRequestDTO) 
 		StatusId: model.Work,
 	}
 
-	_, err = a.ur.PutUserStatus(newUserStatus)
+	_, err = a.ur.PutUserStatus(newUserStatus, tx)
 	if err != nil {
 		return nil, err
 	}
@@ -277,8 +358,29 @@ func (a ActivityUsecaseImpl) Update(activity *request.ActivityEditRequestDTO) (*
 		return nil, utility.AuthenticationError{}
 	}
 
+	// トランザクション開始
+	tx, err := a.db.TxBegin()
+	if err != nil {
+		return nil, err
+	}
+
+	// エラーハンドリング用のdefer
+	defer func() {
+		if err != nil {
+			err := a.db.TxRollback()
+			if err != nil {
+				log.Panic(err)
+			}
+		} else {
+			err := a.db.TxCommit()
+			if err != nil {
+				log.Panic(err)
+			}
+		}
+	}()
+
 	// データの編集を行う
-	res, err := a.as.EditTime(record, newTime)
+	res, err := a.as.EditTime(record, newTime, tx)
 	if err != nil {
 		return nil, err
 	}
@@ -314,15 +416,36 @@ func (a ActivityUsecaseImpl) DeleteByActivityID(activity *request.ActivityDelete
 		return utility.AuthenticationError{}
 	}
 
+	// トランザクション開始
+	tx, err := a.db.TxBegin()
+	if err != nil {
+		log.Panic(err)
+	}
+
+	// エラーハンドリング用のdefer
+	defer func() {
+		if err != nil {
+			err := a.db.TxRollback()
+			if err != nil {
+				log.Panic(err)
+			}
+		} else {
+			err := a.db.TxCommit()
+			if err != nil {
+				log.Panic(err)
+			}
+		}
+	}()
+
 	// 削除
-	newUserStatus, err := a.as.Delete(record)
+	newUserStatus, err := a.as.Delete(record, tx)
 	if err != nil {
 		return err
 	}
 
 	// ユーザーの状態の更新
 	if newUserStatus != nil {
-		_, err = a.ur.PutUserStatus(newUserStatus)
+		_, err = a.ur.PutUserStatus(newUserStatus, tx)
 		if err != nil {
 			return err
 		}

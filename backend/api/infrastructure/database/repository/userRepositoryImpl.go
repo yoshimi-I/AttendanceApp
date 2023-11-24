@@ -19,14 +19,20 @@ func NewUserRepository(db *gorm.DB) repository.UserRepository {
 	}
 }
 
-func (u UserRepositoryImpl) PostUser(user *model.User) (*model.User, error) {
+func (u UserRepositoryImpl) PostUser(user *model.User, tx repository.Transaction) (*model.User, error) {
+	// 受け取ったトランザクションをormに整形
+	conn := ConvertOrm(tx)
+	if conn != nil {
+		conn = u.db
+	}
+
 	entity := &orm_model.User{
 		Name:    user.Name,
 		Email:   user.Email,
 		UserKey: user.UserKey,
 	}
 
-	if err := u.db.Create(entity).Error; err != nil {
+	if err := conn.Create(entity).Error; err != nil {
 		return nil, err
 	}
 
@@ -91,14 +97,20 @@ func (u UserRepositoryImpl) FindUserStatus(userID int) (*model.UserStatus, error
 }
 
 // PostUserStatus ユーザーの状態を新規登録
-func (u UserRepositoryImpl) PostUserStatus(status *model.UserStatus) (*model.UserStatus, error) {
+func (u UserRepositoryImpl) PostUserStatus(status *model.UserStatus, tx repository.Transaction) (*model.UserStatus, error) {
+
+	// 受け取ったトランザクションをormに整形
+	conn := ConvertOrm(tx)
+	if conn != nil {
+		conn = u.db
+	}
 
 	entity := &orm_model.UserStatus{
 		UserID:   status.UserID,
 		StatusID: status.StatusId.ToInt(),
 	}
 
-	if err := u.db.Create(entity).Error; err != nil {
+	if err := conn.Create(entity).Error; err != nil {
 		return nil, err
 	}
 
@@ -106,12 +118,19 @@ func (u UserRepositoryImpl) PostUserStatus(status *model.UserStatus) (*model.Use
 }
 
 // PutUserStatus ユーザーの状態を更新
-func (u UserRepositoryImpl) PutUserStatus(status *model.UserStatus) (*model.UserStatus, error) {
+func (u UserRepositoryImpl) PutUserStatus(status *model.UserStatus, tx repository.Transaction) (*model.UserStatus, error) {
+
+	// 受け取ったトランザクションをormに整形
+	conn := ConvertOrm(tx)
+	if conn != nil {
+		conn = u.db
+	}
+
 	userId := status.UserID
 	entity := &orm_model.UserStatus{
 		StatusID: status.StatusId.ToInt(),
 	}
-	if err := u.db.Model(&orm_model.UserStatus{}).Where("user_id = ?", userId).Updates(entity).Error; err != nil {
+	if err := conn.Model(&orm_model.UserStatus{}).Where("user_id = ?", userId).Updates(entity).Error; err != nil {
 		return nil, err
 	}
 

@@ -5,10 +5,10 @@ import (
 )
 
 type UserRepository interface {
-	PostUser(user *model.User) (*model.User, error)
+	PostUser(user *model.User, tx Transaction) (*model.User, error)
 	FindUserByUserKey(userKey string) (*model.User, error)
 	FindIDByUserKey(userKey string) (id int, err error)
 	FindUserStatus(userId int) (*model.UserStatus, error)
-	PostUserStatus(status *model.UserStatus) (*model.UserStatus, error)
-	PutUserStatus(status *model.UserStatus) (*model.UserStatus, error)
+	PostUserStatus(status *model.UserStatus, tx Transaction) (*model.UserStatus, error)
+	PutUserStatus(status *model.UserStatus, tx Transaction) (*model.UserStatus, error)
 }

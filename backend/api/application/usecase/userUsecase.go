@@ -19,10 +19,15 @@ type UserUsecase interface {
 type UserUsecaseImpl struct {
 	ur repository.UserRepository
 	ar repository.ActivityRepository
+	db repository.Transaction
 }
 
-func NewUserUsecase(ur repository.UserRepository, ar repository.ActivityRepository) UserUsecase {
-	return &UserUsecaseImpl{ur: ur, ar: ar}
+func NewUserUsecase(ur repository.UserRepository, ar repository.ActivityRepository, db repository.Transaction) UserUsecase {
+	return &UserUsecaseImpl{
+		ur: ur,
+		ar: ar,
+		db: db,
+	}
 }
 
 // AddUser ユーザーを登録
@@ -50,8 +55,29 @@ func (u UserUsecaseImpl) AddUser(user *request.UserDTO) (*response.UserDTO, erro
 		UserKey: userKey,
 	}
 
+	// トランザクション開始
+	tx, err := u.db.TxBegin()
+	if err != nil {
+		log.Panic(err)
+	}
+
+	// エラーハンドリング用のdefer
+	defer func() {
+		if err != nil {
+			err := u.db.TxRollback()
+			if err != nil {
+				log.Panic(err)
+			}
+		} else {
+			err := u.db.TxCommit()
+			if err != nil {
+				log.Panic()
+			}
+		}
+	}()
+
 	// DBにuser情報を保存
-	res, err = u.ur.PostUser(addUser)
+	res, err = u.ur.PostUser(addUser, tx)
 	if err != nil {
 		return nil, err
 	}
@@ -63,7 +89,7 @@ func (u UserUsecaseImpl) AddUser(user *request.UserDTO) (*response.UserDTO, erro
 	}
 
 	log.Printf("Setting initial user status for user: %s", userKey)
-	_, err = u.ur.PostUserStatus(addUserStatus)
+	_, err = u.ur.PostUserStatus(addUserStatus, tx)
 	if err != nil {
 		return nil, err
 	}

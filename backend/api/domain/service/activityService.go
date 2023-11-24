@@ -10,12 +10,12 @@ import (
 )
 
 type ActivityDomainService interface {
-	AddStarWorkTime(userID int) (*model.Attendance, error)
-	AddEndWorkTime(userID int) (*model.Attendance, error)
-	AddStartBreakTime(userID int) (*model.Attendance, error)
-	AddEndBreakTime(userID int) (*model.Attendance, error)
-	EditTime(attendance *model.Attendance, newTime time.Time) (*model.Attendance, error)
-	Delete(attendance *model.Attendance) (*model.UserStatus, error)
+	AddStarWorkTime(userID int, tx repository.Transaction) (*model.Attendance, error)
+	AddEndWorkTime(userID int, tx repository.Transaction) (*model.Attendance, error)
+	AddStartBreakTime(userID int, tx repository.Transaction) (*model.Attendance, error)
+	AddEndBreakTime(userID int, tx repository.Transaction) (*model.Attendance, error)
+	EditTime(attendance *model.Attendance, newTime time.Time, tx repository.Transaction) (*model.Attendance, error)
+	Delete(attendance *model.Attendance, tx repository.Transaction) (*model.UserStatus, error)
 }
 
 type ActivityServiceImpl struct {
@@ -31,7 +31,7 @@ func NewActivityDomainService(ar repository.ActivityRepository, hr repository.Hi
 }
 
 // AddStarWorkTime　作業の開始を登録
-func (a ActivityServiceImpl) AddStarWorkTime(userID int) (*model.Attendance, error) {
+func (a ActivityServiceImpl) AddStarWorkTime(userID int, tx repository.Transaction) (*model.Attendance, error) {
 
 	// 時間の登録
 	attendance := &model.Attendance{
@@ -42,7 +42,7 @@ func (a ActivityServiceImpl) AddStarWorkTime(userID int) (*model.Attendance, err
 		Year:           utility.NowYear(),
 	}
 
-	res, err := a.ar.PostActivity(attendance)
+	res, err := a.ar.PostActivity(attendance, tx)
 	if err != nil {
 		log.Printf("Failed to post start activity: %v", err)
 		return nil, fmt.Errorf("failed to post start activity: %w", err)
@@ -52,7 +52,7 @@ func (a ActivityServiceImpl) AddStarWorkTime(userID int) (*model.Attendance, err
 }
 
 // AddEndWorkTime  作業の終了を登録
-func (a ActivityServiceImpl) AddEndWorkTime(userID int) (*model.Attendance, error) {
+func (a ActivityServiceImpl) AddEndWorkTime(userID int, tx repository.Transaction) (*model.Attendance, error) {
 
 	// 時間の登録
 	attendance := &model.Attendance{
@@ -63,7 +63,7 @@ func (a ActivityServiceImpl) AddEndWorkTime(userID int) (*model.Attendance, erro
 		Year:           utility.NowYear(),
 	}
 
-	res, err := a.ar.PostActivity(attendance)
+	res, err := a.ar.PostActivity(attendance, tx)
 	if err != nil {
 		log.Printf("Failed to post end activity: %v", err)
 		return nil, fmt.Errorf("failed to post end activity: %w", err)
@@ -73,7 +73,7 @@ func (a ActivityServiceImpl) AddEndWorkTime(userID int) (*model.Attendance, erro
 }
 
 // AddStartBreakTime 休憩の開始を登録
-func (a ActivityServiceImpl) AddStartBreakTime(userID int) (*model.Attendance, error) {
+func (a ActivityServiceImpl) AddStartBreakTime(userID int, tx repository.Transaction) (*model.Attendance, error) {
 
 	// 時間の登録
 	attendance := &model.Attendance{
@@ -84,7 +84,7 @@ func (a ActivityServiceImpl) AddStartBreakTime(userID int) (*model.Attendance, e
 		Year:           utility.NowYear(),
 	}
 
-	res, err := a.ar.PostActivity(attendance)
+	res, err := a.ar.PostActivity(attendance, tx)
 	if err != nil {
 		log.Printf("Failed to post end activity: %v", err)
 		return nil, fmt.Errorf("failed to post end activity: %w", err)
@@ -94,7 +94,7 @@ func (a ActivityServiceImpl) AddStartBreakTime(userID int) (*model.Attendance, e
 }
 
 // AddEndBreakTime 休憩の終了を登録
-func (a ActivityServiceImpl) AddEndBreakTime(userID int) (*model.Attendance, error) {
+func (a ActivityServiceImpl) AddEndBreakTime(userID int, tx repository.Transaction) (*model.Attendance, error) {
 
 	// 時間の登録
 	attendance := &model.Attendance{
@@ -105,7 +105,7 @@ func (a ActivityServiceImpl) AddEndBreakTime(userID int) (*model.Attendance, err
 		Year:           utility.NowYear(),
 	}
 
-	res, err := a.ar.PostActivity(attendance)
+	res, err := a.ar.PostActivity(attendance, tx)
 	if err != nil {
 		log.Printf("Failed to post end activity: %v", err)
 		return nil, fmt.Errorf("failed to post end activity: %w", err)
@@ -115,7 +115,7 @@ func (a ActivityServiceImpl) AddEndBreakTime(userID int) (*model.Attendance, err
 }
 
 // EditTime 時間を修正
-func (a ActivityServiceImpl) EditTime(activity *model.Attendance, newTime time.Time) (*model.Attendance, error) {
+func (a ActivityServiceImpl) EditTime(activity *model.Attendance, newTime time.Time, tx repository.Transaction) (*model.Attendance, error) {
 
 	// Dateからその日のユーザーの行動を全件取得
 	dateStr := activity.Date
@@ -170,7 +170,7 @@ func (a ActivityServiceImpl) EditTime(activity *model.Attendance, newTime time.T
 		Time: newTime,
 	}
 
-	res, err := a.ar.PutActivity(attendance)
+	res, err := a.ar.PutActivity(attendance, tx)
 	if err != nil {
 		return nil, err
 	}
@@ -179,7 +179,7 @@ func (a ActivityServiceImpl) EditTime(activity *model.Attendance, newTime time.T
 }
 
 // Delete 活動を削除
-func (a ActivityServiceImpl) Delete(attendance *model.Attendance) (*model.UserStatus, error) {
+func (a ActivityServiceImpl) Delete(attendance *model.Attendance, tx repository.Transaction) (*model.UserStatus, error) {
 	dateStr := attendance.Date // 削除したい日の日付　"2023-12-25"
 	userID := attendance.UserID
 	activityID := attendance.ID
@@ -224,14 +224,14 @@ func (a ActivityServiceImpl) Delete(attendance *model.Attendance) (*model.UserSt
 					StatusId: newAction,
 				}
 				// 削除処理を行う
-				err = a.ar.DeleteActivity(activityID)
+				err = a.ar.DeleteActivity(activityID, tx)
 				if err != nil {
 					return nil, err
 				}
 				return updateUserStatus, nil
 			} else {
 				// 削除処理を行う
-				err = a.ar.DeleteActivity(activityID)
+				err = a.ar.DeleteActivity(activityID, tx)
 			}
 		}
 	}
