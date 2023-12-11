@@ -201,7 +201,7 @@ func (a ActivityControllerImpl) DeleteActivity() http.HandlerFunc {
 			return
 		}
 
-		err := a.ActivityUsecase.DeleteByActivityID(&activity)
+		err := a.ActivityUsecase.Delete(&activity)
 		if err != nil {
 			switch err.(type) {
 			case utility.AuthenticationError:

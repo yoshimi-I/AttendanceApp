@@ -17,7 +17,7 @@ type ActivityUsecase interface {
 	AddStartBreak(breakInfo *request.ActivityRequestDTO) (*response.ActivityResponseDTO, error)
 	AddEndBreak(breakInfo *request.ActivityRequestDTO) (*response.ActivityResponseDTO, error)
 	Update(activity *request.ActivityEditRequestDTO) (*response.ActivityResponseDTO, error)
-	DeleteByActivityID(activity *request.ActivityDeleteRequestDTO) error
+	Delete(activity *request.ActivityDeleteRequestDTO) error
 }
 
 type ActivityUsecaseImpl struct {
@@ -373,8 +373,8 @@ func (a ActivityUsecaseImpl) Update(activity *request.ActivityEditRequestDTO) (*
 	return responseDTO, nil
 }
 
-// DeleteByActivityID 作業,休憩の削除
-func (a ActivityUsecaseImpl) DeleteByActivityID(activity *request.ActivityDeleteRequestDTO) error {
+// Delete 作業,休憩の削除
+func (a ActivityUsecaseImpl) Delete(activity *request.ActivityDeleteRequestDTO) error {
 	activityID := activity.ActivityId
 	userKey := activity.UserKey
 	var err error
@@ -387,62 +387,55 @@ func (a ActivityUsecaseImpl) DeleteByActivityID(activity *request.ActivityDelete
 	if err != nil {
 		return utility.NotFoundError{Message: "failed to find existing activity"}
 	}
-
 	// 編集処理をする人の権限確認
 	if userID != record.UserId {
 		return utility.AuthenticationError{Message: "user authentication failed"}
 	}
 
 	// 削除時データのバリデーションチェック
-	// 削除はその日の一番新しいものしかできないようにする(整合性を保つため)
 	dateStr := record.Date // "2023-12-25"
 	historyByDate, err := a.hr.ReadHistoryByDate(userID, dateStr)
 
-	// 当日の削除の場合は現在の状態も更新
-	// 別の日の削除の場合は状態の変更はしない
-	for i, history := range historyByDate {
+	// 現在の日時を取得
+	nowDateStr := utility.NowDateStr()
 
+	// 削除はその日の最新のものしか行えない
+	for i, history := range historyByDate {
 		// 削除したいデータが日付ごとの最新のデータでない場合はエラーを返す
 		if activityID == history.Id {
-			if i != len(historyByDate)-1 {
+			if i != len(historyByDate)-1 || dateStr != nowDateStr {
 				return utility.ForbiddenError{}
 			}
-			if dateStr == history.Date {
-
-				// 更新したい処理を確認
-				var newAction model.StatusEnum
-				// 削除したい処理を確認
-				deleteAction := history.AttendanceType
-				switch deleteAction {
-				case model.WorkStart:
-					newAction = model.Finish
-				case model.WorkEnd:
-					newAction = model.Work
-				case model.BreakStart:
-					newAction = model.Work
-				case model.BreakEnd:
-					newAction = model.Break
-				default:
-					return err
-				}
-				// 現在の状態の更新を行う
-				updateUserStatus := &model.UserStatus{
-					UserId:   userID,
-					StatusId: newAction,
-				}
-				_, err := a.ur.PutUserStatus(updateUserStatus)
-				if err != nil {
-					return err
-				}
-				// 削除処理を行う
-				err = a.ar.DeleteActivity(activityID)
-			} else {
-				// 削除処理を行う
-				err = a.ar.DeleteActivity(activityID)
+			// 更新したい処理を確認
+			var newAction model.StatusEnum
+			// 削除したい処理を確認
+			deleteAction := history.AttendanceType
+			switch deleteAction {
+			case model.WorkStart:
+				newAction = model.Finish
+			case model.WorkEnd:
+				newAction = model.Work
+			case model.BreakStart:
+				newAction = model.Work
+			case model.BreakEnd:
+				newAction = model.Break
+			default:
+				return err
 			}
+			// 現在の状態の更新を行う
+			updateUserStatus := &model.UserStatus{
+				UserId:   userID,
+				StatusId: newAction,
+			}
+			_, err := a.ur.PutUserStatus(updateUserStatus)
+			if err != nil {
+				return err
+			}
+			// 削除処理を行う
+			err = a.ar.DeleteActivity(activityID)
 		}
-
 	}
+
 	return nil
 
 }
